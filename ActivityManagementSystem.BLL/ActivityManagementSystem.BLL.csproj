@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspose.Words" Version="18.1.0" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="DocX" Version="1.8.0" />
+    <PackageReference Include="FreeSpire.Doc" Version="10.8.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.0.3" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.30" />
+    <PackageReference Include="Microsoft.Office.Interop.Word" Version="15.0.4797.1004" />
+    <PackageReference Include="Serilog.Sinks.ColoredConsole" Version="3.0.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.5.3" />
+    <PackageReference Include="System.IO" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ActivityManagementSystem.DAL\ActivityManagementSystem.DAL.csproj" />
+    <ProjectReference Include="..\ActivityManagementSystem.Domain\ActivityManagementSystem.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
