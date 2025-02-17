@@ -1,0 +1,2 @@
+﻿Id,AdmissionNumber,Student_FirstName,Student_MiddleName,Student_LastName,AllergicTo,HouseName,BloodGroup,Gender,Dob,CommunicationAddress,PermanentAddress,Student_AadhaarNumber,ParentEmailId,FatherName,Father_MobileNumber,MotherName,Mother_MobileNumber,Gardian1Name,Gardian1MobileNumber,Gardian2Name,Gardian2MobileNumber,CreatedBy
+1,A2023101,Nandhini,,s,Potato,Mighty Marvels,A1+ve,Female,35265,demo,demo,324567890987,demo@gmail.com,Krishnan,9089090909,Saroja,9898989890,,,,,
