@@ -1192,17 +1192,17 @@ namespace ActivityManagementSystem.DAL.Repositories
                 }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<List<BatchSubjectModel>> GetAllBatchSubMapping(int? id)
+        public Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMapping(int? id)
         {
             var spName = ConstantSPnames.SP_GETALLBATCHSUBMAP;
-            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectModel>(spName, new
+            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectFacultyModel>(spName, new
             {
                 Id = id
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data)
+        public Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
         {
             var spName = ConstantSPnames.SP_INSERTBATCHSUBMAP;
             var sendToDB = new ArrayList();
@@ -1211,10 +1211,10 @@ namespace ActivityManagementSystem.DAL.Repositories
                 sendToDB.Add(
                     new
                     {
-                        Name = item.Name,
-                        BatchId = item.BatchId,
-                        SubjectId = item.SubjectId,
-                        DepartmentId = item.DepartmentId,
+                        Name = item.SectionName,
+                        SectionId = item.sectionID,
+                        SubjectId = item.SubjectID,
+                        FacultyID = item.FacultyID,
                         CreatedBy = item.ModifiedBy,
                         CreatedDate = item.ModifiedDate
                     });
@@ -1225,7 +1225,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
         }
 
-        public Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model)
+        public Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
         {
             var spName = ConstantSPnames.SP_UPDATEBATCHSUBMAP;
             //var spDltUnmapSubAtt = ConstantSPnames.SP_DELUNMAPSUBATT;
@@ -1233,7 +1233,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             string sProc = ConstantSPnames.SP_UPDATEBATCHSUBACTIVEMAP;
             var rowsUpdated = _db.Connection.Execute(sProc,
-                new { BatchId = model.FirstOrDefault(x => x.BatchId != 0).BatchId },
+                new { SectionID = model.FirstOrDefault(x => x.sectionID != 0).sectionID },
                 commandType: CommandType.StoredProcedure);
             foreach (var item in model)
             {
@@ -1241,10 +1241,10 @@ namespace ActivityManagementSystem.DAL.Repositories
                     new
                     {
                         Id = item.Id,
-                        Name = item.Name,
-                        BatchId = item.BatchId,
-                        SubjectId = item.SubjectId,
-                        DepartmentId = item.DepartmentId,
+                        Name = item.SectionName,
+                        SectionId = item.sectionID,
+                        SubjectId = item.SubjectID,
+                        FacultyID = item.FacultyID,
                         ModifiedBy = item.ModifiedBy,
                         ModifiedDate = item.ModifiedDate
                     });

@@ -69,9 +69,9 @@ namespace ActivityManagementSystem.DAL.Interfaces
      //   Task<List<string>> GetSection(SectionModel sectionModel);
         Task<List<Batchdetails>> GetBatchList(BatchListModel batchListModel);
 
-        Task<List<BatchSubjectModel>> GetAllBatchSubMapping(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model);
+        Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMapping(int? id);
+        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
+        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
         Task<int> DeleteBatchSubMapping(int[] ids);
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
