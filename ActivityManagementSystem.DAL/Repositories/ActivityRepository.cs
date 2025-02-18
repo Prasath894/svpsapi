@@ -6231,13 +6231,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTCONTENTLIBDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<ContentLibModel>(spName, new
             {
-
-
-                DepartmentId = contentLibModel.DepartmentId,
                 FacultyId = contentLibModel.FacultyId,
-                Year = contentLibModel.Year,
-                Sem = contentLibModel.Sem,
-                Section = contentLibModel.Section,
+                SectionId = contentLibModel.SectionId,
                 Title = contentLibModel.Title,
                 Description=contentLibModel.Description,
                 ExpiryDate=contentLibModel.ExpiryDate,
@@ -6252,10 +6247,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<ContentLibModel>(spName, new
             {
                 Id = contentLibModel.Id,
-                DepartmentId = contentLibModel.DepartmentId,
-                Year = contentLibModel.Year,
-                Sem= contentLibModel.Sem,
-                Section = contentLibModel.Section,
+                SectionId = contentLibModel.SectionId,
                 Title = contentLibModel.Title,
                 FacultyId=contentLibModel.FacultyId,
                 Description = contentLibModel.Description,
