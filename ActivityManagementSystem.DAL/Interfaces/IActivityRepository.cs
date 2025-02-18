@@ -35,7 +35,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<RoleActivity>> UpdateRoleActivity(RoleActivity roleactivity);
         Task<List<RoleActivity>> GetRoleActivity(int? id);
 
-        Task<List<UserModel>> GetUserDetails(string Username, string Password);
+        Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
 
         Task<List<FacultyDropdown>> GetFacultyByName(string facultyName);
         Task<List<StudentDropdown>> GetStudentByName(string StudentyName);
@@ -54,7 +54,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<SubjectModel>> InsertSubjectDetails(SubjectModel subject);
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
-        string bulkuploadstudent(DataTable target);
+        Task<string> bulkuploadstudent(DataTable target);
      
         string bulkuploadfaculty(DataTable target);
         string bulkuploadsubject(DataTable target);

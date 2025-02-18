@@ -75,13 +75,13 @@ namespace ActivityManagementSystem.BLL.Interfaces
         string InsertFacultyDetails(FacultyModel facultyDetails);
         string UpdateFacultyDetails(FacultyModel facultyDetails);
         Task<List<FacultyModel>> DeleteFacultyDetails(int Id);
-        Task<List<UserModel>> GetUserDetails(string Username, string Password);
+        //Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
      
         Task<List<SubjectModel>> GetAllSubject(int? Id);
         Task<List<SubjectModel>> InsertSubjectDetails(SubjectModel subject);
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
-        string bulkuploadstudent(DataTable target);
+        Task<string> bulkuploadstudent(DataTable target);
        
         string bulkuploadfaculty(DataTable target);
         string bulkuploadsubject(DataTable target);

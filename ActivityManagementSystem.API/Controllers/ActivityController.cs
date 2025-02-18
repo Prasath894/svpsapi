@@ -24,17 +24,24 @@ using ActivityManagementSystem.BLL.Interfaces;
 using Erp.Application.Common;
 using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.SqlServer.Management.XEvent;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using ActivityManagementSystem.Domain.Models;
 
 namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
+    [Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
         private readonly IServices<ActivityService> _activityService;
         private readonly ILogger<ActivityController> _logger;
+        protected string Role => User.FindFirst("userRole")?.Value;
 
+        // Get the UserId claim value
+        protected int UserId => Convert.ToInt32(User.FindFirst("userId")?.Value);
 
         public ActivityController(ILogger<ActivityController> logger, AppSettings appSettings, IServices<ActivityService> activityService)
         {
@@ -43,21 +50,84 @@ namespace ActivityManagementSystem.API.Controllers
             this._logger = logger;
             //_appSettings = appSettings;
         }
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(UserModel))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetUserDetails(string UserName, string Password)
+        protected IActionResult BadRequestError(Exception ex)
         {
-            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetUserDetails(UserName, Password);
-
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
-            return Ok(result);
+            _logger.LogError("Error executing the request: {message}", ex.Message);
+            var errorResponse = new { message = ex.Message };
+            return StatusCode(StatusCodes.Status400BadRequest, errorResponse);
         }
+
+        protected IActionResult BadRequestError(string errorMessage)
+        {
+            var errorResponse = new { message = errorMessage };
+            return StatusCode(StatusCodes.Status400BadRequest, errorResponse);
+        }
+
+        protected IActionResult SuccessMessage(string message)
+        {
+            return StatusCode(StatusCodes.Status200OK, message);
+        }
+        [AllowAnonymous]
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(Token))]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.ServiceUnavailable)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> Login([FromBody][Required] LoginUserDto user)
+        {
+            if (!string.IsNullOrEmpty(user.Role.ToString()))
+            {
+                if (((user.Role.ToString() == "Parent") || (user.Role.ToString() == "Student")) && (string.IsNullOrEmpty(user.MobileNo)))
+                {
+                    return BadRequestError("Mobile number cannot be empty.");
+                }
+                if ((user.Role.ToString() == "Teacher" || (user.Role.ToString() == "Admin") || (user.Role.ToString() == "Principal")) && (string.IsNullOrEmpty(user.Username)))
+                {
+                    return BadRequestError("Username cannot be empty.");
+                }
+                if (((user.Role.ToString() == "Teacher") || (user.Role.ToString() == "Admin") || (user.Role.ToString() == "Principal")) && (string.IsNullOrEmpty(user.Password)))
+                {
+                    return BadRequestError("Password cannot be empty.");
+                }
+            }
+
+            try
+            {
+                var token = await _activityService.Service.LoginAsync(user);
+                if (token != null)
+                {
+                    return Ok(token);
+                }
+                else
+                {
+                    return Unauthorized(new { message = "You are not allowed to login." });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequestError(ex);
+            }
+
+        }
+
+    
+        //[HttpGet]
+        //[ProducesResponseType(200, Type = typeof(UserModel))]
+        //[ProducesResponseType(404)]
+        //public async Task<IActionResult> GetUserDetails(string UserName, string Password)
+        //{
+        //    // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
+        //    var result = await _activityService.Service.GetUserDetails(UserName, Password);
+
+        //    _logger.LogDebug(result.ToString());
+        //    if (result == null)
+        //    {
+        //        return NoContent();
+        //    }
+        //    return Ok(result);
+        //}
 
 
         [HttpGet]
@@ -1107,7 +1177,7 @@ namespace ActivityManagementSystem.API.Controllers
                 var XlPath = fileUploadModel.FormFiles.FileName;
                 if (XlPath == "Student.csv")
                 {
-                    result = _activityService.Service.bulkuploadstudent(uploadedFileData);
+                    result = await _activityService.Service.bulkuploadstudent(uploadedFileData);
 
                 }
                 else if (XlPath == "Faculty.xlsx")

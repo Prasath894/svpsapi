@@ -11,8 +11,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
 
         public string SubjectCode { get; set; }
         public string SubjectName { get; set; }
-        public string SubSem { get; set; }
-        public string SubYear { get; set; }
+        public string Grade { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
