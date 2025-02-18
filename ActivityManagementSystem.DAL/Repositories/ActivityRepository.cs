@@ -676,10 +676,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 SubjectShortForm = subject.SubjectShortForm,
                 SubjectCode = subject.SubjectCode,
                 SubjectName = subject.SubjectName,
-                SubSem = subject.SubSem,
-                SubYear = subject.SubYear,
-                CreatedBy = subject.CreatedBy,
-                CreatedDate = subject.CreatedDate
+                Grade = subject.Grade,
+                CreatedBy = subject.CreatedBy               
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -693,10 +691,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 SubjectShortForm = subject.SubjectShortForm,
                 SubjectCode = subject.SubjectCode,
                 SubjectName = subject.SubjectName,
-                SubSem = subject.SubSem,
-                SubYear = subject.SubYear,
-                ModifiedBy = subject.ModifiedBy,
-                ModifiedDate = subject.ModifiedDate
+                Grade = subject.Grade,
+                ModifiedBy = subject.ModifiedBy              
 
             }, commandType: CommandType.StoredProcedure).ToList());
 
