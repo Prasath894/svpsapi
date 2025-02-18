@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Reflection;
 
 namespace Erp.Application.Common
@@ -13,6 +14,12 @@ namespace Erp.Application.Common
         {
             DataTable dataTable = new();
 
+            // Ensure the file exists
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"File not found: {filePath}");
+            }
+
             using (TextFieldParser parser = new(filePath))
             {
                 parser.TextFieldType = FieldType.Delimited;
@@ -22,16 +29,8 @@ namespace Erp.Application.Common
                 string[] fields = parser.ReadFields() ?? Array.Empty<string>();
                 foreach (string field in fields)
                 {
-                    if (field == "S.No")
-                    {
-                        dataTable.Columns.Add(new DataColumn("SNo"));
-
-                    }
-                    else
-                    {
-                        dataTable.Columns.Add(new DataColumn(field));
-
-                    }
+                    // Add the column name, trimming spaces
+                    dataTable.Columns.Add(new DataColumn(field.Trim()));
                 }
 
                 // Read data rows from the CSV
@@ -40,6 +39,29 @@ namespace Erp.Application.Common
                     string[]? rows = parser.ReadFields();
                     if (rows != null)
                     {
+                        // Process each row based on the column names
+                        for (int i = 0; i < rows.Length; i++)
+                        {
+                            // Trim spaces for each cell
+                            rows[i] = rows[i]?.Trim();
+
+                            // If the column name contains "Date" or "DOB", try converting it to DateTime
+                            if (dataTable.Columns[i].ColumnName.Contains("Date", StringComparison.OrdinalIgnoreCase) ||
+                                dataTable.Columns[i].ColumnName.ToLower().Contains("dob", StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (DateTime.TryParse(rows[i], out DateTime parsedDate))
+                                {
+                                    // Assign the date in a specific format (MM/dd/yyyy)
+                                    rows[i] = parsedDate.ToString("MM/dd/yyyy");
+                                }
+                                else
+                                {
+                                    rows[i] = string.Empty; // If parsing fails, assign an empty string or handle appropriately
+                                }
+                            }
+                        }
+
+                        // Add the processed row to the DataTable
                         dataTable.Rows.Add(rows);
                     }
                 }
@@ -47,6 +69,7 @@ namespace Erp.Application.Common
 
             return dataTable;
         }
+
 
         // Method to convert List<Clsobj> to DataTable
         public static DataTable ConvertListToDataTable<T>(List<T> list)

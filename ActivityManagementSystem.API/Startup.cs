@@ -20,6 +20,10 @@ using ActivityManagementSystem.Domain.AppSettings;
 using ActivityManagementSystem.Service.Middleware;
 using ActivityManagementSystem.BLL;
 using Microsoft.AspNetCore.Cors.Infrastructure;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace ActivityManagementSystem.Service
 {
@@ -86,6 +90,26 @@ namespace ActivityManagementSystem.Service
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ActivityManagementSystem.Service.API", Version = "v1" });
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "ActivityManagementSystem.Service.API Authorization",
+                });
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+        {
+            new OpenApiSecurityScheme {
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
             });
             //services.AddCors(options =>
             //{
@@ -105,6 +129,38 @@ namespace ActivityManagementSystem.Service
 
             services.AddLocalization();
             services.AddMvc();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+        .AddJwtBearer(options =>
+        {
+            var secretKey = AppSettings.JWTSettings.SecretKey ?? string.Empty;
+            var issuer = AppSettings.JWTSettings.Issuer;
+            var audience = AppSettings.JWTSettings.Audience;
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey)),
+                ValidateIssuer = true,
+                ValidIssuer = issuer,
+                ValidateAudience = true,
+                ValidAudience = audience,
+                ValidateLifetime = true // Ensures token expiration is validated
+            };
+        });
+
+            // Register HttpClient
+            services.AddHttpClient("ApiClient", client =>
+            {
+                var apiBaseUrl = Configuration["ApiBaseUrl"] ?? string.Empty;
+                client.BaseAddress = new Uri(apiBaseUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+
             //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             //services.AddScoped<IUserContextAccessor, UserContextAccessor>();
 
@@ -169,7 +225,7 @@ namespace ActivityManagementSystem.Service
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors("MyAllowSpecificOrigins");
             app.UseEndpoints(endpoints =>
