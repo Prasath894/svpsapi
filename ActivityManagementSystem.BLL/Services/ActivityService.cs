@@ -1,26 +1,31 @@
-﻿using ActivityManagementSystem.BLL.Interfaces;
+﻿using ActivityManagementSystem.BLL.Common;
+using ActivityManagementSystem.BLL.Interfaces;
 using ActivityManagementSystem.DAL;
 using ActivityManagementSystem.DAL.Interfaces;
 using ActivityManagementSystem.DAL.Repositories;
+using ActivityManagementSystem.Domain.AppSettings;
+using ActivityManagementSystem.Domain.Common;
+using ActivityManagementSystem.Domain.Models;
 using ActivityManagementSystem.Domain.Models.Activity;
+using Microsoft.SqlServer.Management.Smo;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-
 namespace ActivityManagementSystem.BLL.Services
 {
     public class ActivityService : IActivityService
     {
         private readonly IDatabase<ActivityRepository> _activityRepository;
-
-        public ActivityService(IDatabase<ActivityRepository> activityRepository)
+        private readonly AppSettings _appSettings;
+        public ActivityService(IDatabase<ActivityRepository> activityRepository, AppSettings appSettings)
         {
-
+            _appSettings = appSettings;
             _activityRepository = activityRepository;
         }
 
@@ -40,34 +45,7 @@ namespace ActivityManagementSystem.BLL.Services
                         result[i].Files.RemoveAt(result[i].Files.Count - 1);
                     }
                 }
-                //    if (!initialRequest)
-                //    {
-                //    List<string> lstk = new List<string>();
-                //    for (int k = 0; k < result[i].Files.Count; k++)
-                //    {
-                //        string ext = System.IO.Path.GetExtension(result[i].Files[k].Trim()).Substring(1);
-                //        if (ext == "jpg" || ext == "bmp" || ext == "png" || ext == "jpeg")
-                //        {
-                //            string path = result[i].FilePath.ToString() + "\\" + result[i].Files[k].Trim();
-                //            byte[] b = System.IO.File.ReadAllBytes(path);
-                //            string val = Convert.ToBase64String(b);
-                //            lstk.Add(val);
-
-                //        }
-                //    }
-                //    //for (int k = 0; k <= result[i].Files.Count; k++)
-                //    //{
-                //    //    string path = Directory.GetCurrentDirectory() + "\\2.bmp"; //result[i].FilePath + "\\" + result[0].Files[k].Trim();
-                //    //    byte[] b = System.IO.File.ReadAllBytes(path);
-
-                //    //    string val = Convert.ToBase64String(b);
-                //    //    lstk.Add(val);
-
-                //    //}
-                //    result[i].FileBlob = lstk;
-                //}
-
-                //  List<string> lst = 
+         
 
                 return result;
             }
@@ -79,7 +57,91 @@ namespace ActivityManagementSystem.BLL.Services
 
         }
 
+        public async Task<Token> LoginAsync(LoginUserDto user)
+        {
+            try
+            {
+                string userRole = user.Role.ToString();
 
+                if (user.Role == "Teacher" || user.Role == "Admin" || user.Role =="Principal")
+                {
+                    var faculties = await _activityRepository.Repository.GetUserDetails(user.Username, user.Password,user.Role);
+                    if (faculties == null || faculties.Count == 0)  // Fix: Count should be compared with 0
+                    {
+                        throw new Exception("Server unavailable.");
+                    }
+
+                    var faculty = faculties.FirstOrDefault(x =>
+                        (x.UserName?.Equals(user.Username) ?? false) &&
+                        (x.Password?.Equals(user.Password) ?? false)); // Fix: Ensure both conditions match for login
+
+                    if (faculty != null)
+                    {
+                        return GetToken(faculty.FacultyName, userRole, faculty.Id);
+                    }
+                    else
+                    {
+                        throw new Exception("The username and password do not match.");
+                    }
+                }
+                else if (user.Role.ToString() == "Parent")
+                {
+                    var students = await _activityRepository.Repository.GetStudentDetails(null);
+                    if (students == null || students.Count == 0)  // Fix: Count should be compared with 0
+                    {
+                        throw new Exception("Server unavailable.");
+                    }
+
+                    var student = students.FirstOrDefault(x =>
+                        (x.Father_MobileNumber?.Equals(user.MobileNo) ?? false) ||
+                        (x.Mother_MobileNumber?.Equals(user.MobileNo) ?? false));
+
+                    if (student != null)
+                    {
+                        string userName = student.Father_MobileNumber.Equals(user.MobileNo) ?
+                            student.FatherName : student.MotherName;
+                        return GetToken(userName, userRole, student.Id);
+                    }
+                    else
+                    {
+                        throw new Exception("The mobile number does not match.");
+                    }
+                }
+
+                // Default case: if user.Role is not Faculty or Parent
+                throw new Exception("Invalid role specified.");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error during login: " + ex.Message); // Better exception handling
+            }
+        }
+
+
+        private Token GetToken(string userName, string userRole, int userId)
+        {
+            var jwtService = new JwtService(_appSettings.JWTSettings.SecretKey ?? string.Empty,
+                    _appSettings.JWTSettings.Issuer ?? string.Empty,_appSettings.JWTSettings.Audience ?? string.Empty);
+
+            var claims = new List<Claim>()
+                {
+                    new (ClaimTypes.Name, userName),
+                    new (ClaimTypes.Role, userRole),
+                    new Claim("Role", userRole.ToString()),
+                    new Claim("UserId", userId.ToString())
+                };
+
+            var expires = DateTime.UtcNow.AddHours(2);
+            var token = jwtService.GenerateToken(claims, expires);
+            return new Token()
+            {
+                AccessToken = token,
+                ExpiresAt = expires,
+                UserRole = userRole,
+                Username = userName,
+                UserId = userId
+            };
+        }
         public virtual async Task<List<ActivityModel>> GetActivityData(int? id)
         {
             try
@@ -364,19 +426,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<UserModel>> GetUserDetails(string username, string Password)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetUserDetails(username, Password);
-
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+       
 
         public virtual async Task<List<FacultyDropdown>> GetFacultyByName(string facultyName)
         {
@@ -547,11 +597,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> InsertBatchStudMappings(List<BatchStudMappingModel> data)
+        public virtual async Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data)
         {
             try
             {
-                return await _activityRepository.Repository.InsertBatchStudMappings(data);
+                return await _activityRepository.Repository.InsertSectionStudMappings(data);
             }
             catch (Exception ex)
             {
@@ -581,11 +631,11 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
-        public string bulkuploadstudent(DataTable target)
+        public async Task<string> bulkuploadstudent(DataTable target)
         {
             try
             {
-                return _activityRepository.Repository.bulkuploadstudent(target);
+                return await _activityRepository.Repository.bulkuploadstudent(target);
             }
             catch (Exception ex)
             {

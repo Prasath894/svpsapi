@@ -19,7 +19,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("admissionNumber")]
         public string AdmissionNumber { get; set; } = string.Empty;
 
-       
+
 
         /// <summary>
         /// First name of the student.
@@ -39,7 +39,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("student_LastName")]
         public string Student_LastName { get; set; } = string.Empty;
 
-      
+
         /// <summary>
         /// Section ID of the student.
         /// </summary>
@@ -118,7 +118,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("father_MobileNumber")]
         public string Father_MobileNumber { get; set; } = string.Empty;
 
-       
+
 
         /// <summary>
         /// Father's photo.
@@ -138,7 +138,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("mother_MobileNumber")]
         public string Mother_MobileNumber { get; set; } = string.Empty;
 
-       
+
 
         /// <summary>
         /// Mother's photo.
@@ -158,7 +158,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("gardian1MobileNumber")]
         public string Gardian1MobileNumber { get; set; } = string.Empty;
 
-       
+
 
         /// <summary>
         /// Guardian 1 photo.
@@ -178,7 +178,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("gardian2MobileNumber")]
         public string Gardian2MobileNumber { get; set; } = string.Empty;
 
-        
+
 
         /// <summary>
         /// Guardian 2 photo.
@@ -186,7 +186,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("gardian2Photo")]
         public string Gardian2Photo { get; set; } = string.Empty;
 
-       
+
 
         /// <summary>
         /// Section mapping status.

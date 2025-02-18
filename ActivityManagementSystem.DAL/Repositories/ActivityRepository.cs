@@ -319,13 +319,14 @@ namespace ActivityManagementSystem.DAL.Repositories
                     .ToList());
         }
 
-        public Task<List<UserModel>> GetUserDetails(string Username, string Password)
+        public Task<List<UserModel>> GetUserDetails(string Username, string Password,string role)
         {
             var spName = ConstantSPnames.SP_GETUSERDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<UserModel>(spName, new
             {
                 UserName = Username,
-                Password = Password
+                Password = Password,
+                Role =role
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
@@ -486,13 +487,13 @@ namespace ActivityManagementSystem.DAL.Repositories
                     command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
                     command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
                     command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                    command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultyDetails.DepartmentId;
-                    command.Parameters.Add("IndentRoleName", SqlDbType.VarChar).Value = facultyDetails.IndentRoleName;
-                    command.Parameters.Add("FdpRoleName", SqlDbType.VarChar).Value = facultyDetails.FdpRoleName;
                     command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
                     command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2;
                     command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("Photo", SqlDbType.VarChar).Value = facultyDetails.Photo;
+                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
+                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
+                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
+                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
                     command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
                     command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
                     command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
@@ -552,13 +553,14 @@ namespace ActivityManagementSystem.DAL.Repositories
                     command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
                     command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
                     command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                    command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultyDetails.DepartmentId;
-                    command.Parameters.Add("IndentRoleName", SqlDbType.VarChar).Value = facultyDetails.IndentRoleName;
-                    command.Parameters.Add("FdpRoleName", SqlDbType.VarChar).Value = facultyDetails.FdpRoleName;
+                  
                     command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
                     command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2 ?? (object)DBNull.Value;
                     command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("Photo", SqlDbType.VarChar).Value = facultyDetails.Photo;
+                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
+                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
+                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
+                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
                     command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
                     command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
                     command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
@@ -792,7 +794,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> InsertBatchStudMappings(List<BatchStudMappingModel> data)
+        public Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data)
         {
             var spName = ConstantSPnames.SP_INSERTBATCHSTUDMAP;
             var sendToDB = new ArrayList();
@@ -872,15 +874,16 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         }
 
-      
 
-        public string bulkuploadstudent(DataTable target)
+
+        public async Task<string> bulkuploadstudent(DataTable target)
         {
             try
             {
                 var spName = ConstantSPnames.SP_BULKSTUDENTUPLOAD;
                 using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
-                sqlConnection.OpenAsync();
+                await sqlConnection.OpenAsync(); // Await this!
+
                 using SqlCommand command = new(spName, sqlConnection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.Add("@StudentTable", SqlDbType.Structured).Value = target;
@@ -888,21 +891,21 @@ namespace ActivityManagementSystem.DAL.Repositories
                 SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
                 returnStatusParam.Direction = ParameterDirection.Output;
 
-                command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(); // Await this!
 
-                return (returnStatusParam.Value?.ToString() ?? string.Empty);
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw;
+                return "SQL Error: " + ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return "Error: " + ex.Message;
             }
         }
 
-        
+
         public string bulkuploadfaculty(DataTable target)
         {
             try
