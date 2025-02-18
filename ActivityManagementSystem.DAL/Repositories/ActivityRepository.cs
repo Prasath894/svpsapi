@@ -31,6 +31,7 @@ using Color = System.Drawing.Color;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2013.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.VisualBasic;
 //using Microsoft.Office.Interop.Word;
 //using Aspose.Words;
 
@@ -6022,15 +6023,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTASSIGNMENTDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<AssignmentModel>(spName, new
             {
-                DepartmentId = assignmentModel.DepartmentId,
-                Year = assignmentModel.Year,
-                Sem = assignmentModel.Sem,
-                Section = assignmentModel.Section,
+                SectionId = assignmentModel.SectionId,
                 SubjectId = assignmentModel.SubjectId,
-                FacultyId = assignmentModel.FacultyId,
-                DueDate = assignmentModel.DueDate,
                 Title = assignmentModel.Title,
+                FacultyId = assignmentModel.FacultyId,
                 Description = assignmentModel.Description,
+                DueDate = assignmentModel.DueDate,
+                FileName = assignmentModel.FileName,
+                FilePath = assignmentModel.FilePath,
                 CreatedBy = assignmentModel.CreatedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -6040,15 +6040,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<AssignmentModel>(spName, new
             {
                 Id = assignmentModel.Id,
-                DepartmentId = assignmentModel.DepartmentId,
-                Year = assignmentModel.Year,
-                Sem = assignmentModel.Sem,
-                Section = assignmentModel.Section,
+                SectionId = assignmentModel.SectionId,
                 SubjectId = assignmentModel.SubjectId,
-                FacultyId = assignmentModel.FacultyId,
-                DueDate = assignmentModel.DueDate,
                 Title = assignmentModel.Title,
+                FacultyId = assignmentModel.FacultyId,
                 Description = assignmentModel.Description,
+                DueDate = assignmentModel.DueDate,
+                FileName = assignmentModel.FileName,
+                FilePath = assignmentModel.FilePath,
                 ModifiedBy = assignmentModel.ModifiedBy
             },
          commandType: CommandType.StoredProcedure).ToList());
