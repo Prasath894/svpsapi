@@ -319,13 +319,14 @@ namespace ActivityManagementSystem.DAL.Repositories
                     .ToList());
         }
 
-        public Task<List<UserModel>> GetUserDetails(string Username, string Password)
+        public Task<List<UserModel>> GetUserDetails(string Username, string Password,string role)
         {
             var spName = ConstantSPnames.SP_GETUSERDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<UserModel>(spName, new
             {
                 UserName = Username,
-                Password = Password
+                Password = Password,
+                Role =role
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
@@ -876,15 +877,16 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         }
 
-      
 
-        public string bulkuploadstudent(DataTable target)
+
+        public async Task<string> bulkuploadstudent(DataTable target)
         {
             try
             {
                 var spName = ConstantSPnames.SP_BULKSTUDENTUPLOAD;
                 using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
-                sqlConnection.OpenAsync();
+                await sqlConnection.OpenAsync(); // Await this!
+
                 using SqlCommand command = new(spName, sqlConnection);
                 command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.Add("@StudentTable", SqlDbType.Structured).Value = target;
@@ -892,21 +894,21 @@ namespace ActivityManagementSystem.DAL.Repositories
                 SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
                 returnStatusParam.Direction = ParameterDirection.Output;
 
-                command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(); // Await this!
 
-                return (returnStatusParam.Value?.ToString() ?? string.Empty);
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw;
+                return "SQL Error: " + ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return "Error: " + ex.Message;
             }
         }
 
-        
+
         public string bulkuploadfaculty(DataTable target)
         {
             try
