@@ -100,7 +100,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<int> DeleteBatchSubMapping(int[] ids);
         //string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
-        Task<int> InsertBatchStudMappings(List<BatchStudMappingModel> data);
+        Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
         Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model);
         Task<int> DeleteBatchStudMapping(int[] ids, int batchId);
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);

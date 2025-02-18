@@ -547,11 +547,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> InsertBatchStudMappings(List<BatchStudMappingModel> data)
+        public virtual async Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data)
         {
             try
             {
-                return await _activityRepository.Repository.InsertBatchStudMappings(data);
+                return await _activityRepository.Repository.InsertSectionStudMappings(data);
             }
             catch (Exception ex)
             {

@@ -273,8 +273,8 @@ namespace ActivityManagementSystem.API.Controllers
                 var files = result[i].FileNames;
                 if (files != null)
                 {
-                    result[i].Files = files.Split('|').ToList();
-                    result[i].Files.RemoveAt(result[i].Files.Count - 1);
+                    result[i].files = files.Split('|').ToList();
+                    result[i].files.RemoveAt(result[i].files.Count - 1);
 
                 }
                 //  List<string> lst = 
@@ -736,7 +736,7 @@ namespace ActivityManagementSystem.API.Controllers
             }
 
             // Get file path
-            var filePath = result1[0].Photo;
+            var filePath = result1[0].FilePath;
             if (string.IsNullOrEmpty(filePath) || !Directory.Exists(filePath))
             {
                 return NotFound("File path is invalid or does not exist.");
@@ -1056,9 +1056,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchStudMappingModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertBatchStudMappingDetails(List<BatchStudMappingModel> data)
+        public async Task<IActionResult> InsertSectionStudMappingDetails(List<BatchStudMappingModel> data)
         {
-            var result = await _activityService.Service.InsertBatchStudMappings(data);
+            var result = await _activityService.Service.InsertSectionStudMappings(data);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {

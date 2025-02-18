@@ -486,13 +486,13 @@ namespace ActivityManagementSystem.DAL.Repositories
                     command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
                     command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
                     command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                    command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultyDetails.DepartmentId;
-                    command.Parameters.Add("IndentRoleName", SqlDbType.VarChar).Value = facultyDetails.IndentRoleName;
-                    command.Parameters.Add("FdpRoleName", SqlDbType.VarChar).Value = facultyDetails.FdpRoleName;
                     command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
                     command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2;
                     command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("Photo", SqlDbType.VarChar).Value = facultyDetails.Photo;
+                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
+                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
+                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
+                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
                     command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
                     command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
                     command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
@@ -552,13 +552,14 @@ namespace ActivityManagementSystem.DAL.Repositories
                     command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
                     command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
                     command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                    command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultyDetails.DepartmentId;
-                    command.Parameters.Add("IndentRoleName", SqlDbType.VarChar).Value = facultyDetails.IndentRoleName;
-                    command.Parameters.Add("FdpRoleName", SqlDbType.VarChar).Value = facultyDetails.FdpRoleName;
+                  
                     command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
                     command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2 ?? (object)DBNull.Value;
                     command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("Photo", SqlDbType.VarChar).Value = facultyDetails.Photo;
+                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
+                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
+                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
+                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
                     command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
                     command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
                     command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
@@ -796,7 +797,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> InsertBatchStudMappings(List<BatchStudMappingModel> data)
+        public Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data)
         {
             var spName = ConstantSPnames.SP_INSERTBATCHSTUDMAP;
             var sendToDB = new ArrayList();
