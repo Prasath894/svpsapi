@@ -8,11 +8,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
     {
         public int Id { get; set; }
         public string Day { get; set; } = string.Empty;
-        public int DepartmentId { get; set; }
-        public string DepartmentName { get; set; }
-        public int Year { get; set; }
-        public string Sem { get; set; } = string.Empty;
-        public string Section { get; set; } = string.Empty;
+        public string SectionId { get; set; } = string.Empty;
         public string HallNo { get; set; } = string.Empty;
         public DateTime WithEffectFrom { get; set; }
         public string Hour1 { get; set; } = string.Empty;

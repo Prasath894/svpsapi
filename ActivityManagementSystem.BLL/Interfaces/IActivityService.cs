@@ -82,9 +82,9 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
-       
+        Task<string> bulkuploadsubject(DataTable target);
         string bulkuploadfaculty(DataTable target);
-        string bulkuploadsubject(DataTable target);
+       
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch,string year, string Hoursday, string SubjectCode);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);

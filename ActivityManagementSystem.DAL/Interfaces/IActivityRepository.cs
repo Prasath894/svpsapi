@@ -57,7 +57,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<string> bulkuploadstudent(DataTable target);
      
         string bulkuploadfaculty(DataTable target);
-        string bulkuploadsubject(DataTable target);
+        Task<string> bulkuploadsubject(DataTable target);
 
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch, string year, string Hoursday, string SubjectCode);
         string InsertAttendance(List<AttendanceModel> attendance);
