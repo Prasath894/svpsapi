@@ -85,7 +85,9 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<string> bulkuploadsubject(DataTable target);
         string bulkuploadfaculty(DataTable target);
        
-        Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch,string year, string Hoursday, string SubjectCode);
+        string bulkuploadfaculty(DataTable target);
+        string bulkuploadsubject(DataTable target);
+        Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);
        // Task<List<BatchStudentSubjectList>> GetBatchWiseStudentList();
@@ -94,9 +96,9 @@ namespace ActivityManagementSystem.BLL.Interfaces
         //Task<List<string>> GetSection(SectionModel sectionModel);
       //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
 
-        Task<List<BatchSubjectModel>> GetAllBatchSubMappings(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model);
+        Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
+        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
+        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
         Task<int> DeleteBatchSubMapping(int[] ids);
         //string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
