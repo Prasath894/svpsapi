@@ -4278,7 +4278,7 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
-        public virtual async Task<List<BatchSubjectModel>> GetAllBatchSubMappings(int? id)
+        public virtual async Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id)
         {
             try
             {
@@ -4289,7 +4289,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data)
+        public virtual async Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
         {
             try
             {
@@ -4300,7 +4300,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model)
+        public virtual async Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
         {
             try
             {

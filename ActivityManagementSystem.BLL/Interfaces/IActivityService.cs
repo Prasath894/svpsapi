@@ -94,9 +94,9 @@ namespace ActivityManagementSystem.BLL.Interfaces
         //Task<List<string>> GetSection(SectionModel sectionModel);
       //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
 
-        Task<List<BatchSubjectModel>> GetAllBatchSubMappings(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model);
+        Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
+        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
+        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
         Task<int> DeleteBatchSubMapping(int[] ids);
         //string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
