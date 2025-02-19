@@ -85,7 +85,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
        
         string bulkuploadfaculty(DataTable target);
         string bulkuploadsubject(DataTable target);
-        Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch,string year, string Hoursday, string SubjectCode);
+        Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);
        // Task<List<BatchStudentSubjectList>> GetBatchWiseStudentList();

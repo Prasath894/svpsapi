@@ -32,7 +32,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    [Authorize]
+   // [Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -515,11 +515,8 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
 
-
-      
-       
-
-        [HttpGet]
+        [AllowAnonymous]
+        [HttpGet]       
         [ProducesResponseType(200, Type = typeof(RoleModel))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllRole()
@@ -1231,10 +1228,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AttendanceModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch, string Year, string Hoursday, string SubjectCode)
+        public async Task<IActionResult> GetAllAttendance(DateTime? AttendanceDate,   int sectionId,  string Hoursday)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllAttendance(AttendanceDate, department, Sem, Section, batch, Year, Hoursday, SubjectCode);
+            var result = await _activityService.Service.GetAllAttendance(AttendanceDate,   sectionId,Hoursday);
 
             _logger.LogDebug(result.ToString());
             if (result == null)

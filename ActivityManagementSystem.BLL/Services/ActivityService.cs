@@ -676,11 +676,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch, string year, string Hoursday, string SubjectCode)
+        public virtual async Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllAttendance(AttendanceDate, department, Sem, Section, batch, year, Hoursday, SubjectCode);
+                return await _activityRepository.Repository.GetAllAttendance(AttendanceDate,  sectionId, Hoursday);
 
 
             }

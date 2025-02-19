@@ -966,20 +966,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             }
         }
 
-        public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem,
-            string Section, string batch, string year, string Hoursday, string SubjectCode)
+        public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             var spName = ConstantSPnames.SP_GETALLATTENDANCE;
             return Task.Factory.StartNew(() => _db.Connection.Query<AttendanceModel>(spName, new
             {
                 AttendanceDate = AttendanceDate,
-                DepartmentID = department,
-                Section = Section,
-                Sem = Sem,
-                batch = batch.ToUpper() == "ALL" ? null : batch,
-                year = year,
-                Hoursday = Hoursday,
-                subjectCode = SubjectCode
+                SectionId = sectionId, 
+                Hoursday = Hoursday
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -1001,7 +995,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                         {
                             writer.WriteStartElement("Param");
                             writer.WriteElementString("StudentId", attendance[i].StudentId.ToString());
-                            writer.WriteElementString("BatchId", attendance[i].BatchId.ToString());
+                            writer.WriteElementString("SectionId", attendance[i].SectionId.ToString());
                             writer.WriteElementString("SubjectId", attendance[i].SubjectId.ToString());
                             writer.WriteElementString("Date", attendance[i].Date.ToString("MM/dd/yyyy"));
                             writer.WriteElementString("IsPresent", attendance[i].IsPresent.ToString());
@@ -1053,7 +1047,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
                 Id = attendance.Id,
                 StudentId = attendance.StudentId,
-                BatchId = attendance.BatchId,
+                SectionId = attendance.SectionId,
                 SubjectId = attendance.SubjectId,
                 Date = attendance.Date,
                 IsPresent = attendance.IsPresent,
@@ -1140,7 +1134,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     sendToDB.Add(
                         new
                         {
-                            BatchId = item.BatchId,
+                            SectionId = item.SectionId,
                             StudentId = item.StudentId,
                             Hoursday = item.Hoursday,
                             SubjectId = item.SubjectId,
