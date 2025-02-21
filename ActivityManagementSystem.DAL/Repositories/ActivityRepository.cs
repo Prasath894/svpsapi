@@ -607,7 +607,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<HouseModel>(spName, new
             {
                 Id = house.Id,
-               Name=house.Name,
+                 Name=house.Name,
                 ISActive = house.IsActive,
                 ModifiedBy = house.ModifiedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -935,31 +935,32 @@ namespace ActivityManagementSystem.DAL.Repositories
             }
         }
 
-        public string bulkuploadsubject(DataTable target)
+        public async Task<string> bulkuploadsubject(DataTable target)
         {
             try
             {
-                var spName = ConstantSPnames.SP_BULKSTUDENTUPLOAD;
+                var spName = ConstantSPnames.SP_BULKSUBJECTUPLOAD;
                 using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
-                sqlConnection.OpenAsync();
+                await sqlConnection.OpenAsync();
+
                 using SqlCommand command = new(spName, sqlConnection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add("@UserTable", SqlDbType.Structured).Value = target;
+                command.Parameters.Add("@SubjectTable", SqlDbType.Structured).Value = target;
 
                 SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
                 returnStatusParam.Direction = ParameterDirection.Output;
 
-                command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(); // Await this!
 
-                return (returnStatusParam.Value?.ToString() ?? string.Empty);
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw;
+                return "SQL Error: " + ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return "Error: " + ex.Message;
             }
         }
 
@@ -6069,11 +6070,9 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTTIMETABLEDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName, new
             {
-                DepartmentId = timetableModel.DepartmentId,
+                
                 Day = timetableModel.Day,
-                Year = timetableModel.Year,
-                Sem = timetableModel.Sem,
-                Section = timetableModel.Section,
+                SectionId = timetableModel.SectionId,
                 HallNo = timetableModel.HallNo,
                 WithEffectFrom = timetableModel.WithEffectFrom,
                 Hour1 = timetableModel.Hour1,
@@ -6095,11 +6094,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName, new
             {
                 Id = timetableModel.Id,
-                DepartmentId = timetableModel.DepartmentId,
                 Day = timetableModel.Day,
-                Year = timetableModel.Year,
-                Sem = timetableModel.Sem,
-                Section = timetableModel.Section,
+                SectionId = timetableModel.SectionId,
                 HallNo = timetableModel.HallNo,
                 WithEffectFrom = timetableModel.WithEffectFrom,
                 Hour1 = timetableModel.Hour1,

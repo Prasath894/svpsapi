@@ -1177,16 +1177,16 @@ namespace ActivityManagementSystem.API.Controllers
                     result = await _activityService.Service.bulkuploadstudent(uploadedFileData);
 
                 }
-                else if (XlPath == "Faculty.xlsx")
+                else if (XlPath == "Faculty.csv")
                 {
                     result = _activityService.Service.bulkuploadfaculty(uploadedFileData);
                 }
                
-                else if (XlPath == "Subject.xlsx")
+                else if (XlPath == "Subject.csv")
                 {
-                    result = _activityService.Service.bulkuploadsubject(uploadedFileData);
+                    result = await _activityService.Service.bulkuploadsubject(uploadedFileData);
                 }
-                else if (XlPath == "Mark.xlsx")
+                else if (XlPath == "Mark.csv")
                 {
                     result = _activityService.Service.bulkuploadmark(XlPath, fileUploadModel.department, fileUploadModel.Sem, fileUploadModel.Year, fileUploadModel.Section);
                 }
