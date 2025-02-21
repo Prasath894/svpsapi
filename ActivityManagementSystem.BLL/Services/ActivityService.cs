@@ -643,7 +643,7 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
      
-        public async Task<string> bulkuploadfaculty(DataTable target)
+        
         public async Task <string> bulkuploadsubject(DataTable target)
         {
             try
@@ -656,11 +656,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public string bulkuploadfaculty(DataTable target)
+        public async Task<string> bulkuploadfaculty(DataTable target)
         {
             try
             {
-                return _activityRepository.Repository.bulkuploadfaculty(target);
+                return await _activityRepository.Repository.bulkuploadfaculty(target);
             }
             catch (Exception ex)
             {

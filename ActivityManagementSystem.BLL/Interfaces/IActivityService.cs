@@ -82,8 +82,6 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
-        Task<string> bulkuploadsubject(DataTable target);
-        string bulkuploadfaculty(DataTable target);
 
         Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
