@@ -55,8 +55,8 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
-     
-        string bulkuploadfaculty(DataTable target);
+
+        Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
 
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
