@@ -19,6 +19,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_DELETEHOUSE = "sp_DeleteHouseDetails";
 
 		public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
+        public const string SP_BULKFACULTYUPLOAD = "[sp_BulkUploadFaculty]";
 
         public const string SP_GETACTIVITIES = "sp_GetActivity";
 		public const string SP_GETACTIVITYDETAILS= "sp_GetActivityData";
@@ -59,11 +60,11 @@ namespace ActivityManagementSystem.DAL.Constants
 		public const string SP_UPDATESUBJECT = "sp_UpdateSubject";
 		public const string SP_DELETESUBJECT = "sp_DeleteSubject";
 		
-		public const string SP_INSERTBATCHSTUDMAP = "sp_InsertBatchStudMappings";
-		public const string SP_GETALLBATCHSTUDMAP = "sp_GetBatchStudsMappings";
-		public static string SP_UPDATEBATCHSTUDMAP = "sp_UpdateBatchStudsMappings";
-		public static string SP_DELETEBATCHSTUDMAP = "sp_DeleteBatchStudsMappings";
-		public static string SP_UPDATEBATCHSTUDACTIVEMAP = "sp_UpdateActiveBatchStudMapping";
+		public const string SP_INSERTSECTIONSTUDMAP = "[sp_InsertSectionStudsMappings]";
+		public const string SP_GETALLSECTIONSTUDMAP = "[sp_GetSectionStudsMappings]";
+		public static string SP_UPDATESECTIONSTUDMAP = "sp_UpdateSectionStudsMappings";
+		public static string SP_DELETESECTIONSTUDMAP = "[sp_DeleteSectionStudsMappings]";
+		public static string SP_UPDATESECTIONSTUDACTIVEMAP = "[sp_UpdateActiveBatchStudMapping]";
 
 		public const string TBL_STUDENT = "dbo.tbl_StudentDetails";
 		public const string TBL_FACULTY = "dbo.tbl_FacultyDetails";

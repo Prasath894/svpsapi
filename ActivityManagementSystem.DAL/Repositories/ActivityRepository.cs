@@ -784,9 +784,9 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         }
 
-        public Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id)
+        public Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id)
         {
-            var spName = ConstantSPnames.SP_GETALLBATCHSTUDMAP;
+            var spName = ConstantSPnames.SP_GETALLSECTIONSTUDMAP;
             return Task.Factory.StartNew(() => _db.Connection.Query<BatchStudMappingModel>(spName, new
             {
                 Id = id
@@ -796,17 +796,17 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         public Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data)
         {
-            var spName = ConstantSPnames.SP_INSERTBATCHSTUDMAP;
+            var spName = ConstantSPnames.SP_INSERTSECTIONSTUDMAP;
             var sendToDB = new ArrayList();
             foreach (var item in data)
             {
                 sendToDB.Add(
                     new
                     {
-                        BatchId = item.SectionId,
+                        SectionId = item.SectionId,
                         StudentId = item.StudentId,
-                        CreatedBy = item.ModifiedBy,
-                        CreatedDate = item.ModifiedDate
+                        CreatedBy = item.CreatedBy,
+                        CreatedDate = item.CreatedDate
                     });
 
             }
@@ -823,14 +823,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             //}, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model)
+        public Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model)
         {
-            var spName = ConstantSPnames.SP_UPDATEBATCHSTUDMAP;
+            var spName = ConstantSPnames.SP_UPDATESECTIONSTUDMAP;
             var sendToDB = new ArrayList();
 
-            string sProc = ConstantSPnames.SP_UPDATEBATCHSTUDACTIVEMAP;
+            string sProc = ConstantSPnames.SP_UPDATESECTIONSTUDACTIVEMAP;
             var rowsUpdated = _db.Connection.Execute(sProc,
-                new { BatchId = model.FirstOrDefault(x => x.SectionId != 0).SectionId },
+                new { SectionId = model.FirstOrDefault(x => x.SectionId != 0).SectionId },
                 commandType: CommandType.StoredProcedure);
             foreach (var item in model)
             {
@@ -838,7 +838,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     new
                     {
                         Id = item.Id,
-                        BatchId = item.SectionId,
+                        SectionId = item.SectionId,
                         StudentId = item.StudentId,
                         ModifiedBy = item.ModifiedBy,
                         ModifiedDate = item.ModifiedDate
@@ -851,7 +851,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             //_db.Connection.Query<BatchStudMappingModel>(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> DeleteBatchStudMapping(int[] ids, int batchId)
+        public Task<int> DeleteSectionStudMapping(int[] ids, int batchId)
         {
             var delRecIds = new ArrayList();
             foreach (int id in ids)
@@ -863,10 +863,10 @@ namespace ActivityManagementSystem.DAL.Repositories
                     });
             }
 
-            var spName1 = ConstantSPnames.SP_DELETEBATCHSTUDMAP;
-            var spName = ConstantSPnames.SP_UPDATEBATCHSTUDACTIVEMAP;
+            var spName1 = ConstantSPnames.SP_DELETESECTIONSTUDMAP;
+            var spName = ConstantSPnames.SP_UPDATESECTIONSTUDACTIVEMAP;
             //  _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure))
-            var rowsUpdated = _db.Connection.Execute(spName, new { BatchId = batchId },
+            var rowsUpdated = _db.Connection.Execute(spName, new { SectionId = batchId },
                 commandType: CommandType.StoredProcedure);
             return Task.Factory.StartNew(() =>
                 _db.Connection.Execute(spName1, delRecIds, commandType: CommandType.StoredProcedure));
@@ -906,32 +906,36 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
 
-        public string bulkuploadfaculty(DataTable target)
+        public async Task<string> bulkuploadfaculty(DataTable target)
         {
+
             try
             {
-                var spName = ConstantSPnames.SP_BULKSTUDENTUPLOAD;
+                var spName = ConstantSPnames.SP_BULKFACULTYUPLOAD;
                 using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
-                sqlConnection.OpenAsync();
+                await sqlConnection.OpenAsync(); // Await this!
+
                 using SqlCommand command = new(spName, sqlConnection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add("@UserTable", SqlDbType.Structured).Value = target;
+                command.Parameters.Add("@FacultyTable", SqlDbType.Structured).Value = target;
 
                 SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
                 returnStatusParam.Direction = ParameterDirection.Output;
 
-                command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(); // Await this!
 
-                return (returnStatusParam.Value?.ToString() ?? string.Empty);
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw;
+                return "SQL Error: " + ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return "Error: " + ex.Message;
             }
+
+            
         }
 
         public string bulkuploadsubject(DataTable target)

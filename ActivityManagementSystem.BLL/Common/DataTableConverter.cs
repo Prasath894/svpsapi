@@ -12,6 +12,7 @@ namespace Erp.Application.Common
         //Converting CSV formatted file to data table
         public static DataTable ConvertCsvToDataTable(string filePath)
         {
+            
             DataTable dataTable = new();
 
             // Ensure the file exists
@@ -48,6 +49,7 @@ namespace Erp.Application.Common
                             // If the column name contains "Date" or "DOB", try converting it to DateTime
                             if (dataTable.Columns[i].ColumnName.Contains("Date", StringComparison.OrdinalIgnoreCase) ||
                                 dataTable.Columns[i].ColumnName.ToLower().Contains("dob", StringComparison.OrdinalIgnoreCase))
+                                    
                             {
                                 if (DateTime.TryParse(rows[i], out DateTime parsedDate))
                                 {
