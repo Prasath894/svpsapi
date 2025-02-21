@@ -993,7 +993,6 @@ namespace ActivityManagementSystem.DAL.Repositories
                             writer.WriteStartElement("Param");
                             writer.WriteElementString("StudentId", attendance[i].StudentId.ToString());
                             writer.WriteElementString("SectionId", attendance[i].SectionId.ToString());
-                            writer.WriteElementString("SubjectId", attendance[i].SubjectId.ToString());
                             writer.WriteElementString("Date", attendance[i].Date.ToString("MM/dd/yyyy"));
                             writer.WriteElementString("IsPresent", attendance[i].IsPresent.ToString());
                             writer.WriteElementString("Hoursday", hours[j].ToString());
@@ -1045,7 +1044,6 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Id = attendance.Id,
                 StudentId = attendance.StudentId,
                 SectionId = attendance.SectionId,
-                SubjectId = attendance.SubjectId,
                 Date = attendance.Date,
                 IsPresent = attendance.IsPresent,
                 ModifiedBy = attendance.ModifiedBy,
@@ -1134,7 +1132,6 @@ namespace ActivityManagementSystem.DAL.Repositories
                             SectionId = item.SectionId,
                             StudentId = item.StudentId,
                             Hoursday = item.Hoursday,
-                            SubjectId = item.SubjectId,
                             Date = item.Date.ToString("yyyy-MM-dd")
                         });
                 }
