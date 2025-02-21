@@ -4,16 +4,18 @@ using System.Text;
 
 namespace ActivityManagementSystem.Domain.Models.Activity
 {
-    public class BatchSubjectModel
+    public class BatchSubjectFacultyModel
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int BatchId { get; set; }
-        public string BatchName { get; set; }
-        public int SubjectId { get; set; }
+        public long Id { get; set; }
+        public long sectionID { get; set; }
+        public string SectionName { get; set; }
+        public string GradeorClass { get; set; }
+        public long CoordinatorID { get; set; }
+        public string Section { get; set; }
+        public long SubjectID { get; set; }
         public string SubjectName { get; set; }
         public string SubjectCode { get; set; }
-        public int DepartmentId { get; set; }
+        public long FacultyID { get; set; }
         public bool IsActive { get; set; }
         public string CreatedBy { get; set; }
         public DateTime? CreatedDate { get; set; }

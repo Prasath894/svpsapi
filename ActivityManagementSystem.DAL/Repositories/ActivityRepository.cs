@@ -31,6 +31,7 @@ using Color = System.Drawing.Color;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2013.Excel;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.VisualBasic;
 //using Microsoft.Office.Interop.Word;
 //using Aspose.Words;
 
@@ -606,7 +607,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<HouseModel>(spName, new
             {
                 Id = house.Id,
-               Name=house.Name,
+                 Name=house.Name,
                 ISActive = house.IsActive,
                 ModifiedBy = house.ModifiedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -938,48 +939,43 @@ namespace ActivityManagementSystem.DAL.Repositories
             
         }
 
-        public string bulkuploadsubject(DataTable target)
+        public async Task<string> bulkuploadsubject(DataTable target)
         {
             try
             {
-                var spName = ConstantSPnames.SP_BULKSTUDENTUPLOAD;
+                var spName = ConstantSPnames.SP_BULKSUBJECTUPLOAD;
                 using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
-                sqlConnection.OpenAsync();
+                await sqlConnection.OpenAsync();
+
                 using SqlCommand command = new(spName, sqlConnection);
                 command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add("@UserTable", SqlDbType.Structured).Value = target;
+                command.Parameters.Add("@SubjectTable", SqlDbType.Structured).Value = target;
 
                 SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
                 returnStatusParam.Direction = ParameterDirection.Output;
 
-                command.ExecuteNonQueryAsync();
+                await command.ExecuteNonQueryAsync(); // Await this!
 
-                return (returnStatusParam.Value?.ToString() ?? string.Empty);
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
             }
-            catch (SqlException)
+            catch (SqlException ex)
             {
-                throw;
+                return "SQL Error: " + ex.Message;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return "Error: " + ex.Message;
             }
         }
 
-        public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem,
-            string Section, string batch, string year, string Hoursday, string SubjectCode)
+        public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             var spName = ConstantSPnames.SP_GETALLATTENDANCE;
             return Task.Factory.StartNew(() => _db.Connection.Query<AttendanceModel>(spName, new
             {
                 AttendanceDate = AttendanceDate,
-                DepartmentID = department,
-                Section = Section,
-                Sem = Sem,
-                batch = batch.ToUpper() == "ALL" ? null : batch,
-                year = year,
-                Hoursday = Hoursday,
-                subjectCode = SubjectCode
+                SectionId = sectionId, 
+                Hoursday = Hoursday
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -1001,8 +997,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                         {
                             writer.WriteStartElement("Param");
                             writer.WriteElementString("StudentId", attendance[i].StudentId.ToString());
-                            writer.WriteElementString("BatchId", attendance[i].BatchId.ToString());
-                            writer.WriteElementString("SubjectId", attendance[i].SubjectId.ToString());
+                            writer.WriteElementString("SectionId", attendance[i].SectionId.ToString());
                             writer.WriteElementString("Date", attendance[i].Date.ToString("MM/dd/yyyy"));
                             writer.WriteElementString("IsPresent", attendance[i].IsPresent.ToString());
                             writer.WriteElementString("Hoursday", hours[j].ToString());
@@ -1053,8 +1048,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
                 Id = attendance.Id,
                 StudentId = attendance.StudentId,
-                BatchId = attendance.BatchId,
-                SubjectId = attendance.SubjectId,
+                SectionId = attendance.SectionId,
                 Date = attendance.Date,
                 IsPresent = attendance.IsPresent,
                 ModifiedBy = attendance.ModifiedBy,
@@ -1140,10 +1134,9 @@ namespace ActivityManagementSystem.DAL.Repositories
                     sendToDB.Add(
                         new
                         {
-                            BatchId = item.BatchId,
+                            SectionId = item.SectionId,
                             StudentId = item.StudentId,
                             Hoursday = item.Hoursday,
-                            SubjectId = item.SubjectId,
                             Date = item.Date.ToString("yyyy-MM-dd")
                         });
                 }
@@ -1194,17 +1187,17 @@ namespace ActivityManagementSystem.DAL.Repositories
                 }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<List<BatchSubjectModel>> GetAllBatchSubMapping(int? id)
+        public Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMapping(int? id)
         {
             var spName = ConstantSPnames.SP_GETALLBATCHSUBMAP;
-            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectModel>(spName, new
+            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectFacultyModel>(spName, new
             {
                 Id = id
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data)
+        public Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
         {
             var spName = ConstantSPnames.SP_INSERTBATCHSUBMAP;
             var sendToDB = new ArrayList();
@@ -1213,10 +1206,10 @@ namespace ActivityManagementSystem.DAL.Repositories
                 sendToDB.Add(
                     new
                     {
-                        Name = item.Name,
-                        BatchId = item.BatchId,
-                        SubjectId = item.SubjectId,
-                        DepartmentId = item.DepartmentId,
+                        Name = item.SectionName,
+                        SectionId = item.sectionID,
+                        SubjectId = item.SubjectID,
+                        FacultyID = item.FacultyID,
                         CreatedBy = item.ModifiedBy,
                         CreatedDate = item.ModifiedDate
                     });
@@ -1227,7 +1220,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
         }
 
-        public Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model)
+        public Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
         {
             var spName = ConstantSPnames.SP_UPDATEBATCHSUBMAP;
             //var spDltUnmapSubAtt = ConstantSPnames.SP_DELUNMAPSUBATT;
@@ -1235,7 +1228,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             string sProc = ConstantSPnames.SP_UPDATEBATCHSUBACTIVEMAP;
             var rowsUpdated = _db.Connection.Execute(sProc,
-                new { BatchId = model.FirstOrDefault(x => x.BatchId != 0).BatchId },
+                new { SectionID = model.FirstOrDefault(x => x.sectionID != 0).sectionID },
                 commandType: CommandType.StoredProcedure);
             foreach (var item in model)
             {
@@ -1243,10 +1236,10 @@ namespace ActivityManagementSystem.DAL.Repositories
                     new
                     {
                         Id = item.Id,
-                        Name = item.Name,
-                        BatchId = item.BatchId,
-                        SubjectId = item.SubjectId,
-                        DepartmentId = item.DepartmentId,
+                        Name = item.SectionName,
+                        SectionId = item.sectionID,
+                        SubjectId = item.SubjectID,
+                        FacultyID = item.FacultyID,
                         ModifiedBy = item.ModifiedBy,
                         ModifiedDate = item.ModifiedDate
                     });
@@ -6026,15 +6019,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTASSIGNMENTDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<AssignmentModel>(spName, new
             {
-                DepartmentId = assignmentModel.DepartmentId,
-                Year = assignmentModel.Year,
-                Sem = assignmentModel.Sem,
-                Section = assignmentModel.Section,
+                SectionId = assignmentModel.SectionId,
                 SubjectId = assignmentModel.SubjectId,
-                FacultyId = assignmentModel.FacultyId,
-                DueDate = assignmentModel.DueDate,
                 Title = assignmentModel.Title,
+                FacultyId = assignmentModel.FacultyId,
                 Description = assignmentModel.Description,
+                DueDate = assignmentModel.DueDate,
+                FileName = assignmentModel.FileName,
+                FilePath = assignmentModel.FilePath,
                 CreatedBy = assignmentModel.CreatedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -6044,15 +6036,14 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<AssignmentModel>(spName, new
             {
                 Id = assignmentModel.Id,
-                DepartmentId = assignmentModel.DepartmentId,
-                Year = assignmentModel.Year,
-                Sem = assignmentModel.Sem,
-                Section = assignmentModel.Section,
+                SectionId = assignmentModel.SectionId,
                 SubjectId = assignmentModel.SubjectId,
-                FacultyId = assignmentModel.FacultyId,
-                DueDate = assignmentModel.DueDate,
                 Title = assignmentModel.Title,
+                FacultyId = assignmentModel.FacultyId,
                 Description = assignmentModel.Description,
+                DueDate = assignmentModel.DueDate,
+                FileName = assignmentModel.FileName,
+                FilePath = assignmentModel.FilePath,
                 ModifiedBy = assignmentModel.ModifiedBy
             },
          commandType: CommandType.StoredProcedure).ToList());
@@ -6083,11 +6074,9 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTTIMETABLEDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName, new
             {
-                DepartmentId = timetableModel.DepartmentId,
+                
                 Day = timetableModel.Day,
-                Year = timetableModel.Year,
-                Sem = timetableModel.Sem,
-                Section = timetableModel.Section,
+                SectionId = timetableModel.SectionId,
                 HallNo = timetableModel.HallNo,
                 WithEffectFrom = timetableModel.WithEffectFrom,
                 Hour1 = timetableModel.Hour1,
@@ -6109,11 +6098,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName, new
             {
                 Id = timetableModel.Id,
-                DepartmentId = timetableModel.DepartmentId,
                 Day = timetableModel.Day,
-                Year = timetableModel.Year,
-                Sem = timetableModel.Sem,
-                Section = timetableModel.Section,
+                SectionId = timetableModel.SectionId,
                 HallNo = timetableModel.HallNo,
                 WithEffectFrom = timetableModel.WithEffectFrom,
                 Hour1 = timetableModel.Hour1,
@@ -6236,13 +6222,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_INSERTCONTENTLIBDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<ContentLibModel>(spName, new
             {
-
-
-                DepartmentId = contentLibModel.DepartmentId,
                 FacultyId = contentLibModel.FacultyId,
-                Year = contentLibModel.Year,
-                Sem = contentLibModel.Sem,
-                Section = contentLibModel.Section,
+                SectionId = contentLibModel.SectionId,
                 Title = contentLibModel.Title,
                 Description=contentLibModel.Description,
                 ExpiryDate=contentLibModel.ExpiryDate,
@@ -6257,10 +6238,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<ContentLibModel>(spName, new
             {
                 Id = contentLibModel.Id,
-                DepartmentId = contentLibModel.DepartmentId,
-                Year = contentLibModel.Year,
-                Sem= contentLibModel.Sem,
-                Section = contentLibModel.Section,
+                SectionId = contentLibModel.SectionId,
                 Title = contentLibModel.Title,
                 FacultyId=contentLibModel.FacultyId,
                 Description = contentLibModel.Description,

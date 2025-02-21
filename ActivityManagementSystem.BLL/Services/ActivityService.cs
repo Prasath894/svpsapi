@@ -644,27 +644,30 @@ namespace ActivityManagementSystem.BLL.Services
         }
      
         public async Task<string> bulkuploadfaculty(DataTable target)
+        public async Task <string> bulkuploadsubject(DataTable target)
         {
             try
             {
                 return await _activityRepository.Repository.bulkuploadfaculty(target);
+                return await _activityRepository.Repository.bulkuploadsubject(target);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public string bulkuploadsubject(DataTable target)
+        public string bulkuploadfaculty(DataTable target)
         {
             try
             {
-                return _activityRepository.Repository.bulkuploadsubject(target);
+                return _activityRepository.Repository.bulkuploadfaculty(target);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
+        
         public string bulkuploadmark(string target, long department, string sem, string year, string section)
         {
             try
@@ -676,11 +679,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch, string year, string Hoursday, string SubjectCode)
+        public virtual async Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllAttendance(AttendanceDate, department, Sem, Section, batch, year, Hoursday, SubjectCode);
+                return await _activityRepository.Repository.GetAllAttendance(AttendanceDate,  sectionId, Hoursday);
 
 
             }
@@ -4278,7 +4281,7 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
-        public virtual async Task<List<BatchSubjectModel>> GetAllBatchSubMappings(int? id)
+        public virtual async Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id)
         {
             try
             {
@@ -4289,7 +4292,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> InsertBatchSubMappings(List<BatchSubjectModel> data)
+        public virtual async Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
         {
             try
             {
@@ -4300,7 +4303,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> UpdateBatchSubMapping(List<BatchSubjectModel> model)
+        public virtual async Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
         {
             try
             {

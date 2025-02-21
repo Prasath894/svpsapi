@@ -515,11 +515,8 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
 
-
-
-
         [AllowAnonymous]
-        [HttpGet]
+        [HttpGet]       
         [ProducesResponseType(200, Type = typeof(RoleModel))]
         [ProducesResponseType(404)]
         
@@ -1186,11 +1183,11 @@ namespace ActivityManagementSystem.API.Controllers
                     result = await _activityService.Service.bulkuploadfaculty(uploadedFileData);
                 }
                
-                else if (XlPath == "Subject.xlsx")
+                else if (XlPath == "Subject.csv")
                 {
-                    result = _activityService.Service.bulkuploadsubject(uploadedFileData);
+                    result = await _activityService.Service.bulkuploadsubject(uploadedFileData);
                 }
-                else if (XlPath == "Mark.xlsx")
+                else if (XlPath == "Mark.csv")
                 {
                     result = _activityService.Service.bulkuploadmark(XlPath, fileUploadModel.department, fileUploadModel.Sem, fileUploadModel.Year, fileUploadModel.Section);
                 }
@@ -1232,10 +1229,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AttendanceModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllAttendance(DateTime? AttendanceDate, int department, string Sem, string Section, string batch, string Year, string Hoursday, string SubjectCode)
+        public async Task<IActionResult> GetAllAttendance(DateTime? AttendanceDate,   int sectionId,  string Hoursday)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllAttendance(AttendanceDate, department, Sem, Section, batch, Year, Hoursday, SubjectCode);
+            var result = await _activityService.Service.GetAllAttendance(AttendanceDate,   sectionId,Hoursday);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -1455,12 +1452,12 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(BatchSubjectModel))]
+        [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> GetAllBatchSubMappingDetails(int? id)
         {
             var result = await _activityService.Service.GetAllBatchSubMappings(id);
-            var groupByData = result.GroupBy(x => x.BatchId);
+            var groupByData = result.GroupBy(x => x.sectionID);
             var jsonData = JsonConvert.SerializeObject(groupByData);
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -1470,9 +1467,9 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(jsonData);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(BatchSubjectModel))]
+        [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertBatchSubMappingDetails(List<BatchSubjectModel> data)
+        public async Task<IActionResult> InsertBatchSubMappingDetails(List<BatchSubjectFacultyModel> data)
         {
             var result = await _activityService.Service.InsertBatchSubMappings(data);
             _logger.LogDebug(result.ToString());
@@ -1483,9 +1480,9 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(BatchSubjectModel))]
+        [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateBatchSubMapping([FromBody] List<BatchSubjectModel> data)
+        public async Task<IActionResult> UpdateBatchSubMapping([FromBody] List<BatchSubjectFacultyModel> data)
         {
             var result = await _activityService.Service.UpdateBatchSubMapping(data);
             _logger.LogDebug(result.ToString());
@@ -1498,7 +1495,7 @@ namespace ActivityManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(BatchSubjectModel))]
+        [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteBatchSubMapping(int[] ids)
         {
