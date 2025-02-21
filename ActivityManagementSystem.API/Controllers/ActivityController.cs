@@ -519,6 +519,7 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]       
         [ProducesResponseType(200, Type = typeof(RoleModel))]
         [ProducesResponseType(404)]
+        
         public async Task<IActionResult> GetAllRole()
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
@@ -1108,9 +1109,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(BatchStudMappingModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllBatchStudMappingDetails(int? id)
+        public async Task<IActionResult> GetAllSectionStudMappingDetails(int? id)
         {
-            var result = await _activityService.Service.GetAllBatchStudMappings(id);
+            var result = await _activityService.Service.GetAllSectionStudMappings(id);
             var groupByData = result.GroupBy(x => x.SectionId);
             var jsonData = JsonConvert.SerializeObject(groupByData);
             _logger.LogDebug(result.ToString());
@@ -1136,9 +1137,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchStudMappingModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateBatchStudMapping([FromBody] List<BatchStudMappingModel> data)
+        public async Task<IActionResult> UpdateSectionStudMapping([FromBody] List<BatchStudMappingModel> data)
         {
-            var result = await _activityService.Service.UpdateBatchStudMapping(data);
+            var result = await _activityService.Service.UpdateSectionStudMapping(data);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1151,9 +1152,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchStudMappingModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteBatchStudMapping(int[] ids, int batchId)
+        public async Task<IActionResult> DeleteSectionStudMapping(int[] ids, int batchId)
         {
-            var result = await _activityService.Service.DeleteBatchStudMapping(ids, batchId);
+            var result = await _activityService.Service.DeleteSectionStudMapping(ids, batchId);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -1179,7 +1180,7 @@ namespace ActivityManagementSystem.API.Controllers
                 }
                 else if (XlPath == "Faculty.csv")
                 {
-                    result = _activityService.Service.bulkuploadfaculty(uploadedFileData);
+                    result = await _activityService.Service.bulkuploadfaculty(uploadedFileData);
                 }
                
                 else if (XlPath == "Subject.csv")

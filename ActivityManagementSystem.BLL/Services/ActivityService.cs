@@ -586,11 +586,11 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
-        public virtual async Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id)
+        public virtual async Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllBatchStudMappings(id);
+                return await _activityRepository.Repository.GetAllSectionStudMappings(id);
             }
             catch (Exception ex)
             {
@@ -608,22 +608,22 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model)
+        public virtual async Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model)
         {
             try
             {
-                return await _activityRepository.Repository.UpdateBatchStudMapping(model);
+                return await _activityRepository.Repository.UpdateSectionStudMapping(model);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<int> DeleteBatchStudMapping(int[] ids, int batchId)
+        public virtual async Task<int> DeleteSectionStudMapping(int[] ids, int batchId)
         {
             try
             {
-                return await _activityRepository.Repository.DeleteBatchStudMapping(ids, batchId);
+                return await _activityRepository.Repository.DeleteSectionStudMapping(ids, batchId);
             }
             catch (Exception ex)
             {
@@ -642,10 +642,13 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+     
+        public async Task<string> bulkuploadfaculty(DataTable target)
         public async Task <string> bulkuploadsubject(DataTable target)
         {
             try
             {
+                return await _activityRepository.Repository.bulkuploadfaculty(target);
                 return await _activityRepository.Repository.bulkuploadsubject(target);
             }
             catch (Exception ex)
