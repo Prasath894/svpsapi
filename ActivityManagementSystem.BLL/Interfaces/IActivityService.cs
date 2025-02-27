@@ -158,7 +158,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId);
 
 
-        Task<List<AcademicCalender>> GetAllAcademicCalender(string role, int year, string sem);
+        Task<List<AcademicCalender>> GetAllAcademicCalender(string role);
         Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);

@@ -74,10 +74,11 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<Batchdetails>> GetBatchList(BatchListModel batchListModel);
 
         Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMapping(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
-        Task<int> DeleteBatchSubMapping(int[] ids);
-        Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id);
+        Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data);
+
+        Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data);
+        string DeleteBatchSubMapping(int id);
+        Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
         Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
         Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
@@ -133,7 +134,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<Feedbacksubject>> getSubFacultyList(int studentId);
         Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId);
 
-        Task<List<AcademicCalender>> GetAllAcademicCalender(string role, int year, string sem);
+        Task<List<AcademicCalender>> GetAllAcademicCalender(string role);
         Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);

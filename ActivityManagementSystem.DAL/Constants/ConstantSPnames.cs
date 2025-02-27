@@ -81,10 +81,11 @@ namespace ActivityManagementSystem.DAL.Constants
 		public static string SP_GETSECTION = "sp_GetSection";
 		public static string SP_GETBATCHLIST = "sp_GetBatchList";
 
-		public const string SP_INSERTBATCHSUBMAP = "sp_InsertBatchSubMappings";
-		public const string SP_GETALLBATCHSUBMAP = "sp_GetBatchSubsMappings";
-		public static string SP_UPDATEBATCHSUBMAP = "sp_UpdateBatchSubMappings";
+		public const string SP_INSERTBATCHSUBMAP = "sp_InsertSectionSubMappings";
+		public const string SP_GETALLBATCHSUBMAP = "sp_GetSectionSubFacultyMappings";
+		public static string SP_UPDATEBATCHSUBMAP = "sp_UpdateSectionSubMappings";
 		public static string SP_DELETEBATCHSUBMAP = "sp_DeleteBatchSubsMappings";
+
 		public static string SP_UPDATEBATCHSUBACTIVEMAP = "sp_UpdateActiveBatchSubMapping";
 		public const string SP_GETALLStudsListFromAdmission = "sp_GetStudentAdmissionList";
 		public static string SP_UPDATESTUDDEPT = "sp_UpdateDeptIdAdmission";

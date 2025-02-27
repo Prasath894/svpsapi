@@ -34,18 +34,6 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public DateTime? EndDate { get; set; } = null;
 
         /// <summary>
-        /// Gets or sets the academic year.
-        /// </summary>
-        [JsonPropertyName("year")]
-        public string Year { get; set; } = "1";
-
-        /// <summary>
-        /// Gets or sets the semester.
-        /// </summary>
-        [JsonPropertyName("sem")]
-        public string Sem { get; set; } = "Even";
-
-        /// <summary>
         /// Gets or sets the name of the user who created the record.
         /// </summary>
         [JsonPropertyName("createdBy")]
