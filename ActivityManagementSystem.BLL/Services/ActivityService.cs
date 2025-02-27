@@ -4289,7 +4289,8 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
+        public virtual async Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data)
+
         {
             try
             {
@@ -4300,22 +4301,23 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
+        public virtual async Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data)
+
         {
             try
             {
-                return await _activityRepository.Repository.UpdateBatchSubMapping(model);
+                return await _activityRepository.Repository.UpdateBatchSubMapping(data);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<int> DeleteBatchSubMapping(int[] ids)
+        public virtual  string DeleteBatchSubMapping(int id)
         {
             try
             {
-                return await _activityRepository.Repository.DeleteBatchSubMapping(ids);
+                return  _activityRepository.Repository.DeleteBatchSubMapping(id);
             }
             catch (Exception ex)
             {
@@ -5733,11 +5735,11 @@ namespace ActivityManagementSystem.BLL.Services
         }
 
 
-        public virtual async Task<List<AcademicCalender>> GetAllAcademicCalender(string role, int year, string sem)
+        public virtual async Task<List<AcademicCalender>> GetAllAcademicCalender(string role)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllAcademicCalender(role,year,sem);
+                return await _activityRepository.Repository.GetAllAcademicCalender(role);
             }
             catch (Exception ex)
             {

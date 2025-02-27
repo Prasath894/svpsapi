@@ -85,8 +85,8 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<string> bulkuploadsubject(DataTable target);
         string bulkuploadfaculty(DataTable target);
        
-        string bulkuploadfaculty(DataTable target);
-        string bulkuploadsubject(DataTable target);
+       
+      
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);
@@ -97,10 +97,10 @@ namespace ActivityManagementSystem.BLL.Interfaces
       //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
 
         Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
-        Task<int> DeleteBatchSubMapping(int[] ids);
-        //string generateAttendancereport();
+        Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data);
+
+        Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data);
+        string DeleteBatchSubMapping(int id);//string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
         Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model);
@@ -154,7 +154,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId);
 
 
-        Task<List<AcademicCalender>> GetAllAcademicCalender(string role, int year, string sem);
+        Task<List<AcademicCalender>> GetAllAcademicCalender(string role);
         Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);

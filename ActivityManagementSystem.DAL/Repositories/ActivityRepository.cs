@@ -750,7 +750,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 GradeOrClass=section.GradeOrClass,
                 Section =section.Section,
                 CoordinatorId=section.CoordinatorId,
-                Teachers =section.Teachers,
+                
                 IsActive=section.IsActive,
                 CreatedBy = section.CreatedBy
                 
@@ -767,7 +767,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 GradeOrClass = section.GradeOrClass,
                 Section = section.Section,
                 CoordinatorId = section.CoordinatorId,
-                Teachers = section.Teachers,
+                
                 IsActive = section.IsActive,
 
                 ModifiedBy = section.ModifiedBy
@@ -1196,77 +1196,72 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data)
+        public Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data)
         {
             var spName = ConstantSPnames.SP_INSERTBATCHSUBMAP;
-            var sendToDB = new ArrayList();
-            foreach (var item in data)
+            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectFacultyModel>(spName, new
             {
-                sendToDB.Add(
-                    new
-                    {
-                        Name = item.SectionName,
-                        SectionId = item.sectionID,
-                        SubjectId = item.SubjectID,
-                        FacultyID = item.FacultyID,
-                        CreatedBy = item.ModifiedBy,
-                        CreatedDate = item.ModifiedDate
-                    });
+                Name = data.SectionName,
+                SectionId = data.sectionID,
+                SubjectId = data.SubjectID,
+                FacultyID = data.FacultyID,
+                CreatedBy = data.CreatedBy,
+                CreatedDate = data.CreatedDate
 
-            }
-
-            return Task.Factory.StartNew(() =>
-                _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
+            }, commandType: CommandType.StoredProcedure).ToList());
+           
         }
 
-        public Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model)
+        public Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data)
+
         {
             var spName = ConstantSPnames.SP_UPDATEBATCHSUBMAP;
-            //var spDltUnmapSubAtt = ConstantSPnames.SP_DELUNMAPSUBATT;
-            var sendToDB = new ArrayList();
-
-            string sProc = ConstantSPnames.SP_UPDATEBATCHSUBACTIVEMAP;
-            var rowsUpdated = _db.Connection.Execute(sProc,
-                new { SectionID = model.FirstOrDefault(x => x.sectionID != 0).sectionID },
-                commandType: CommandType.StoredProcedure);
-            foreach (var item in model)
+            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectFacultyModel>(spName, new
             {
-                sendToDB.Add(
-                    new
-                    {
-                        Id = item.Id,
-                        Name = item.SectionName,
-                        SectionId = item.sectionID,
-                        SubjectId = item.SubjectID,
-                        FacultyID = item.FacultyID,
-                        ModifiedBy = item.ModifiedBy,
-                        ModifiedDate = item.ModifiedDate
-                    });
+                Id = data.Id,
+                Name = data.SectionName,
+                SectionId = data.sectionID,
+                SubjectId = data.SubjectID,
+                FacultyID = data.FacultyID,
+                ModifiedBy = data.ModifiedBy,
+                ModifiedDate = data.ModifiedDate
 
-            }
-
-            return Task.Factory.StartNew(() =>
-                _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
-        }
-
-        public Task<int> DeleteBatchSubMapping(int[] ids)
-        {
-            var delRecIds = new ArrayList();
-            foreach (int id in ids)
-            {
-                delRecIds.Add(
-                    new
-                    {
-                        Id = id
-                    });
-            }
-
-            var spName = ConstantSPnames.SP_DELETEBATCHSUBMAP;
-
-            return Task.Factory.StartNew(() =>
-                _db.Connection.Execute(spName, delRecIds, commandType: CommandType.StoredProcedure));
+            }, commandType: CommandType.StoredProcedure).ToList());
 
         }
+       
+
+       
+            public string DeleteBatchSubMapping(int id)
+            {
+                try
+                {
+
+                    var spName = ConstantSPnames.SP_DELETEBATCHSUBMAP;
+
+            using (SqlConnection sqlconnection =
+                      new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+            {
+                sqlconnection.Open();
+
+
+                SqlCommand command = new SqlCommand(spName, sqlconnection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.Add("Id", SqlDbType.Int).Value = id;
+
+                command.ExecuteNonQuery();
+                return "Success";
+            }
+
+            //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
+        }
+            catch (Exception ex)
+            {
+                return (ex.Message);
+            }
+
+}
         //public string generateAttendancereport()
         //{
         //    try
@@ -6424,11 +6419,11 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message.ToString();
             }
         }
-        public Task<List<AcademicCalender>> GetAllAcademicCalender(string role, int year, string sem)
+        public Task<List<AcademicCalender>> GetAllAcademicCalender(string role)
         {
             var spName = ConstantSPnames.SP_GETACADEMICCALENDER;
             return Task.Factory.StartNew(() => _db.Connection.Query<AcademicCalender>(spName,
-                new { Role= role,Year = year,Sem=sem }, commandType: CommandType.StoredProcedure).ToList());
+                new { Role= role }, commandType: CommandType.StoredProcedure).ToList());
         }
         public Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender)
         {
@@ -6438,8 +6433,6 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
 
 
-                Year= academicCalender.Year,
-                Sem= academicCalender.Sem,
                 AcademicActivities=academicCalender.AcademicActivities,
                 StartDate=academicCalender.StartDate,
                 EndDate =academicCalender.EndDate,
@@ -6454,8 +6447,6 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<AcademicCalender>(spName, new
             {
                 SNo = academicCalender.SNo,
-                Year = academicCalender.Year,
-                Sem = academicCalender.Sem,
                 AcademicActivities = academicCalender.AcademicActivities,
                 StartDate = academicCalender.StartDate,
                 EndDate = academicCalender.EndDate,

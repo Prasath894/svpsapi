@@ -1456,19 +1456,18 @@ namespace ActivityManagementSystem.API.Controllers
         public async Task<IActionResult> GetAllBatchSubMappingDetails(int? id)
         {
             var result = await _activityService.Service.GetAllBatchSubMappings(id);
-            var groupByData = result.GroupBy(x => x.sectionID);
-            var jsonData = JsonConvert.SerializeObject(groupByData);
+            
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
                 return NoContent();
             }
-            return Ok(jsonData);
+            return Ok(result);
         }
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertBatchSubMappingDetails(List<BatchSubjectFacultyModel> data)
+        public async Task<IActionResult> InsertBatchSubMappingDetails(BatchSubjectFacultyModel data)
         {
             var result = await _activityService.Service.InsertBatchSubMappings(data);
             _logger.LogDebug(result.ToString());
@@ -1481,7 +1480,7 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateBatchSubMapping([FromBody] List<BatchSubjectFacultyModel> data)
+        public async Task<IActionResult> UpdateBatchSubMapping([FromBody] BatchSubjectFacultyModel data)
         {
             var result = await _activityService.Service.UpdateBatchSubMapping(data);
             _logger.LogDebug(result.ToString());
@@ -1496,9 +1495,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteBatchSubMapping(int[] ids)
+        public async Task<IActionResult> DeleteBatchSubMapping(int ids)
         {
-            var result = await _activityService.Service.DeleteBatchSubMapping(ids);
+            var result = _activityService.Service.DeleteBatchSubMapping(ids);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -3893,9 +3892,9 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AcademicCalender))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllAcademicCalender(string role, int year, string sem)
+        public async Task<IActionResult> GetAllAcademicCalender(string role)
         {
-            var result = await _activityService.Service.GetAllAcademicCalender(role, year, sem);
+            var result = await _activityService.Service.GetAllAcademicCalender(role);
             //var groupByData = result.GroupBy(x => x.FacultyId);
             // var jsonData = JsonConvert.SerializeObject(groupByData);
             _logger.LogDebug(result.ToString());
