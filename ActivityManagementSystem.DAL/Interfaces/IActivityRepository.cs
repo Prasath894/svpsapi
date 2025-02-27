@@ -55,8 +55,8 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
-     
-        string bulkuploadfaculty(DataTable target);
+
+        Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
 
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
@@ -76,8 +76,8 @@ namespace ActivityManagementSystem.DAL.Interfaces
         string DeleteBatchSubMapping(int id);
         Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
-        Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model);
-        Task<int> DeleteBatchStudMapping(int[] ids, int batchId);
+        Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
+        Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
 
 
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);

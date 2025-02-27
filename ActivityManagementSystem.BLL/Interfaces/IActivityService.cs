@@ -82,29 +82,27 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
         string DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
+
+        Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
-        string bulkuploadfaculty(DataTable target);
-       
-       
-      
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);
-       // Task<List<BatchStudentSubjectList>> GetBatchWiseStudentList();
+       // Task<List<SectionStudentSubjectList>> GetBatchWiseStudentList();
         Task<int> PasswordReset(string userName, string password);
 
         //Task<List<string>> GetSection(SectionModel sectionModel);
       //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
 
         Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
-        Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data);
-
-        Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data);
-        string DeleteBatchSubMapping(int id);//string generateAttendancereport();
-        Task<List<BatchStudMappingModel>> GetAllBatchStudMappings(int? id);
+        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
+        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
+        Task<int> DeleteBatchSubMapping(int[] ids);
+        //string generateAttendancereport();
+        Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
-        Task<int> UpdateBatchStudMapping(List<BatchStudMappingModel> model);
-        Task<int> DeleteBatchStudMapping(int[] ids, int batchId);
+        Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
+        Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
         public string generateAttendancesubjectwisereport(string SubjectCode, string Sem, string Year, string DepartmentId);
         public string generateAttendancedynamicreport(string Sem, string Year, int Department,string Section);
