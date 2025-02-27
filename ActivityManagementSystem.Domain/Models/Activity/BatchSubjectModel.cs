@@ -10,7 +10,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public long sectionID { get; set; }
         public string SectionName { get; set; }
         public string GradeorClass { get; set; }
-        public long CoordinatorID { get; set; }
+        public string FacultyName { get; set; }
         public string Section { get; set; }
         public long SubjectID { get; set; }
         public string SubjectName { get; set; }
@@ -21,7 +21,6 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public DateTime? CreatedDate { get; set; }
         public string ModifiedBy { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public int Year { get; set; }
-        public string Sem { get; set; }
+        
     }
 }

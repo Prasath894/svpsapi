@@ -32,11 +32,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("coordinatorId")]
         public int CoordinatorId { get; set; } = 0;
 
-        /// <summary>
-        /// List of teacher names assigned to this section.
-        /// </summary>
-        [JsonPropertyName("teachers")]
-        public string Teachers { get; set; } = string.Empty;
+        
 
         /// <summary>
         /// Indicates whether the section is active.
