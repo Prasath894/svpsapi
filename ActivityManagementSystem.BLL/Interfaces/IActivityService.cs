@@ -98,12 +98,12 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<int> PasswordReset(string userName, string password);
 
         //Task<List<string>> GetSection(SectionModel sectionModel);
-      //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
+        //  Task<List<Sectiondetails>> GetSectionList(SectionListModel batchListModel);
 
         Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
-        Task<int> InsertBatchSubMappings(List<BatchSubjectFacultyModel> data);
-        Task<int> UpdateBatchSubMapping(List<BatchSubjectFacultyModel> model);
-        Task<int> DeleteBatchSubMapping(int[] ids);
+        Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data);
+        Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data);
+        string DeleteBatchSubMapping(int id);
         //string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
