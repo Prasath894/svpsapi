@@ -21,12 +21,13 @@ using System.Net.Http;
 using System.Text;
 using Microsoft.Extensions.Configuration.UserSecrets;
 using ActivityManagementSystem.BLL.Interfaces;
-using Erp.Application.Common;
 using DocumentFormat.OpenXml.Bibliography;
 using Microsoft.SqlServer.Management.XEvent;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using ActivityManagementSystem.Domain.Models;
+using System.Net.Mail;
+using ActivityManagementSystem.BLL.Common;
 
 namespace ActivityManagementSystem.API.Controllers
 {
@@ -113,22 +114,7 @@ namespace ActivityManagementSystem.API.Controllers
         }
 
     
-        //[HttpGet]
-        //[ProducesResponseType(200, Type = typeof(UserModel))]
-        //[ProducesResponseType(404)]
-        //public async Task<IActionResult> GetUserDetails(string UserName, string Password)
-        //{
-        //    // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-        //    var result = await _activityService.Service.GetUserDetails(UserName, Password);
-
-        //    _logger.LogDebug(result.ToString());
-        //    if (result == null)
-        //    {
-        //        return NoContent();
-        //    }
-        //    return Ok(result);
-        //}
-
+       
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(FacultyDropdown))]
@@ -852,7 +838,7 @@ namespace ActivityManagementSystem.API.Controllers
             var isReadToSend = isReadToSendData == null ? false : isReadToSendData;
             var result1 = await _activityService.Service.GetAnnouncementDetails(id, (bool)isReadToSend);
             var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";
-            var filePath = result1[0].Photo;
+            var filePath = result1[0].Filepath;
             var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
 
 
@@ -1171,25 +1157,28 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
                 (string filePath, string fileName) = await FileOperations.SaveFileWithTimeStamp(fileUploadModel);
-                var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
+              
                 var XlPath = fileUploadModel.FormFiles.FileName;
                 if (XlPath == "Student.csv")
                 {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
                     result = await _activityService.Service.bulkuploadstudent(uploadedFileData);
 
                 }
                 else if (XlPath == "Faculty.csv")
                 {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
                     result = await _activityService.Service.bulkuploadfaculty(uploadedFileData);
                 }
                
                 else if (XlPath == "Subject.csv")
                 {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
                     result = await _activityService.Service.bulkuploadsubject(uploadedFileData);
                 }
-                else if (XlPath == "Mark.csv")
+                else if (XlPath == "Mark.xlsx")
                 {
-                    result = _activityService.Service.bulkuploadmark(XlPath, fileUploadModel.department, fileUploadModel.Sem, fileUploadModel.Year, fileUploadModel.Section);
+                    result = await _activityService.Service.bulkuploadmark(filePath, fileUploadModel.Section);
                 }
                 
             }
@@ -1295,6 +1284,82 @@ namespace ActivityManagementSystem.API.Controllers
                 return NoContent();
             }
             return Ok(result);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<AttachmentModel>))]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.ServiceUnavailable)]
+        public async Task<IActionResult> GetAttachment(int id, string type)
+        {
+
+            _logger.LogInformation("{MethodName} method is called", nameof(GetAttachment));
+            try
+            {
+
+                var attachmentData = await _activityService.Service.GetAttachmentAsync(id, type);
+                return Ok(attachmentData);
+            }
+            catch (InvalidDataException)
+            {
+                return Ok("Success: No valid file found.");
+            }           
+
+        }
+        [HttpGet]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.ServiceUnavailable)]
+        public async Task<IActionResult> DownloadAttachment(int id, string type, string filename)
+        {
+            _logger.LogInformation("{MethodName} method is called", nameof(DownloadAttachment));
+            try
+            {
+                // Construct file path
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}", filename);
+                _logger.LogInformation("File path: {FilePath}", filePath);
+
+                // Check if the file exists
+                if (!System.IO.File.Exists(filePath))
+                {
+                    _logger.LogWarning("File not found: {FilePath}", filePath);
+                    return NotFound("File not found.");
+                }
+
+                // Prepare memory stream
+                MemoryStream memory = new MemoryStream();
+
+                using (var stream = new FileStream(filePath, FileMode.Open))
+                {
+                    await stream.CopyToAsync(memory);
+                }
+
+                // Get content type
+                string contentType;
+                try
+                {
+                    contentType = FindContentType.GetContentType(filePath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to determine content type");
+                    return StatusCode(500, "Failed to determine content type.");
+                }
+
+                // Reset memory stream position
+                memory.Position = 0;
+
+                return File(memory, contentType, Path.GetFileName(filePath));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while downloading the attachment");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(ActivityFilterModel))]
@@ -1743,11 +1808,11 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(RoleModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllFormRole()
+        public async Task<IActionResult> GetAllExams()
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = await _activityService.Service.GetFormRole(null);
+            var result = await _activityService.Service.GetExams(null);
             _logger.LogDebug(result.ToString());
             //if (result == null)
             //{
@@ -1756,13 +1821,13 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(FormRoleModel))]
+        [ProducesResponseType(200, Type = typeof(ExamsModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetFormRole(int? id)
+        public async Task<IActionResult> GetExams(int? id)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = await _activityService.Service.GetFormRole(id);
+            var result = await _activityService.Service.GetExams(id);
             _logger.LogDebug(result.ToString());
             //if (result == null)
             //{
@@ -1771,11 +1836,11 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FormRoleModel))]
+        [ProducesResponseType(200, Type = typeof(ExamsModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertFormRole([FromBody] FormRoleModel roleModel)
+        public async Task<IActionResult> InsertExams([FromBody] ExamsModel roleModel)
         {
-            var result = await _activityService.Service.InsertFormRole(roleModel);
+            var result = await _activityService.Service.InsertExams(roleModel);
             _logger.LogDebug(result.ToString());
             //if (result == null)
             //{
@@ -1784,11 +1849,11 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FormRoleModel))]
+        [ProducesResponseType(200, Type = typeof(ExamsModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateFormRole([FromBody] FormRoleModel roleModel)
+        public async Task<IActionResult> UpdateExams([FromBody] ExamsModel roleModel)
         {
-            var result = await _activityService.Service.UpdateFormRole(roleModel);
+            var result = await _activityService.Service.UpdateExams(roleModel);
             _logger.LogDebug(result.ToString());
             //if (result == null)
             //{
@@ -1797,11 +1862,11 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(RoleModel))]
+        [ProducesResponseType(200, Type = typeof(ExamsModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteFormRole(int id)
+        public async Task<IActionResult> DeleteExams(int id)
         {
-            var result = await _activityService.Service.DeleteFormRole(id);
+            var result = await _activityService.Service.DeleteExams(id);
             _logger.LogDebug(result.ToString());
             //if (result == null)
             //{
@@ -2173,62 +2238,6 @@ namespace ActivityManagementSystem.API.Controllers
             }
         }
 
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(LabDetailsModel))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllLabDetails(int? id)
-        {
-            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
-            //$"\r\n product subcategories", ToString());
-            var result = await _activityService.Service.GetAllLabDetails(id);
-            //var sentBack = result.GroupBy(x => x.BatchId);
-
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
-            return Ok(result);
-        }
-        [HttpPost]
-        [ProducesResponseType(200, Type = typeof(LabDetailsModel))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertLabDetails([FromBody] LabDetailsModel labDetailsModel)
-        {
-            var result = await _activityService.Service.InsertLabDetails(labDetailsModel);
-            _logger.LogDebug(result.ToString());
-            //if (result == null)
-            //{
-            //    return NoContent();
-            //}
-            return Ok(result);
-        }
-        [HttpPost]
-        [ProducesResponseType(200, Type = typeof(LabDetailsModel))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateLabDetails([FromBody] LabDetailsModel labDetailsModel)
-        {
-            var result = await _activityService.Service.UpdateLabDetails(labDetailsModel);
-            _logger.LogDebug(result.ToString());
-            //if (result == null)
-            //{
-            //    return NoContent();
-            //}
-            return Ok(result);
-        }
-        [HttpPost]
-        [ProducesResponseType(200, Type = typeof(LabDetailsModel))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteLabDetails(int id)
-        {
-            var result = _activityService.Service.DeleteLabDetails(id);
-            _logger.LogDebug(result.ToString());
-            //if (result == null)
-            //{
-            //    return NoContent();
-            //}
-            return Ok(result);
-        }
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(HOADetailsModel))]
@@ -2773,14 +2782,13 @@ namespace ActivityManagementSystem.API.Controllers
 
         }
         [HttpGet]
-        [EnableCors]
-        public async Task<FileResult> GetAllMarkReport(string Sem, string Year, string Department, string Section, string subjects, bool AttendanceRequired, string test)
+       // [AllowAnonymous]
+        public async Task<FileResult> GetAllMarkReport(string Section, string subjects,string test)
         {
             try
             {
 
-                var result = _activityService.Service.GetAllMarkReport(Sem, Year, Department,
-                    Section, subjects, AttendanceRequired, test);
+                var result = _activityService.Service.GetAllMarkReport( Section, subjects, test);
                 //_logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
             }
@@ -2961,17 +2969,22 @@ namespace ActivityManagementSystem.API.Controllers
                 }
                 //  List<string> lst = 
             }
-            for (int j = 0; j < result.Count; j++)
-            {
-                var bulkfiles = result[j].MemberFileNames;
-                if (bulkfiles != null)
-                {
-                    result[j].MemberFiles = bulkfiles.Split('|').ToList();
-                    result[j].MemberFiles.RemoveAt(result[j].MemberFiles.Count - 1);
-                }
-            }
+            
             return Ok(result);
         }
+        //[HttpPost]
+        //[ProducesResponseType(200, Type = typeof(FileUpload))]
+        //[ProducesResponseType(404)]
+
+        //public async Task<IActionResult> UpdateAnnouncement(int id,bool isReadyToSend)
+        //{
+
+        //    var result = _activityService.Service.UpdateAnnouncement(id, isReadyToSend);
+        //    return Ok();
+
+        //}
+
+
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(Announcement))]
         [ProducesResponseType(404)]
@@ -3314,9 +3327,7 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FileUpload))]
-        [ProducesResponseType(404)]
+        
 
         
 
@@ -3958,7 +3969,6 @@ namespace ActivityManagementSystem.API.Controllers
         public async Task<IActionResult> GetAllInfoGalore(int? id)
         {
            
-            
             var result = await _activityService.Service.GetAllInfoGalore(id);
             //var groupByData = result.GroupBy(x => x.FacultyId);
             // var jsonData = JsonConvert.SerializeObject(groupByData);
@@ -3967,60 +3977,49 @@ namespace ActivityManagementSystem.API.Controllers
             {
                 return NoContent();
             }
-            var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";           
+            var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";
 
-
-            MemoryStream compressedFileStream = new MemoryStream();
-
-            using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Update, true))
+            string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", "InfoGalore", $"InfoGalore-{id}");
+            // Ensure the folder exists by deleting it first if it's already there
+            if (Directory.Exists(destination))
             {
-                for (int i = 0; i < result.Count(); i++)
-                {
-                    var filePath = result[i].InfoFilePath;
-                    var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
-
-                    files.ForEach(file =>
-                    {
-                        string fileName = Path.GetFileName(file);
-
-                        // Check if file already exists in the zip archive
-                        var existingEntry = zipArchive.Entries.FirstOrDefault(e => e.Name == fileName);
-
-                        if (existingEntry != null)
-                        {
-                            // Uncomment this if you want to replace the existing file
-                            // existingEntry.Delete(); 
-                            return; // Skip if already exists
-                        }
-
-                        // Create a zip entry for the file
-                        var zipEntry = zipArchive.CreateEntry(fileName);
-
-                        // Read file bytes
-                        byte[] bytes = System.IO.File.ReadAllBytes(file);
-
-                        // Copy to zip entry stream
-                        using (var originalFileStream = new MemoryStream(bytes))
-                        using (var zipEntryStream = zipEntry.Open())
-                        {
-                            originalFileStream.CopyTo(zipEntryStream);
-                        }
-                    });
-                }
+                // Delete the directory and its contents recursively
+                Directory.Delete(destination, true);
             }
+            // Recreate the directory
+            Directory.CreateDirectory(destination);
 
-            const string contentType = "application/zip";
-            HttpContext.Response.ContentType = contentType;
-            var info = new FileContentResult(compressedFileStream.ToArray(), contentType)
+            // Get all files from the source folder
+            List<InfoAttachmentModel> extractedFiles = new List<InfoAttachmentModel>();
+            //   string[] files = Directory.GetFiles(destination);
+            for (int i = 0; i < result.Count(); i++)
             {
-                FileDownloadName = $"{zipName}.zip"
-            };
-           
-            
-            return info;
-        }
-        [HttpPost]      
+                var filePath = result[i].InfoFilePath;
+                var fileList = Directory.GetFiles(Path.Combine(filePath)).ToList();
+                foreach (string file in fileList)
+                {
+                    var attachment = new InfoAttachmentModel
+                    {
+                        FileName = Path.GetFileName(file),
+                        FilePath = file,
+                        InfoType = result[i].InfoType
+                    };
 
+                    string fileName = Path.GetFileName(file);
+                    string destFile = file;
+
+                    if (FileIsAnImageChecker.IsImageFile(file))
+                    {
+                        attachment.BlobData = await System.IO.File.ReadAllBytesAsync(file);
+                    }
+                    extractedFiles.Add(attachment);
+                }
+                
+            }
+            return Ok(extractedFiles);
+        }
+
+        [HttpPost] 
         public async Task<IActionResult> InsertInfoGalore([FromForm] InfoGaloreModel infoGaloreModel)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
