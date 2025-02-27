@@ -117,10 +117,10 @@ namespace ActivityManagementSystem.DAL.Constants
 		
 		public static string SP_DELETEINDENTFORM = "sp_DeleteIndentForm";
 
-        public static string SP_GETFORMROLE = "[sp_GetFormRole]";
-        public static string SP_INSERTFORMROLE = "[sp_InsertFormRole]";
-        public static string SP_UPDATEFORMRole = "[sp_UpdateFormRole]";
-        public static string SP_DELETEFORMROLE = "[sp_DeleteFormRole]";
+        public static string SP_GETEXAMS = "[sp_GetExamMaster]";
+        public static string SP_INSERTEXAMS = "[sp_InsertExamMaster]";
+        public static string SP_UPDATEEXAMS = "[sp_UpdateExamMaster]";
+        public static string SP_DELETEEXAMS = "[sp_DeleteExamMaster]";
 
 
 		public static string SP_INSERTFDP = "sp_InsertFdpForm";

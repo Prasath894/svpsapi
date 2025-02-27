@@ -29,6 +29,12 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<HouseModel>> UpdateHouseDetails(HouseModel house);
         Task<List<HouseModel>> DeleteHouseDetails(int id);
 
+
+
+        Task<List<ExamsModel>> GetExams(int? id);
+        Task<List<ExamsModel>> InsertExams(ExamsModel roleModel);
+        Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel);
+        Task<string> DeleteExams(int id);
         Task<List<ActivityModel>> GetAllActivityData(int Type, long? DepartmentId);
         Task<List<ActivityResponse>> GetAllActivityDataForReport(ActivityFilterModel activityFilterModel);
 
@@ -39,7 +45,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<MiscellaneousResponse>> GetAllMiscellaneousDataForReport(ActivityFilterModel activityFilterModel);
         Task<List<ExtensionServicesResponse>> GetAllExtensionServicesDataForReport(ActivityFilterModel activityFilterModel);
         Task<List<ConsultantResponse>> GetAllConsultantDataForReport(ActivityFilterModel activityFilterModel);
-        string bulkuploadmark(string target, long department, string sem, string year, string section);
+        Task<string> bulkuploadmark(string target,  string section);
         Task<List<ProjectModelResponse>> GetProjectModelForReport(ActivityFilterModel activityFilterModel);
         Task<List<ImplantTrainingResponse>> GetImplantTrainingReport(ActivityFilterModel activityFilterModel);
         Task<List<SportsandGamesResponse>> GetSportsGamesReport(ActivityFilterModel activityFilterModel);

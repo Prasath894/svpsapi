@@ -21,6 +21,11 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("infoFileName")]
         public string InfoFileName { get; set; }
+        /// <summary>
+        /// Gets or sets the type of the info file.
+        /// </summary>
+        [JsonPropertyName("infoType")]
+        public string InfoType { get; set; }
 
         /// <summary>
         /// Gets or sets the path of the info file.

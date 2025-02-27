@@ -2461,46 +2461,44 @@ namespace ActivityManagementSystem.DAL.Repositories
                 _db.Connection.Query<IndentModel>(spName, new { RefNo = id }, commandType: CommandType.StoredProcedure)
                     .ToList());
         }
-        public Task<List<FormRoleModel>> GetFormRole(int? id)
+        public Task<List<ExamsModel>> GetExams(int? id)
         {
-            var spName = ConstantSPnames.SP_GETFORMROLE;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FormRoleModel>(spName, new { RoleId = id }, commandType: CommandType.StoredProcedure).ToList());
+            var spName = ConstantSPnames.SP_GETEXAMS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<ExamsModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<FormRoleModel>> InsertFormRole(FormRoleModel roleModel)
+        public Task<List<ExamsModel>> InsertExams(ExamsModel roleModel)
         {
-            var spName = ConstantSPnames.SP_INSERTFORMROLE;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FormRoleModel>(spName, new
+            var spName = ConstantSPnames.SP_INSERTEXAMS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<ExamsModel>(spName, new
             {
-                RoleName = roleModel.RoleName,
-                RolePage = roleModel.RolePage,
+                Name = roleModel.Name,
                 IsActive = roleModel.IsActive,
                 // RoleId=roleMaster.RoleId  ,
                 CreatedBy = roleModel.CreatedBy,
                 CreatedDate = roleModel.CreatedDate,
             }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<FormRoleModel>> UpdateFormRole(FormRoleModel roleModel)
+        public Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel)
         {
-            var spName = ConstantSPnames.SP_UPDATEFORMRole;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FormRoleModel>(spName, new
+            var spName = ConstantSPnames.SP_UPDATEEXAMS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<ExamsModel>(spName, new
             {
-                RoleName = roleModel.RoleName,
-                RolePage = roleModel.RolePage,
+                Name = roleModel.Name,
                 IsActive = roleModel.IsActive,
-                RoleId = roleModel.RoleId,
+                Id = roleModel.Id,
                 ModifiedBy = roleModel.ModifiedBy,
                 ModifiedDate = roleModel.ModifiedDate
             }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<string> DeleteFormRole(int id)
+        public Task<string> DeleteExams(int id)
         {
-            var spName = ConstantSPnames.SP_DELETEFORMROLE;
+            var spName = ConstantSPnames.SP_DELETEEXAMS;
             try
             {
                 using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
                 sqlconnection.Open();
                 SqlCommand command = new SqlCommand(spName, sqlconnection);
-                command.CommandType = CommandType.StoredProcedure; command.Parameters.Add("RoleId", SqlDbType.Int).Value = id; command.ExecuteNonQuery();
+                command.CommandType = CommandType.StoredProcedure; command.Parameters.Add("Id", SqlDbType.Int).Value = id; command.ExecuteNonQuery();
                 return Task.Factory.StartNew(() => "Success");                 //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
             }
             catch (Exception ex)
@@ -3211,77 +3209,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 _db.Connection.Query<StockInventoryModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
                     .ToList());
         }
-        public Task<List<LabDetailsModel>> GetAllLabDetails(int? id)
-        {
-            var spName = ConstantSPnames.SP_GETALLLABDETAILS;
-            return Task.Factory.StartNew(() => _db.Connection.Query<LabDetailsModel>(spName,
-            new { SINo = id }, commandType: CommandType.StoredProcedure).ToList());
-            //try
-            //{                
-            //    using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
-            //    sqlconnection.Open();
-            //    SqlCommand command = new SqlCommand(spName, sqlconnection);
-            //    command.CommandType = CommandType.StoredProcedure;
-            //    command.Parameters.Add("SINo", SqlDbType.Int).Value = id;
-            //    command.ExecuteNonQuery();
-            //    return "Success";                 //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
-            //}
-            //catch (Exception ex)
-            //{
-            //    return ex.Message;
-            //}
-        }
-        public Task<List<LabDetailsModel>> InsertLabDetails(LabDetailsModel labDetailsModel)
-        {
-            var spName = ConstantSPnames.SP_INSERTLABDETAILS;
-            return Task.Factory.StartNew(() => _db.Connection.Query<LabDetailsModel>(spName, new
-            {
-                CollegeType = labDetailsModel.CollegeType,
-                DepartmentId = labDetailsModel.DepartmentId,
-                LabName = labDetailsModel.LabName,
-                CreatedBy = labDetailsModel.CreatedBy,
-                CreatedDate = labDetailsModel.CreatedDate
-
-            }, commandType: CommandType.StoredProcedure).ToList());
-        }
-        public Task<List<LabDetailsModel>> UpdateLabDetails(LabDetailsModel labDetailsModel)
-        {
-            var spName = ConstantSPnames.SP_UPDATELABDETAILS;
-            return Task.Factory.StartNew(() => _db.Connection.Query<LabDetailsModel>(spName, new
-            {
-                SINo = labDetailsModel.SINo,
-                CollegeType = labDetailsModel.CollegeType,
-                DepartmentId = labDetailsModel.DepartmentId,
-                LabName = labDetailsModel.LabName,
-                ModifiedBy = labDetailsModel.ModifiedBy,
-                ModifiedDate = labDetailsModel.ModifiedDate
-            }, commandType: CommandType.StoredProcedure).ToList());
-
-
-
-        }
-        public string DeleteLabDetails(int id)
-        {
-            var spName = ConstantSPnames.SP_DELETELABDETAILS;
-            //return Task.Factory.StartNew(() =>
-            //_db.Connection.Query<LabDetailsModel>(spName, new { SINo = id }, commandType: CommandType.StoredProcedure)
-            //.ToList());
-            try
-            {
-                using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
-                sqlconnection.Open();
-                SqlCommand command = new SqlCommand(spName, sqlconnection);
-                command.CommandType = CommandType.StoredProcedure;
-                command.Parameters.Add("SINo", SqlDbType.Int).Value = id;
-                command.ExecuteNonQuery();
-                return "Success";                 //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
-            }
-            catch (Exception ex)
-            {
-                return ex.Message;
-                //}
-            }
-        }
+       
 
         public Task<List<HOADetailsModel>> GetAllHOADetails(int? id)
         {
@@ -4030,118 +3958,103 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
 
-        public string GetAllMarkReport(string Sem, string Year, string Department, string Section, string subjects, bool AttendanceRequired, string Test)
+        public string GetAllMarkReport(string section, string subjects, string test)
         {
             try
             {
-                var spName = ConstantSPnames.SP_MARKTEMPLATE;
-                string strfilepath = _appSettings.Settings.DownloadPath.ToString() + "\\" + _appSettings.Settings.FileName.ToString();
-                DataTable dtTable = new DataTable();
+                string spName = ConstantSPnames.SP_MARKTEMPLATE;
+                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
                 string[] subjectArr = subjects.Split(',');
-                string[] deptArr = Department.Split('-');
-                var YearLtr = Year == "1" ? "I" : Year == "2" ? "II" : "III";
-                string Semester = YearLtr + "-" + Sem.ToUpper();
-                var AttandanceRequired = AttendanceRequired == true ? "Yes" : "No";
-                var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
-                using (SqlConnection myConnection = new SqlConnection(con))
+                string[] secArr = section.Split('-');
+                string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
+
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand(spName, connection))
                 {
-                    SqlCommand objCmd = new SqlCommand(spName, myConnection);
-                    objCmd.CommandType = CommandType.StoredProcedure;
-                    using (var da = new SqlDataAdapter(objCmd))
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@SectionId", SqlDbType.Int).Value = Convert.ToInt64(secArr[2]);
+                    command.CommandTimeout = 100000;
+
+                    using (var adapter = new SqlDataAdapter(command))
+                    using (var ds = new DataSet())
                     {
-                        DataSet ds = new DataSet();
-                        objCmd.Parameters.Add("@Sem", SqlDbType.VarChar).Value = Sem;
-                        objCmd.Parameters.Add("@year", SqlDbType.VarChar).Value = Year;
-                        objCmd.Parameters.Add("@DepartmentID", SqlDbType.Int).Value = Convert.ToInt32(deptArr[0]);
-                        objCmd.Parameters.Add("@Section", SqlDbType.VarChar).Value = Section;
-                        objCmd.CommandTimeout = 100000;
-                        da.Fill(ds);
-                        int StudentCount = ds.Tables[0].Rows.Count;
-                        using (XLWorkbook wb = new XLWorkbook())
-                        {
-                            int colCount = 1;
-                            int rowCount = 1;
-                            int colMaxWidth = subjectArr.Length + 3;
-                            int colPart = colMaxWidth / 3;
-                            var ws = wb.Worksheets.Add("Mark Template");
-
-                            ws.Cell(rowCount, colCount).Value = "THIAGARAJAR POLYTECHNIC COLLEGE, SALEM - 636005";
-                            ws.Range(rowCount, colCount, rowCount, colMaxWidth).Merge().AddToNamed("Titles");
-
-                            ws.Cell(++rowCount, colCount).Value = "STUDENT MARK REPORT-" + Test.ToUpper() + " TEST";
-                            ws.Range(rowCount, colCount, rowCount, colMaxWidth).Merge().AddToNamed("Titles");
-
-                            ws.Cell(++rowCount, colCount).Value = "PROGRAMME: " + deptArr[1].ToUpper();
-                            ws.Range(rowCount, colCount, rowCount, colPart).Merge().AddToNamed("Titles");
-
-                            ws.Cell(rowCount, colPart + 1).Value = "SEMESTER: " + Semester;
-                            ws.Range(rowCount, colPart + 1, rowCount, colPart * 2).Merge().AddToNamed("Titles");
-
-                            colPart = colPart * 2;
-                            ws.Cell(rowCount, colPart + 1).Value = "ATTENDANCE REQUIRED: " + AttendanceRequired;
-                            ws.Range(rowCount, colPart + 1, rowCount, colMaxWidth).Merge().AddToNamed("Titles");
-
-                            // Column headers
-                            ws.Cell(++rowCount, colCount).Value = "SNo";
-                            ws.Column(colCount).AdjustToContents().AddToNamed("Titles");
-
-                            ws.Cell(rowCount, ++colCount).Value = "Reg.No";
-                            ws.Column(colCount).AdjustToContents().AddToNamed("Titles");
-
-                            ws.Cell(rowCount, ++colCount).Value = "Name of Student";
-                            ws.Column(colCount).AdjustToContents().AddToNamed("Titles");
-
-                            // Subjects headers
-                            for (int i = 0; i < subjectArr.Length; i++)
-                            {
-                                ws.Cell(rowCount, i + colCount + 1).Value = subjectArr[i];
-                                ws.Column(i + colCount + 1).AdjustToContents().AddToNamed("Titles");
-                            }
-
-                            ws.Cell(++rowCount, 1).Value = "Date of Examination";
-                            ws.Range(rowCount, 1, rowCount, 3).Merge().AddToNamed("Titles");
-
-                            // Insert Data
-                            var rangeWithData = ws.Cell(++rowCount, 1).InsertData(ds.Tables[0]).AddToNamed("Titles");
-
-                            // Styling
-                            var titlesStyle = wb.Style;
-                            titlesStyle.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                            titlesStyle.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                            titlesStyle.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Border.InsideBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Font.FontSize = 10;
-
-                            var namedRange = wb.NamedRanges.NamedRange("Titles");
-                            if (namedRange != null)
-                            {
-                                namedRange.Ranges.Style = titlesStyle;
-                            }
-
-                            IXLRange range = ws.Range(ws.Cell(1, 1).Address, ws.Cell(StudentCount + rowCount - 1, colMaxWidth).Address);
-                            range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-                            range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-
-                            // Delete existing file if it exists
-                            if (File.Exists(strfilepath))
-                            {
-                                File.Delete(strfilepath);
-                            }
-
-                            wb.SaveAs(strfilepath);
-                        }
-
+                        adapter.Fill(ds);
+                        DataTable studentTable = ds.Tables[0];
+                        return GenerateExcelReport(studentTable, secArr, subjectArr, test, filePath);
                     }
-                    return strfilepath;
                 }
             }
             catch (Exception ex)
             {
-                //_logger.LogError(ex.InnerException.ToString());
+                //_logger.LogError(ex, "Error generating mark report");
                 return ex.Message;
             }
         }
-        public string bulkuploadmark(string target, long department, string sem, string year, string section)
+        private string GenerateExcelReport(DataTable studentTable, string[] secArr, string[] subjectArr, string test, string filePath)
+        {
+            try
+            {
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Mark Template");
+                    int colCount = 1, rowCount = 1;
+                    int colMaxWidth = subjectArr.Length + 3;
+                    int colPart = colMaxWidth / 2;
+
+                    // Headers
+                    ws.Cell(rowCount++, colCount).Value = "SONA VALLIAPPA PUBLIC SCHOOL";
+                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
+
+                    ws.Cell(rowCount++, colCount).Value = $"STUDENT MARK REPORT-{test.ToUpper()} TEST";
+                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
+
+                    ws.Cell(rowCount, colCount).Value = "GRADE: " + secArr[0].ToUpper();
+                    ws.Range(rowCount, colCount, rowCount, colPart).Merge().AddToNamed("Titles");
+
+                    ws.Cell(rowCount++, colPart + 1).Value = "SECTION: " + secArr[1];
+                    ws.Range(rowCount - 1, colPart + 1, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
+
+                    // Column headers
+                    var headers = new List<string> { "SNo", "Reg.No", "Name of Student" };
+                    headers.AddRange(subjectArr);
+                    for (int i = 0; i < headers.Count; i++)
+                    {
+                        ws.Cell(rowCount, i + 1).Value = headers[i];
+                        ws.Column(i + 1).AdjustToContents().AddToNamed("Titles");
+                    }
+                    rowCount++;
+
+                    ws.Cell(rowCount++, 1).Value = "Date of Examination";
+                    ws.Range(rowCount - 1, 1, rowCount - 1, 3).Merge().AddToNamed("Titles");
+
+                    // Insert Data
+                    ws.Cell(rowCount, 1).InsertData(studentTable).AddToNamed("Titles");
+
+                    ApplyStyles(wb, ws, studentTable.Rows.Count, colMaxWidth);
+
+                    if (File.Exists(filePath)) File.Delete(filePath);
+                    wb.SaveAs(filePath);
+                }
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex, "Error generating Excel report");
+                return ex.Message;
+            }
+        }
+        private void ApplyStyles(XLWorkbook wb, IXLWorksheet ws, int studentCount, int colMaxWidth)
+        {
+            var style = wb.Style;
+            style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+            style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            style.Font.FontSize = 10;
+
+            ws.Range(ws.Cell(1, 1), ws.Cell(studentCount + 1, colMaxWidth)).Style = style;
+        }
+        public async Task<string> bulkuploadmark(string target,  string section)
         {
             var testtype = "";
             //bool? IsAttandanceRequired=null;
@@ -4171,26 +4084,10 @@ namespace ActivityManagementSystem.DAL.Repositories
             dtColumn.Caption = "StudentName";
             dt.Columns.Add(dtColumn);
 
-            dtColumn = new DataColumn();
-            dtColumn.DataType = Type.GetType("System.String");
-            dtColumn.ColumnName = "Department";
-            dtColumn.Caption = "Department";
-            dt.Columns.Add(dtColumn);
+            
 
             dtColumn = new DataColumn();
-            dtColumn.DataType = Type.GetType("System.String");
-            dtColumn.ColumnName = "Year";
-            dtColumn.Caption = "Year";
-            dt.Columns.Add(dtColumn);
-
-            dtColumn = new DataColumn();
-            dtColumn.DataType = Type.GetType("System.String");
-            dtColumn.ColumnName = "Sem";
-            dtColumn.Caption = "Sem";
-            dt.Columns.Add(dtColumn);
-
-            dtColumn = new DataColumn();
-            dtColumn.DataType = Type.GetType("System.String");
+            dtColumn.DataType = typeof(Int32); 
             dtColumn.ColumnName = "Section";
             dtColumn.Caption = "Section";
             dt.Columns.Add(dtColumn);
@@ -4264,10 +4161,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     {
                         testtype = row.Cell(1).Value.ToString().Split('-').Last();
                     }
-                    if (row.RangeAddress.FirstAddress.RowNumber == 3)
-                    {
-                        AttandanceRequired = row.LastCellUsed().Value.ToString().Split(' ').Last().ToUpper();
-                    }
+                  
                     // IsAttandanceRequired = AttandanceRequired == "Yes" ? true : false;
                     if (row.RangeAddress.FirstAddress.RowNumber == 4)
                     {
@@ -4295,21 +4189,18 @@ namespace ActivityManagementSystem.DAL.Repositories
                         string data = "";
                         for (int i = 0; i < subject.Count; i++)
                         {
-                            data += subject[i] + "-" + row.Cell(i + 4).Value + "    ||  Date : " + dateofexam[i] + ",";
+                            data += subject[i] + "-" + row.Cell(i + 4).Value + " ||  Date : " + dateofexam[i] + ",";
                         }
                         //Add rows to DataTable.
                         dtRow = dt.NewRow();
                         dtRow["Id"] = 1;
                         dtRow["StudentId"] = row.Cell(2).Value.ToString();
                         dtRow["StudentName"] = row.Cell(3).Value.ToString();
-                        dtRow["Department"] = department;
-                        dtRow["Year"] = year;
-                        dtRow["Sem"] = sem;
-                        dtRow["Section"] = section;
+                        dtRow["Section"] = Convert.ToInt32(section.Split('-')[2]);
                         dtRow["TestType"] = testtype.ToLower();
                         dtRow["Data"] = data;
                         dtRow["PreviousMonthAttendance"] = "-";
-                        dtRow["IsattendanceRequired"] = AttandanceRequired == "YES" ? true : false;
+                        dtRow["IsattendanceRequired"] = false;
                         dtRow["ReadytosendEmail"] = 0;
                         dtRow["IsParentIntemated"] = 0;
                         dtRow["CreatedDate"] = today;
@@ -4329,25 +4220,23 @@ namespace ActivityManagementSystem.DAL.Repositories
                     // Write from the source to the destination.
                     bulkCopy.WriteToServer(dt);
                     var sendToDB = new ArrayList();
-                    if (AttandanceRequired == "YES")
-                    {
-                        var spName = ConstantSPnames.SP_UPDATEATTPERCENTAGE;
-                        foreach (DataRow row in dt.Rows)
-                        {
-                            sendToDB.Add(
-                                new
-                                {
-                                    Year = Convert.ToString(row["Year"]),
-                                    Sem = Convert.ToString(row["Sem"]),
-                                    Section = Convert.ToString(row["Section"]),
-                                    StudentId = Convert.ToString(row["StudentId"]),
-                                    Department = Convert.ToInt64(row["Department"]),
-                                    CreatedDate = Convert.ToDateTime(row["CreatedDate"])
-                                });
-                        }
-                        Task.Factory.StartNew(() =>
-                           _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
-                    }
+                    //if (AttandanceRequired == "YES")
+                    //{
+                    //    var spName = ConstantSPnames.SP_UPDATEATTPERCENTAGE;
+                    //    foreach (DataRow row in dt.Rows)
+                    //    {
+                    //        sendToDB.Add(
+                    //            new
+                    //            {
+                                    
+                    //                Section = Convert.ToString(row["Section"]),
+                    //                StudentId = Convert.ToString(row["StudentId"]),
+                    //                CreatedDate = Convert.ToDateTime(row["CreatedDate"])
+                    //            });
+                    //    }
+                    //   await Task.Factory.StartNew(() =>
+                    //       _db.Connection.Execute(spName, sendToDB.ToArray(), commandType: CommandType.StoredProcedure));
+                    //}
                     return "Uploaded Successfully";
                 }
                 catch (Exception ex)
@@ -4375,10 +4264,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 StudentMark mark = new StudentMark();
                 mark.Id = Convert.ToInt32(rdr["Id"]);
                 mark.StudentId = rdr["StudentId"].ToString();
-                mark.StudentName = rdr["StudentName"].ToString();
-                mark.Year = rdr["Year"].ToString();
-                mark.Sem = rdr["Sem"].ToString();
-                mark.Section = rdr["Section"].ToString();
+                mark.StudentName = rdr["StudentName"].ToString();               
+                mark.Section = Convert.ToInt32(rdr["Section"]);
                 mark.Data = rdr["Data"].ToString();
                 mark.IsattendanceRequired = Convert.ToBoolean(rdr["IsattendanceRequired"]);
                 mark.ReadytosendEmail = Convert.ToBoolean(rdr["ReadytosendEmail"].ToString());
@@ -4397,9 +4284,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<StudentMark>(spName, new
             {
                 StudentId = studentmark.StudentId,
-                StudentName = studentmark.StudentName,
-                Year = studentmark.Year,
-                Sem = studentmark.Sem,
+                StudentName = studentmark.StudentName,               
                 Section = studentmark.Section,
                 Data = studentmark.Data,
                 IsattendanceRequired = studentmark.IsattendanceRequired,
@@ -4535,8 +4420,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         public async Task<Announcement> InsertAnnouncementDetails(Announcement announcement)
         {
-            announcement.IsEmailSend = (announcement.SenderType == "Others" && announcement.othersfilecount == false) ? true : false;
-            announcement.PhoneNumber = announcement.PhoneNumber == null ? "" : announcement.PhoneNumber;
+           
             List<string> phoneNumbers = new List<string>();
 
             var spName = ConstantSPnames.SP_INSERTANNOUNCEMENTDETAILS;
@@ -4553,7 +4437,6 @@ namespace ActivityManagementSystem.DAL.Repositories
                     command.Parameters.Add("Id", SqlDbType.BigInt).Value = announcement.Id;
                     command.Parameters.Add("AnnouncementDate", SqlDbType.DateTime).Value = announcement.AnnouncementDate;
                     command.Parameters.Add("SenderType", SqlDbType.VarChar).Value = announcement.SenderType;
-                    command.Parameters.Add("PhoneNumber", SqlDbType.VarChar).Value = announcement.PhoneNumber;
                     command.Parameters.Add("EnglishTranslate", SqlDbType.NVarChar).Value = announcement.EnglishTranslate;
                     command.Parameters.Add("TamilTranslate", SqlDbType.NVarChar).Value = announcement.TamilTranslate;
                     command.Parameters.Add("IsReadytoSend", SqlDbType.Bit).Value = announcement.IsReadytoSend;
@@ -4565,46 +4448,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     announcement.Id = Convert.ToInt64(command.ExecuteScalar());
 
                     sqlConnection.Close();
-                    if (announcement.SenderType == "Others" && announcement.othersfilecount == false)
-                    {
-                        phoneNumbers = announcement.PhoneNumber.Split(',').ToList();
-                        //   phoneNumbers = othersphonenumber;
-
-
-                        var url = _appSettings.SmsSettings.BaseWhatsAppUrl;
-                        var Data = announcement.EnglishTranslate + "\n" + announcement.TamilTranslate;
-
-                        var list = phoneNumbers.Select((number, index) => new { number, index }).GroupBy(x => x.index / 500)
-                               .Select(g => g.Select(x => x.number).ToList()).ToList();
-
-                        foreach (var item in list)
-                        {
-
-                            var client = new RestClient(url);
-                            var request = new RestRequest(url, Method.Post);
-
-                            string value = string.Join(",", (item.Select(obj =>
-
-                                "+91" + obj
-                            ).ToList()));
-
-                            //value =string.Concat("+91", value);
-                            //originalStrings.Select(s => s + suffix).ToList();
-                            request.AddHeader("content-type", "application/x-www-form-urlencoded");
-                            request.AddParameter("token", "x0p8y2yyxqzz45dg", ParameterType.GetOrPost);
-                            request.AddParameter("to", value, ParameterType.GetOrPost);
-
-
-                            request.AddParameter("body", Data, ParameterType.GetOrPost);
-
-
-                            request.AddParameter("priority", "5");
-
-
-                            RestResponse response = client.Execute(request);
-
-                        }
-                    }
+                    
 
                     return announcement;
                     //return insertedOrUpdatedId;
@@ -5810,151 +5654,40 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        public string UploadBulkAnnouncementFile(string target, string target1, string bulkfilenames, int id, string filesList, string EnglishTranslate, string TamilTranslate, string OthersPhoneNumber, string SenderType)
-        {
-            var emailsend = (SenderType == "Others" || SenderType == "Members") ? 1 : 0;
-            var spName = ConstantSPnames.SP_UPDATEANNOUNCEMENTFILE;
+        //public string UpdateAnnouncement(int id, bool isReadyToSend)
+        //{
+        //     var spName = ConstantSPnames.SP_UPDATEANNOUNCEMENTFILE;
 
 
-            using (SqlConnection sqlConnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
-            {
-                try
-                {
-                    sqlConnection.Open();
-                    SqlCommand command = new SqlCommand(spName, sqlConnection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("Id", SqlDbType.BigInt).Value = id;
-                    command.Parameters.Add("filepath", SqlDbType.VarChar).Value = target;
-                    command.Parameters.Add("files", SqlDbType.VarChar).Value = filesList;
-                    command.Parameters.Add("bulkfilepath", SqlDbType.VarChar).Value = target1;
-                    command.Parameters.Add("bulkfiles", SqlDbType.VarChar).Value = bulkfilenames;
-                    command.Parameters.Add("IsEmailSend", SqlDbType.Bit).Value = emailsend;
-                    //command.Parameters = emailsend;
-                    var result = Convert.ToInt64(command.ExecuteScalar());
-                    sqlConnection.Close();
-                    //if (result == 1)
-                    //{
-                    //List<string> phoneNumbers = new List<string>();
-                    if (SenderType == "Members" || SenderType == "Others")
-                    {
+        //    using (SqlConnection sqlConnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+        //    {
+        //        try
+        //        {
+        //            sqlConnection.Open();
+        //            SqlCommand command = new SqlCommand(spName, sqlConnection);
+        //            command.CommandType = CommandType.StoredProcedure;
+        //            command.Parameters.Add("Id", SqlDbType.BigInt).Value = id;
+                   
+        //            command.Parameters.Add("IsReadytoSend", SqlDbType.Bit).Value = isReadyToSend;
+        //            //command.Parameters = emailsend;
+        //            var result = Convert.ToInt64(command.ExecuteScalar());
+        //            sqlConnection.Close();
+        //            //if (result == 1)
+        //            //{
+        //            //List<string> phoneNumbers = new List<string>();
+                   
 
+                    
+        //            return "Success";
 
-                        List<string> phoneNumbers = new List<string>();
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return ex.Message.ToString();
+        //        }
+        //    }
 
-                        if (SenderType == "Members")
-                        {
-                            string[] path = Directory.GetFiles(target1);
-                            using (XLWorkbook workBook = new XLWorkbook(path[0]))
-                            {
-                                IXLWorksheet workSheet = workBook.Worksheet(1);
-
-                                bool firstRow = true;
-                                //int columnIndex = 0;
-                                foreach (IXLRow row in workSheet.Rows())
-                                {
-                                    if (firstRow)
-                                    {
-                                        firstRow = false;
-                                    }
-                                    else
-                                    {
-                                        int i = 0;
-                                        foreach (IXLCell cell in row.Cells("3"))
-                                        {
-                                            var phonenumber = cell.Value.ToString();
-                                            phoneNumbers.Add(phonenumber);
-                                        }
-                                        i++;
-                                    }
-                                }
-                            }
-                        }
-                        else if (SenderType == "Others")
-
-                        {
-                            phoneNumbers = OthersPhoneNumber.Split(',').ToList();
-                        }
-                        var fileName = string.Empty;
-                        var url = _appSettings.SmsSettings.BaseWhatsAppUrl;
-                        var Data = EnglishTranslate + "\n" + TamilTranslate;
-                        var AsBase64String = string.Empty;
-                        string[] files;
-                        var attachementFlag = false;
-                        var attachementDocFlag = false;
-                        var MsgSendType = "body";
-                        if (target != "")
-                        {
-                            files = Directory.GetFiles(target);
-                            fileName = Path.GetFileName(files[0]);
-                            var exten = Path.GetExtension(files[0]);
-                            byte[] AsBytes = File.ReadAllBytes(files[0]);
-                            AsBase64String = Convert.ToBase64String(AsBytes);
-
-                            if (exten == ".jpg" || exten == ".jpeg" || exten == ".gif" || exten == ".png" || exten == ".webp" || exten == ".bmp")
-                            {
-                                attachementFlag = true;
-                                url = "https://api.ultramsg.com/instance76563/messages/image";
-                                MsgSendType = "image";
-                            }
-                            else
-                            {
-                                attachementDocFlag = true;
-                                url = "https://api.ultramsg.com/instance76563/messages/document";
-                                MsgSendType = "document";
-
-                            }
-                        }
-                        var list = phoneNumbers.Select((number, index) => new { number, index }).GroupBy(x => x.index / 500)
-                           .Select(g => g.Select(x => x.number).ToList()).ToList();
-
-                        foreach (var item in list)
-                        {
-
-                            var client = new RestClient(url);
-                            var request = new RestRequest(url, Method.Post);
-
-                            string value = string.Join(",", (item.Select(obj =>
-
-                                "+91" + obj
-                            ).ToList()));
-
-                            request.AddHeader("content-type", "application/x-www-form-urlencoded");
-                            request.AddParameter("token", "x0p8y2yyxqzz45dg", ParameterType.GetOrPost);
-                            request.AddParameter("to", value, ParameterType.GetOrPost);
-
-                            if (attachementFlag || attachementDocFlag)
-                            {
-                                if (attachementDocFlag)
-                                {
-                                    request.AddParameter("filename", fileName);
-                                }
-                                request.AddParameter("caption", Data, ParameterType.GetOrPost);
-                                request.AddParameter(MsgSendType, AsBase64String, ParameterType.GetOrPost);
-                            }
-                            else
-                            {
-                                request.AddParameter("body", Data, ParameterType.GetOrPost);
-                            }
-
-                            request.AddParameter("priority", "5");
-
-
-                            RestResponse response = client.Execute(request);
-
-
-                        }
-
-                    }
-                    return "Success";
-
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message.ToString();
-                }
-            }
-
-        }
+        //}
         public Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId)
         {
             var spName = ConstantSPnames.SP_GETSTUDENTMARKBYID;
@@ -5988,14 +5721,12 @@ namespace ActivityManagementSystem.DAL.Repositories
                     var attendanceRecord = new StudentAttendanceModel
                     {
                         StudentId = result.GetInt64(result.GetOrdinal("StudentId")),
-                        StudentName = result.GetString(result.GetOrdinal("StudentName")),
-                        Sem = result.GetString(result.GetOrdinal("Sem")),
-                        Year = result.GetString(result.GetOrdinal("Year")),
+                        StudentName = result.GetString(result.GetOrdinal("StudentName")),                        
                         AttendanceRecords = new Dictionary<string, string>()
                     };
 
                     // Handle dynamic columns
-                    for (int i = 5; i < result.FieldCount; i++) // Start from 5 assuming the first 4 columns are fixed
+                    for (int i =2; i < result.FieldCount; i++) // Start from 5 assuming the first 4 columns are fixed
                     {
                         attendanceRecord.AttendanceRecords.Add(result.GetName(i), result.IsDBNull(i) ? "N" : result.GetString(i));
                     }
@@ -6485,7 +6216,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<InfoGaloreModel>(spName, new
             {
 
-
+                InfoType=infoGaloreModel.InfoType,
                 InfoFileName =infoGaloreModel.InfoFileName,
                 ValidDate =infoGaloreModel.ValidDate,
                 CreatedBy = infoGaloreModel.CreatedBy,

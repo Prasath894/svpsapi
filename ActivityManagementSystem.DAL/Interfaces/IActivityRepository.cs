@@ -20,6 +20,10 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<SectionModel>> DeleteSectionDetails(int Id);
 
 
+        Task<List<ExamsModel>> GetExams(int? id);
+        Task<List<ExamsModel>> InsertExams(ExamsModel roleModel);
+        Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel);
+        Task<string> DeleteExams(int id);
 
 
         Task<List<ActivityModel>> GetAllActivityData(int Type, long? DepartmentId);
@@ -65,7 +69,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
      //   Task<List<BatchStudentSubjectList>> GetBatchWiseStudentList();
         Task<int> PasswordReset(string userName, string password);
-
+        
      //   Task<List<string>> GetSection(SectionModel sectionModel);
         Task<List<Batchdetails>> GetBatchList(BatchListModel batchListModel);
 

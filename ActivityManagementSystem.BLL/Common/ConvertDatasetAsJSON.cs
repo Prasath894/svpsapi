@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Erp.Application.Common
+namespace ActivityManagementSystem.BLL.Common
 {
     public class ConvertDatasetAsJSON
     {

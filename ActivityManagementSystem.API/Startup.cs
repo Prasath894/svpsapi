@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -83,8 +83,14 @@ namespace ActivityManagementSystem.Service
                     builder =>
                     {
                         builder.AllowAnyOrigin()
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
+                  //    .AllowAnyHeader()
+                  //    .AllowAnyMethod().WithExposedHeaders("Content-Disposition") // If returning files
+                  //.AllowCredentials();
+                  // builder.WithOrigins("http://localhost:3000") // ✅ Specify frontend URL
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .WithExposedHeaders("Content-Disposition");// If returning files
+                  //.AllowCredentials();
                     });
             });
             services.AddSwaggerGen(c =>
@@ -161,53 +167,7 @@ namespace ActivityManagementSystem.Service
                 client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             });
 
-            //services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            //services.AddScoped<IUserContextAccessor, UserContextAccessor>();
-
-            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-            // .AddIdentityServerAuthentication(options =>
-            // {
-            //	 // base-address of your identityserver
-            //	 options.Authority = "https://localhost:5000";//AppSettings.Settings.AuthUri;
-            //													   // options.RequireHttpsMetadata = false;
-            //													   //options.ApiSecret = "Pikatoosecret";
-            //													   // name of the API resource
-            //	// options.ClaimsIssuer = "https://localhost/AuthServer";
-            //	 options.ApiName = "api1";
-            // });
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //.AddJwtBearer(options =>
-            //{
-            //	// base-address of your identityserver
-            //	options.Authority = "https://localhost:5000";
-            //	options.RequireHttpsMetadata = false;
-            //	// name of the API resource
-            //	options.Audience = "api1";
-            //});
-
-            //services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
-            //  .AddIdentityServerAuthentication(options =>
-            //  {
-            //   options.Authority = AppSettings.Settings.AuthUri;
-            //   options.ApiName = "api1";
-            //  });
-
-            //services.AddAuthentication("Bearer")
-            //  .AddIdentityServerAuthentication(options =>
-            //  {
-            //	  options.Authority = AppSettings.Settings.AuthUri;
-            //	  options.RequireHttpsMetadata = false;
-
-            //	  options.ApiName = "api1";
-            //	  //options.ApiSecret = "Pikatoosecret";
-            //  });
-
-            //var policy = new CorsPolicy();
-            //policy.Headers.Add("*");
-            //policy.Methods.Add("*");
-            //policy.Origins.Add(AppSettings.Settings.UiUrl);
-            //policy.SupportsCredentials = true;
-            //services.AddCors(x => x.AddPolicy("EnableCors", policy)).BuildServiceProvider();
+          
             services.AddControllers();
            
         }

@@ -6,12 +6,12 @@ namespace ActivityManagementSystem.Domain.Models.Activity
 {
     public class StudentMark
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string StudentId { get; set; }
         public string StudentName { get; set; }
-        public string Year { get; set; }
-        public string Sem { get; set; }
-        public string Section { get; set; }
+        public string SectionName { get; set; }
+        public string GradeOrClass { get; set; }
+        public int Section { get; set; }
         public string Data { get; set; }
         public string PreviousMonthAttendance { get; set; }
         public bool IsattendanceRequired { get; set; }

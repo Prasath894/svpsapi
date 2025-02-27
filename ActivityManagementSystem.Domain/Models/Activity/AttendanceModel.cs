@@ -9,7 +9,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public int Id { get; set; }
         public int SectionId { get; set; }
         public string StudentName { get; set; }     
-        public string RollNo { get; set; }
+        public string AdmissionNumber { get; set; }
         public long StudentId { get; set; }
         public DateTime Date { get; set; }
         public bool IsPresent { get; set; }

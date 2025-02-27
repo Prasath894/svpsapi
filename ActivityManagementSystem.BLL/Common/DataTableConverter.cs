@@ -5,7 +5,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 
-namespace Erp.Application.Common
+namespace ActivityManagementSystem.BLL.Common
 {
     public class DataTableConverter
     {

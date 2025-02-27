@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Erp.Application.Common
+namespace ActivityManagementSystem.BLL.Common
 {
     public static class FileOperations
     {

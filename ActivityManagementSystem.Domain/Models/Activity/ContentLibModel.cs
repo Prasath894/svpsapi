@@ -14,7 +14,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public string Title { get; set; }
         public string Description { get; set; }
         public long FacultyId { get; set; }
-        public DateOnly ExpiryDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
         public string FileName { get; set; }
 
         public string FilePath { get; set; }

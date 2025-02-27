@@ -4,15 +4,15 @@ using ActivityManagementSystem.DAL;
 using ActivityManagementSystem.DAL.Interfaces;
 using ActivityManagementSystem.DAL.Repositories;
 using ActivityManagementSystem.Domain.AppSettings;
-using ActivityManagementSystem.Domain.Common;
 using ActivityManagementSystem.Domain.Models;
 using ActivityManagementSystem.Domain.Models.Activity;
-using Microsoft.SqlServer.Management.Smo;
+
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -117,6 +117,91 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
+        public async Task<List<AttachmentModel>> GetAttachmentAsync(int id, string type)
+        {
+            // Step 1: Define the action method based on the file type
+            string actionMethodName = string.Empty;
+            if (type == "Assignment")
+            {
+                actionMethodName = $"Assignment\\Assignment-{id}";
+            }
+            if (type == "Announcement")
+            {
+                actionMethodName = $"Announcement\\Announcement-{id}";
+            }
+            else if (type == "Students")
+            {
+                actionMethodName = $"Students\\Students-{id}";
+            }
+            else if (type == "ContentLib")
+            {
+                actionMethodName = $"ContentLib\\ContentLib-{id}";
+            }
+            else if (type == "Event")
+            {
+                actionMethodName = $"Events\\Events-{id}";
+            }
+            else if (type == "PressReports")
+            {
+                actionMethodName = $"PressReports\\PressReports-{id}";
+            }
+            else if (type == "Faculty")
+            {
+                actionMethodName = $"Facultys\\Facultys-{id}";
+            }
+            else if (type == "InfoGalore")
+            {
+                actionMethodName = "InfoGalore";
+            }
+
+            // Step 2: Define the source and destination folders
+            string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
+            string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
+
+            // Step 3: Check if the source folder exists; if not, return an empty list
+            if (!Directory.Exists(outputFolder))
+            {
+                return new List<AttachmentModel>(); // Return an empty list if folder does not exist
+            }
+
+            // Ensure the folder exists by deleting it first if it's already there
+            if (Directory.Exists(destination))
+            {
+                Directory.Delete(destination, true);
+            }
+            Directory.CreateDirectory(destination);
+
+            // Step 4: Get all files from the source folder
+            string[] files = Directory.GetFiles(outputFolder);
+
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(destination, fileName);
+                File.Copy(file, destFile, true); // Overwrites if file exists
+            }
+
+            List<AttachmentModel> extractedFiles = new List<AttachmentModel>();
+
+            // Step 5: Process extracted files
+            foreach (var filePath in Directory.GetFiles(destination))
+            {
+                var attachment = new AttachmentModel
+                {
+                    FileName = Path.GetFileName(filePath),
+                    FilePath = filePath
+                };
+
+                if (FileIsAnImageChecker.IsImageFile(filePath))
+                {
+                    attachment.BlobData = await File.ReadAllBytesAsync(filePath);
+                }
+
+                extractedFiles.Add(attachment);
+            }
+
+            return extractedFiles;
+        }
 
         private Token GetToken(string userName, string userRole, int userId)
         {
@@ -668,11 +753,11 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
         
-        public string bulkuploadmark(string target, long department, string sem, string year, string section)
+        public async Task<string> bulkuploadmark(string target,  string section)
         {
             try
             {
-                return _activityRepository.Repository.bulkuploadmark(target, department, sem, year, section);
+                return await _activityRepository.Repository.bulkuploadmark(target,  section);
             }
             catch (Exception ex)
             {
@@ -4455,44 +4540,44 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<FormRoleModel>> GetFormRole(int? id)
+        public virtual async Task<List<ExamsModel>> GetExams(int? id)
         {
             try
             {
-                return await _activityRepository.Repository.GetFormRole(id);
+                return await _activityRepository.Repository.GetExams(id);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<List<FormRoleModel>> InsertFormRole(FormRoleModel roleModel)
+        public virtual async Task<List<ExamsModel>> InsertExams(ExamsModel roleModel)
         {
             try
             {
-                return await _activityRepository.Repository.InsertFormRole(roleModel);
+                return await _activityRepository.Repository.InsertExams(roleModel);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<List<FormRoleModel>> UpdateFormRole(FormRoleModel roleModel)
+        public virtual async Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel)
         {
             try
             {
-                return await _activityRepository.Repository.UpdateFormRole(roleModel);
+                return await _activityRepository.Repository.UpdateExams(roleModel);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<string> DeleteFormRole(int id)
+        public virtual async Task<string> DeleteExams(int id)
         {
             try
             {
-                return await _activityRepository.Repository.DeleteFormRole(id);
+                return await _activityRepository.Repository.DeleteExams(id);
             }
             catch (Exception ex)
             {
@@ -4760,51 +4845,7 @@ namespace ActivityManagementSystem.BLL.Services
             return _activityRepository.Repository.DownloadStockReport(StockDate, Store);
 
         }
-        public virtual async Task<List<LabDetailsModel>> GetAllLabDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllLabDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<LabDetailsModel>> InsertLabDetails(LabDetailsModel labDetailsModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertLabDetails(labDetailsModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<LabDetailsModel>> UpdateLabDetails(LabDetailsModel labDetailsModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateLabDetails(labDetailsModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DeleteLabDetails(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.DeleteLabDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
+        
         public virtual async Task<List<HOADetailsModel>> GetAllHOADetails(int? id)
         {
             try
@@ -5086,9 +5127,9 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string GetAllMarkReport(string Sem, string Year, string Department, string Section, string subjects, bool AttendanceRequired, string test)
+        public virtual string GetAllMarkReport(string Section, string subjects, string test)
         {
-            return _activityRepository.Repository.GetAllMarkReport(Sem, Year, Department, Section, subjects, AttendanceRequired, test);
+            return _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
         }
         public virtual List<StudentMark> GetStudentMark()
         {
@@ -5389,17 +5430,17 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string UploadBulkAnnouncementFile(string target, string target1, string bulkfilenames, int id, string files, string EnglishTranslate, string TamilTranslate, string OthersPhoneNumber, string SenderType)
-        {
-            try
-            {
-                return _activityRepository.Repository.UploadBulkAnnouncementFile(target, target1, bulkfilenames, id, files, EnglishTranslate, TamilTranslate, OthersPhoneNumber, SenderType);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        //public virtual string UpdateAnnouncement(int id,  bool isReadyToSend)
+        //{
+        //    try
+        //    {
+        //        return _activityRepository.Repository.UpdateAnnouncement( id, isReadyToSend);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
         public virtual async Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId)
         {
             try
