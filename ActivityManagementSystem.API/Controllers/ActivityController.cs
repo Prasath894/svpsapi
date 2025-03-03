@@ -33,7 +33,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -3443,10 +3443,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AssignmentModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllAssignmentByStudent(int studentId)
+        public async Task<IActionResult> GetAllAssignmentByStudent(string role,int studentId)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllAssignmentByStudentDetails(studentId);
+            var result = await _activityService.Service.GetAllAssignmentByStudentDetails(role,studentId);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {

@@ -5511,11 +5511,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(int studentId)
+        public virtual async Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(string role,int studentId)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllAssignmentByStudentDetails(studentId);
+                return await _activityRepository.Repository.GetAllAssignmentByStudentDetails(role,studentId);
             }
             catch (Exception ex)
             {

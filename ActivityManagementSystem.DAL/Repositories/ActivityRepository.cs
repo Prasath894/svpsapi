@@ -5781,11 +5781,11 @@ namespace ActivityManagementSystem.DAL.Repositories
              _db.Connection.Query<AssignmentModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
                  .ToList());
         }
-        public Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(int studentId)
+        public Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(string role,int studentId)
         {
             var spName = ConstantSPnames.SP_GETALLASSIGNMENTBYSTUDENT;
             return Task.Factory.StartNew(() => _db.Connection.Query<AssignmentModel>(spName,
-                new { studentId = studentId }, commandType: CommandType.StoredProcedure).ToList());
+                new { role= role,studentId = studentId }, commandType: CommandType.StoredProcedure).ToList());
         }
 
         public Task<List<TimetableModel>> GetAllTimetableDetails(int? id)

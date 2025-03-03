@@ -127,7 +127,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<AssignmentModel>> InsertAssignmentDetails(AssignmentModel assignmentModel);
         Task<List<AssignmentModel>> UpdateAssignmentDetails(AssignmentModel assignmentModel);
         Task<List<AssignmentModel>> DeleteAssignmentDetails(int id);
-        Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(int studentId);
+        Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(string role,int studentId);
 
         Task<List<TimetableModel>> GetAllTimetableDetails(int? id);
         Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel);
