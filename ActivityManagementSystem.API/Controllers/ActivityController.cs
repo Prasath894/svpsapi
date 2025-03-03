@@ -1874,6 +1874,75 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(HousePointModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetHousePoint()
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.GetHousePointDetails();
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetHouseActivity(int? id)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.GetHouseActivity(id);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> InsertHouseActivity([FromBody] HouseActivity model)
+        {
+            var result = await _activityService.Service.InsertHouseActivity(model);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateHouseActivity([FromBody] HouseActivity model)
+        {
+            var result = await _activityService.Service.UpdateHouseActivity(model);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteHouseActivity(int id)
+        {
+            var result = await _activityService.Service.DeleteHouseActivity(id);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpGet]
         public async Task<FileResult> SearchAndReplaceIndentForm(int id)
         {
             try

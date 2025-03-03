@@ -4586,6 +4586,61 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public virtual async Task<List<HousePointModel>> GetHousePointDetails()
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetHousePointDetails();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<List<HouseActivity>> GetHouseActivity(int? id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetHouseActivity(id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<List<HouseActivity>> InsertHouseActivity(HouseActivity roleModel)
+        {
+            try
+            {
+                return await _activityRepository.Repository.InsertHouseActivity(roleModel);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<List<HouseActivity>> UpdateHouseActivity(HouseActivity roleModel)
+        {
+            try
+            {
+                return await _activityRepository.Repository.UpdateHouseActivity(roleModel);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<string> DeleteHouseActivity(int id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.DeleteHouseActivity(id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public virtual string SearchAndReplaceIndentForm(int id)
         {
             try

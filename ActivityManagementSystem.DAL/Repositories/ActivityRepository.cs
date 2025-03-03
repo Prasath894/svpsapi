@@ -2501,6 +2501,57 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return Task.Factory.StartNew(() => ex.Message);
             }
         }
+        public Task<List<HousePointModel>> GetHousePointDetails()
+        {
+            var spName = ConstantSPnames.SP_GETHOUSEPOINT;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HousePointModel>(spName, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<List<HouseActivity>> GetHouseActivity(int? id)
+        {
+            var spName = ConstantSPnames.SP_GETHOUSEACTIVITY;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HouseActivity>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<List<HouseActivity>> InsertHouseActivity(HouseActivity roleModel)
+        {
+            var spName = ConstantSPnames.SP_INSERTHOUSEACTIVITY;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HouseActivity>(spName, new
+            {
+                ActivityName = roleModel.ActivityName,
+                HouseId = roleModel.HouseId,
+                StudentList = roleModel.StudentList,
+                CreatedBy = roleModel.CreatedBy,
+                CreatedDate = roleModel.CreatedDate,
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<List<HouseActivity>> UpdateHouseActivity(HouseActivity roleModel)
+        {
+            var spName = ConstantSPnames.SP_UPDATEHOUSEACTIVITY;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HouseActivity>(spName, new
+            {
+                ActivityName = roleModel.ActivityName,
+                HouseId = roleModel.HouseId,
+                StudentList = roleModel.StudentList,
+                Id = roleModel.Id,
+                ModifiedBy = roleModel.ModifiedBy,
+                ModifiedDate = roleModel.ModifiedDate
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<string> DeleteHouseActivity(int id)
+        {
+            var spName = ConstantSPnames.SP_DELETEHOUSEACTIVITY;
+            try
+            {
+                using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
+                sqlconnection.Open();
+                SqlCommand command = new SqlCommand(spName, sqlconnection);
+                command.CommandType = CommandType.StoredProcedure; command.Parameters.Add("Id", SqlDbType.Int).Value = id; command.ExecuteNonQuery();
+                return Task.Factory.StartNew(() => "Success");                 //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
+            }
+            catch (Exception ex)
+            {
+                return Task.Factory.StartNew(() => ex.Message);
+            }
+        }
         public string SearchAndReplaceIndentForm(int id)
         {
             string column = string.Empty;

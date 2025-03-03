@@ -29,8 +29,11 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<HouseModel>> UpdateHouseDetails(HouseModel house);
         Task<List<HouseModel>> DeleteHouseDetails(int id);
 
-
-
+        Task<List<HousePointModel>> GetHousePointDetails();
+        Task<List<HouseActivity>> GetHouseActivity(int? id);
+        Task<List<HouseActivity>> InsertHouseActivity(HouseActivity roleModel);
+        Task<List<HouseActivity>> UpdateHouseActivity(HouseActivity roleModel);
+        Task<string> DeleteHouseActivity(int id);
         Task<List<ExamsModel>> GetExams(int? id);
         Task<List<ExamsModel>> InsertExams(ExamsModel roleModel);
         Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel);

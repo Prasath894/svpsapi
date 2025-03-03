@@ -18,7 +18,16 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_UPDATEHOUSE = "sp_UpdateHouseDetails";
         public const string SP_DELETEHOUSE = "sp_DeleteHouseDetails";
 
-		public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
+        public const string SP_GETHOUSEPOINT = "sp_GetHousepointbyHouseId";
+
+        public const string SP_GETHOUSEACTIVITY = "sp_GetHouseDetails";
+        public const string SP_INSERTHOUSEACTIVITY = "sp_InsertHouseDetails";
+        public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHouseDetails";
+        public const string SP_DELETEHOUSEACTIVITY = "sp_DeleteHouseDetails";
+
+
+
+        public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
         public const string SP_BULKFACULTYUPLOAD = "[sp_BulkUploadFaculty]";
         public const string SP_BULKSUBJECTUPLOAD = "[sp_BulkUploadSubject]";
 

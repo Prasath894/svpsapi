@@ -26,6 +26,12 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<string> DeleteExams(int id);
 
 
+        Task<List<HousePointModel>> GetHousePointDetails();
+        Task<List<HouseActivity>> GetHouseActivity(int? id);
+        Task<List<HouseActivity>> InsertHouseActivity(HouseActivity roleModel);
+        Task<List<HouseActivity>> UpdateHouseActivity(HouseActivity roleModel);
+        Task<string> DeleteHouseActivity(int id);
+
         Task<List<ActivityModel>> GetAllActivityData(int Type, long? DepartmentId);
         Task<List<ActivityModel>> GetActivityData(int? id);
         Task<List<ActivityModel>> InsertActivityData(ActivityModel activitydetails);
