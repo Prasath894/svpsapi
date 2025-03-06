@@ -52,6 +52,12 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("houseId")]
         public int HouseId { get; set; }
+        /// <summary>
+        /// Gets or sets the house name.
+        /// </summary>
+
+        [JsonPropertyName("houseName")]
+        public string HouseName { get; set; }
 
         /// <summary>
         /// Gets or sets the list of students participating in the activity.
