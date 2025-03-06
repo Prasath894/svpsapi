@@ -20,10 +20,10 @@ namespace ActivityManagementSystem.DAL.Constants
 
         public const string SP_GETHOUSEPOINT = "sp_GetHousepointbyHouseId";
 
-        public const string SP_GETHOUSEACTIVITY = "sp_GetHouseDetails";
-        public const string SP_INSERTHOUSEACTIVITY = "sp_InsertHouseDetails";
-        public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHouseDetails";
-        public const string SP_DELETEHOUSEACTIVITY = "sp_DeleteHouseDetails";
+        public const string SP_GETHOUSEACTIVITY = "[sp_GetHouseActivitypoint]";
+        public const string SP_INSERTHOUSEACTIVITY = "InsertHousePointDetail";
+        public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHousePointDetail";
+        public const string SP_DELETEHOUSEACTIVITY = "[sp_DeleteHousePointDetail]";
 
 
 

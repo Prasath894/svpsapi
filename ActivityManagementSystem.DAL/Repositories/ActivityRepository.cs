@@ -397,7 +397,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<HouseModel>(spName, new
             {
                 Name=house.Name,
-                ISActive = house.IsActive,
+                Is_Active = house.Is_Active,
                 CreatedBy = house.CreatedBy,
 
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -600,7 +600,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
                 Id = house.Id,
                  Name=house.Name,
-                ISActive = house.IsActive,
+                Is_Active = house.Is_Active,
                 ModifiedBy = house.ModifiedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -2510,6 +2510,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
                 ActivityName = roleModel.ActivityName,
                 HouseId = roleModel.HouseId,
+                Point = roleModel.Point,
+
                 StudentList = roleModel.StudentList,
                 CreatedBy = roleModel.CreatedBy,
                 CreatedDate = roleModel.CreatedDate,
@@ -2523,6 +2525,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 ActivityName = roleModel.ActivityName,
                 HouseId = roleModel.HouseId,
                 StudentList = roleModel.StudentList,
+                Point = roleModel.Point,
                 Id = roleModel.Id,
                 ModifiedBy = roleModel.ModifiedBy,
                 ModifiedDate = roleModel.ModifiedDate
