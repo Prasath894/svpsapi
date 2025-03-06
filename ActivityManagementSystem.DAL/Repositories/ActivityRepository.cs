@@ -341,15 +341,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public Task<List<AlumniDropdown>> GetAlumniByName(string AlumniName)
-        {
-            var spName = ConstantSPnames.SP_GETAlumniBYNAME;
-            return Task.Factory.StartNew(() => _db.Connection.Query<AlumniDropdown>(spName, new
-            {
-                AlumniName = AlumniName
-            }, commandType: CommandType.StoredProcedure).ToList());
-        }
-
+       
         public Task<List<StudentDropdown>> GetStudentByName(string StudentyName)
         {
             var spName = ConstantSPnames.SP_GETSTUDENTBYNAME;
@@ -2814,114 +2806,61 @@ namespace ActivityManagementSystem.DAL.Repositories
             documentp.SaveToFile(savepath);
             return savepath;
         }
-        public Task<List<FdpModel>> GetAllFdpDetails(int? id)
+        public Task<List<UpcomingCompetition>> GetAllUpcomingCompetition(string role, int? id)
         {
-            var spName = ConstantSPnames.SP_GETAllFDPDETAILS;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FdpModel>(spName,
-                new { RefNo = id }, commandType: CommandType.StoredProcedure).ToList());
+            var spName = ConstantSPnames.SP_GETALLUPCOMINGCOMPETITION;
+            return Task.Factory.StartNew(() => _db.Connection.Query<UpcomingCompetition>(spName,
+                new {Role=role, Id = id }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<FdpModel>> InsertFdpDetails(FdpModel fdpModel)
+        public Task<List<UpcomingCompetition>> InsertUpcomingCompetition(UpcomingCompetition model)
         {
             // fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
 
-            var spName = ConstantSPnames.SP_INSERTFDP;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FdpModel>(spName, new
+            var spName = ConstantSPnames.SP_INSERTUPCOMINGCOMPETITION;
+            return Task.Factory.StartNew(() => _db.Connection.Query<UpcomingCompetition>(spName, new
             {
-                FormDate = fdpModel.FormDate,
-                RelievingOrderIssuedon = fdpModel.RelievingOrderIssuedon,
-                DepartmentId = fdpModel.DepartmentId,
-                TitleOfTheProgramme = fdpModel.TitleOfTheProgramme,
-                StartDate = fdpModel.StartDate,
-                EndDate = fdpModel.EndDate,
-                NoOfDaysAttended = fdpModel.NoOfDaysAttended,
-                venue = fdpModel.venue,
-                ConductedBy = fdpModel.ConductedBy,
-                TypeOfProgramme = fdpModel.TypeOfProgramme,
-                DescriptionOfOthers = fdpModel.DescriptionOfOthers,
-                level = fdpModel.level,
-                HeadOfAccount = fdpModel.HeadOfAccount,
-                ProgrammeDetails = fdpModel.ProgrammeDetails,
-                collegeType = fdpModel.collegeType,
-                FacultyName = fdpModel.FacultyName,
-                SubmittedReleivingOrder = fdpModel.SubmittedReleivingOrder,
-                SubmittedCopyOfCertificate = fdpModel.SubmittedCopyOfCertificate,
-                TaDaBroneBy = fdpModel.TaDaBroneBy,
-                Photo = fdpModel.Photo,
-                LevelOthers = fdpModel.LevelOthers,
-                Maker = fdpModel.Maker,
-                IsMakerCompleted = fdpModel.IsMakerCompleted,
-                MakerStatus = fdpModel.MakerStatus,
-                IsChecker1Completed = fdpModel.IsChecker1Completed,
-                Checker1 = fdpModel.Checker1,
-                Checker1Status = fdpModel.Checker1Status,
-                //MakerDate= fdpModel.MakerDate,
-                MakerOrHodFlag = fdpModel.MakerOrHodFlag,
-                Note = fdpModel.Note,
-                CurrentFileQueueStatus = fdpModel.CurrentFileQueueStatus,
-                CreatedBy = fdpModel.CreatedBy,
-                CreatedDate = fdpModel.CreatedDate
+                EventDate=model.EventDate,
+                EventName=model.EventName,
+                EventDay = model.EventDay,
+                Grade=model.Grade,
+                EventTiming =model.EventTiming,
+                Eligibility= model.Eligibility,
+                Guidelines= model.Guidelines,
+                TimeLimit= model.TimeLimit,
+                JudgingCriteria= model.JudgingCriteria,
+                DressCode= model.DressCode,
+                IsPollingRequired= model.IsPollingRequired,
+                PollingEndDate= model.PollingEndDate,
+                CreatedBy = model.CreatedBy
             }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<FdpModel>> UpdateFdpDetails(FdpModel fdpModel)
+        public Task<List<UpcomingCompetition>> UpdateUpcomingCompetition(UpcomingCompetition model)
         {
-            var spName = ConstantSPnames.SP_UPDATEFDPDETAILS;
-            return Task.Factory.StartNew(() => _db.Connection.Query<FdpModel>(spName, new
+            var spName = ConstantSPnames.SP_UPDATEUPCOMINGCOMPETITION;
+            return Task.Factory.StartNew(() => _db.Connection.Query<UpcomingCompetition>(spName, new
             {
-                refNo = fdpModel.RefNo,
-                RelievingOrderIssuedon = fdpModel.RelievingOrderIssuedon,
-                FormDate = fdpModel.FormDate,
-                DepartmentId = fdpModel.DepartmentId,
-                TitleOfTheProgramme = fdpModel.TitleOfTheProgramme,
-                StartDate = fdpModel.StartDate,
-                EndDate = fdpModel.EndDate,
-                NoOfDaysAttended = fdpModel.NoOfDaysAttended,
-                ConductedBy = fdpModel.ConductedBy,
-                venue = fdpModel.venue,
-                TypeOfProgramme = fdpModel.TypeOfProgramme,
-                level = fdpModel.level,
-                HeadOfAccount = fdpModel.HeadOfAccount,
-                Photo = fdpModel.Photo,
-                LevelOthers = fdpModel.LevelOthers,
-                collegeType = fdpModel.collegeType,
-                FacultyName = fdpModel.FacultyName,
-                ProgrammeDetails = fdpModel.ProgrammeDetails,
-                DescriptionOfOthers = fdpModel.DescriptionOfOthers,
-                SubmittedReleivingOrder = fdpModel.SubmittedReleivingOrder,
-                SubmittedCopyOfCertificate = fdpModel.SubmittedCopyOfCertificate,
-                TaDaBroneBy = fdpModel.TaDaBroneBy,
-                Maker = fdpModel.Maker,
-                Checker1 = fdpModel.Checker1,
-                Checker2 = fdpModel.Checker2,
-                Checker3 = fdpModel.Checker3,
-                Checker4 = fdpModel.Checker4,
-                IsMakerCompleted = fdpModel.IsMakerCompleted,
-                IsChecker1Completed = fdpModel.IsChecker1Completed,
-                IsChecker2Completed = fdpModel.IsChecker2Completed,
-                IsChecker3Completed = fdpModel.IsChecker3Completed,
-                IsChecker4Completed = fdpModel.IsChecker4Completed,
-                MakerStatus = fdpModel.MakerStatus,
-                Checker1Status = fdpModel.Checker1Status,
-                Checker2Status = fdpModel.Checker2Status,
-                Checker3Status = fdpModel.Checker3Status,
-                Checker4Status = fdpModel.Checker4Status,
-                //MakerDate = fdpModel.MakerDate,
-                //Checker1Date = fdpModel.Checker1Date,
-                //Checker2Date = fdpModel.Checker2Date,
-                //Checker3Date = fdpModel.Checker3Date,
-                //Checker4Date = fdpModel.Checker4Date,
-                MakerOrHodFlag = fdpModel.MakerOrHodFlag,
-                Note = fdpModel.Note,
-                CurrentFileQueueStatus = fdpModel.CurrentFileQueueStatus,
-                ModifiedBy = fdpModel.ModifiedBy,
-                ModifiedDate = fdpModel.ModifiedDate
+                Id=model.Id,
+                EventDate = model.EventDate,
+                EventName = model.EventName,
+                EventDay = model.EventDay,
+                Grade = model.Grade,
+                EventTiming = model.EventTiming,
+                Eligibility = model.Eligibility,
+                Guidelines = model.Guidelines,
+                TimeLimit = model.TimeLimit,
+                JudgingCriteria = model.JudgingCriteria,
+                DressCode = model.DressCode,
+                IsPollingRequired = model.IsPollingRequired,
+                PollingEndDate = model.PollingEndDate,
+                ModifiedBy = model.ModifiedBy
             }, commandType: CommandType.StoredProcedure).ToList());
 
         }
-        public Task<List<FdpModel>> DeleteFdpDetails(int id)
+        public Task<List<UpcomingCompetition>> DeleteUpcomingCompetition(int id)
         {
-            var spName = ConstantSPnames.SP_DELETEFDPFORM;
+            var spName = ConstantSPnames.SP_DELETEUPCOMINGCOMPETITION;
             return Task.Factory.StartNew(() =>
-                _db.Connection.Query<FdpModel>(spName, new { RefNo = id }, commandType: CommandType.StoredProcedure)
+                _db.Connection.Query<UpcomingCompetition>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
                     .ToList());
         }
         public Task<List<InventoryIssuedMappingModel>> GetAllInventoryIssuedDetails(int? id)
@@ -3568,14 +3507,14 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
         public Task<List<OdpModel>> GetAllOdpDetails(int? id)
         {
-            var spName = ConstantSPnames.SP_GETAllODPDETAILS;
+            var spName = ConstantSPnames.SP_GETAllFDPDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<OdpModel>(spName,
                 new { RefNo = id }, commandType: CommandType.StoredProcedure).ToList());
         }
         public Task<List<OdpModel>> InsertOdpDetails(OdpModel oDPModel)
         {
             //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
-            var spName = ConstantSPnames.SP_INSERTODPDETAILS;
+            var spName = ConstantSPnames.SP_GETAllFDPDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<OdpModel>(spName, new
             {
                 FormDate = oDPModel.FormDate,
@@ -3606,7 +3545,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
         public Task<List<OdpModel>> UpdateOdpDetails(OdpModel oDPModel)
         {
-            var spName = ConstantSPnames.SP_UPDATEODPDETAILS;
+            var spName = ConstantSPnames.SP_UPDATEFDPDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<OdpModel>(spName, new
             {
                 RefNo = oDPModel.RefNo,
@@ -3643,7 +3582,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
         public Task<List<OdpModel>> DeleteOdpDetails(int id)
         {
-            var spName = ConstantSPnames.SP_DELETEODPFORM;
+            var spName = ConstantSPnames.SP_DELETEFDPFORM;
             return Task.Factory.StartNew(() =>
              _db.Connection.Query<OdpModel>(spName, new { RefNo = id }, commandType: CommandType.StoredProcedure)
                  .ToList());
@@ -3844,7 +3783,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         public string SearchAndReplaceOdpForm(int id)
         {
             string column = string.Empty;
-            var spName = ConstantSPnames.SP_GETAllODPDETAILS;
+            var spName = ConstantSPnames.SP_GETAllFDPDETAILS;
             string strfilepath = _appSettings.Settings.DownloadPath.ToString() + "\\" + _appSettings.Settings.FileNames.ToString();
             string savepath = _appSettings.Settings.DownloadPath.ToString() + "\\" + _appSettings.Settings.PdfFile.ToString();
 

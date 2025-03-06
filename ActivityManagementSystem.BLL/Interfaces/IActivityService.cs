@@ -58,7 +58,6 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SemesterResultResponse>> GetSemesterResultReport(ActivityFilterModel activityFilterModel);
         Task<List<SymposiumExpoResponse>> GetSymposiumResultReport(ActivityFilterModel activityFilterModel);
         Task<List<PlacementResponse>> GetPlacementResultReport(ActivityFilterModel activityFilterModel);
-        Task<List<AlumniResponse>> GetAlumniReport(ActivityFilterModel activityFilterModel);
 
 
         Task<List<ActivityGuestlecturesResponse>> GetGuestlecturesForReport(ActivityFilterModel activityFilterModel);

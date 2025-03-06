@@ -528,20 +528,7 @@ namespace ActivityManagementSystem.BLL.Services
         }
 
 
-        public virtual async Task<List<AlumniDropdown>> GetAlumniByName(string AlumniName)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAlumniByName(AlumniName);
-
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
+     
         public virtual async Task<List<HouseModel>> GetAllHouse(int? Id)
         {
             try
@@ -2224,128 +2211,10 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
-        public virtual async Task<List<AlumniResponse>> GetAlumniReport(ActivityFilterModel activityFilterModel)
-        {
-            try
-            {
-                var result = new List<AlumniResponse>();
-
-                var reportData = await GetAllActivityData(activityFilterModel.Type, activityFilterModel.DepartmentId);
-
-                var data = reportData.Select(x => JsonConvert.DeserializeObject<AlumniResponse>(x.Data)).ToList();
-                for (var i = 0; i < data.Count(); i++)
-                {
-                    List<string> lstk = new List<string>();
-                    if (reportData[i].Files != null)
-                    {
-                        for (var k = 0; k < reportData[i].Files.Count; k++)
-                        {
-                            string ext = System.IO.Path.GetExtension(reportData[i].Files[k].Trim()).Substring(1);
-                            if (ext == "jpg" || ext == "bmp" || ext == "png" || ext == "jpeg")
-                            {
-                                string path = reportData[i].FilePath.ToString() + "\\" + reportData[i].Files[k].Trim();
-                                byte[] b = System.IO.File.ReadAllBytes(path);
-                                string val = Convert.ToBase64String(b);
-                                lstk.Add(val);
-
-                            }
-                        }
-                    }
-
-                    data[i].FileBlob = lstk;
-                    string[] dateSplitFrom = data[i].EventDate.Split('/');
-                    data[i].EventDate = dateSplitFrom[1] + '/' + dateSplitFrom[0] + '/' + dateSplitFrom[2];
-
-                }
-                var viewModel = new AlumniResponse();
-
-                var columns = viewModel.GetType().GetProperties();
-                if (activityFilterModel.FilterColumns != null)
-                {
-                    if (activityFilterModel.FilterColumns.Count > 0)
-                    {
-                        foreach (var column in columns)
-                        {
-                            var selectedColumn = activityFilterModel.FilterColumns.SingleOrDefault(x => x.Name == column.Name);
-
-                            if (selectedColumn != null)
-                            {
-                                data = GetAlumniModelFilteredResult(data, selectedColumn).ToList();
-                            }
-                        }
-                    }
-                }
-                result.AddRange(data);
-
-                return result;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        
 
 
-        private IEnumerable<AlumniResponse> GetAlumniModelFilteredResult(IEnumerable<AlumniResponse> activityResponse, FilterColumn filterColumn)
-        {
-            IEnumerable<AlumniResponse> response = activityResponse;
-            if (filterColumn.Name.ToLower().Contains("date"))
-            {
-                filterColumn.Value = String.Format("{0}/{1}/{2}", filterColumn.Value.Split('/')[2],
-                    filterColumn.Value.Split('/')[1],
-                    filterColumn.Value.Split('/')[0]);
-            }
-            switch (filterColumn.Name)
-            {
-
-
-
-                case "Event":
-                    response = activityResponse.Where(x => x.Event == filterColumn.Value);
-
-                    return response;
-                case "OrganisedBy":
-                    response = activityResponse.Where(x => x.OrganisedBy == filterColumn.Value);
-
-                    return response;
-                case "Venue":
-                    response = activityResponse.Where(x => x.Venue == filterColumn.Value);
-
-                    return response;
-
-
-                case "EventDate":
-                    response = activityResponse.Where(x =>
-
-                    Convert.ToDateTime(string.Format("{0}/{1}/{2}", x.EventDate.Split('/')[2],
-                                                                        x.EventDate.Split('/')[1],
-                                                                        x.EventDate.Split('/')[0])) == Convert.ToDateTime(filterColumn.Value));
-                    return response;
-                case "Time":
-                    response = activityResponse.Where(x => x.Time == filterColumn.Value);
-                    return response;
-
-                case "Impact":
-                    response = activityResponse.Where(x => x.Impact == filterColumn.Value);
-                    return response;
-
-                case "ResourcePersonOrActed":
-                    response = activityResponse.Where(x => x.ResourcePersonOrActed == filterColumn.Value);
-
-                    return response;
-
-                //case "Department":
-                //    response = activityResponse.Where(x => x.Department == filterColumn.Value);
-
-                //    return response;
-
-                default:
-                    response = activityResponse;
-
-                    return response;
-            }
-        }
-
+        
         #endregion
 
         #region Nandhini
@@ -4663,44 +4532,44 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<FdpModel>> GetAllFdpDetails(int? id)
+        public virtual async Task<List<UpcomingCompetition>> GetAllUpcomingCompetition(string role, int? id)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllFdpDetails(id);
+                return await _activityRepository.Repository.GetAllUpcomingCompetition(role,id);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<List<FdpModel>> InsertFdpDetails(FdpModel fdpModel)
+        public virtual async Task<List<UpcomingCompetition>> InsertUpcomingCompetition(UpcomingCompetition model)
         {
             try
             {
-                return await _activityRepository.Repository.InsertFdpDetails(fdpModel);
+                return await _activityRepository.Repository.InsertUpcomingCompetition(model);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<List<FdpModel>> UpdateFdpDetails(FdpModel fdpModel)
+        public virtual async Task<List<UpcomingCompetition>> UpdateUpcomingCompetition(UpcomingCompetition model)
         {
             try
             {
-                return await _activityRepository.Repository.UpdateFdpDetails(fdpModel);
+                return await _activityRepository.Repository.UpdateUpcomingCompetition(model);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual async Task<List<FdpModel>> DeleteFdpDetails(int id)
+        public virtual async Task<List<UpcomingCompetition>> DeleteUpcomingCompetition(int id)
         {
             try
             {
-                return await _activityRepository.Repository.DeleteFdpDetails(id);
+                return await _activityRepository.Repository.DeleteUpcomingCompetition(id);
             }
             catch (Exception ex)
             {
