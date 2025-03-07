@@ -2837,6 +2837,17 @@ namespace ActivityManagementSystem.DAL.Repositories
                 CreatedBy = model.CreatedBy
             }, commandType: CommandType.StoredProcedure).ToList());
         }
+        
+        public Task<List<UpcomingCompetition>> UpdateInterestedCompetition(int studentId, int competitionId)
+        {
+            var spName = ConstantSPnames.SP_UPDATEINTERESTED;
+            return Task.Factory.StartNew(() => _db.Connection.Query<UpcomingCompetition>(spName, new
+            {
+                @StudentId=studentId,
+                @CompetitionId=competitionId
+            }, commandType: CommandType.StoredProcedure).ToList());
+
+        }
         public Task<List<UpcomingCompetition>> UpdateUpcomingCompetition(UpcomingCompetition model)
         {
             var spName = ConstantSPnames.SP_UPDATEUPCOMINGCOMPETITION;
@@ -3944,8 +3955,93 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Section = Section
             }, commandType: CommandType.StoredProcedure).ToList());
         }
+        public string GetInterestedStudentList(int competitionId)
+        {
+            try
+            {
+                string spName = ConstantSPnames.SP_INTERESTEDSTUDENTLIST;
+                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
+              
+                string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
+
+                using (var connection = new SqlConnection(connectionString))
+                using (var command = new SqlCommand(spName, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.Add("@CompetitionId", SqlDbType.Int).Value = competitionId;
+                    //command.CommandTimeout = 100000;
+
+                    using (var adapter = new SqlDataAdapter(command))
+                    using (var ds = new DataSet())
+                    {
+                        adapter.Fill(ds);
+                        DataTable studentTable = ds.Tables[0];
+                        return GenerateExcelusingDatatable(studentTable, "Competition");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex, "Error generating mark report");
+                return ex.Message;
+            }
+        }
+        private string GenerateExcelusingDatatable(DataTable studentTable, string activityName)
+        {
+            try
+            {
+                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
+
+                using (var wb = new XLWorkbook())
+                {
+                    var ws = wb.Worksheets.Add("Competition");
+                    int colCount = 1, rowCount = 1;
+                    
+                  
+                    string eventValue = studentTable.Rows[0]["EventName"].ToString();
+                    if (studentTable.Columns.Contains("EventName"))
+                    {
+                        studentTable.Columns.Remove("EventName");
+                    }
+                    int colMaxWidth = studentTable.Columns.Count;
+                    // Headers
+                    ws.Cell(rowCount++, colCount).Value = "SONA VALLIAPPA PUBLIC SCHOOL";
+                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
+
+                    ws.Cell(rowCount++, colCount).Value = $"{eventValue} - INTEREST STUDENT";
+                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
 
+                  
+
+                    // Column headers
+                    var headers = new List<string> { "SNo", "Adminssion No", "Name of Student","Grade","Section","Father Mobile No","Polling Status" };
+                  
+                    for (int i = 0; i < headers.Count; i++)
+                    {
+                        ws.Cell(rowCount, i + 1).Value = headers[i];
+                        ws.Column(i + 1).AdjustToContents().AddToNamed("Titles");
+                    }
+                    rowCount++;
+
+                   
+
+                    // Insert Data
+                    ws.Cell(rowCount, 1).InsertData(studentTable).AddToNamed("Titles");
+
+                    ApplyStyles(wb, ws, studentTable.Rows.Count, colMaxWidth);
+
+                    if (File.Exists(filePath)) File.Delete(filePath);
+                    wb.SaveAs(filePath);
+                }
+                return filePath;
+            }
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex, "Error generating Excel report");
+                return ex.Message;
+            }
+        }
         public string GetAllMarkReport(string section, string subjects, string test)
         {
             try

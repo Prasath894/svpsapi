@@ -44,6 +44,18 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("eventName")]
         public string EventName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// TotalStudent.
+        /// </summary>
+        [JsonPropertyName("totalStudent")]
+        public string TotalStudent { get; set; } = string.Empty;
+
+        /// <summary>
+        /// InterestedStudent.
+        /// </summary>
+        [JsonPropertyName("interestedStudent")]
+        public string InterestedStudent { get; set; } = string.Empty;
         /// <summary>
         /// Eligibility criteria for the event.
         /// </summary>
