@@ -2035,7 +2035,7 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateInterestedCompetition(int studentId,int competitionId)
         {
-            var result = await _activityService.Service.UpdateUpcomingCompetition(studentId, competitionId);
+            var result = await _activityService.Service.UpdateInterestedCompetition(studentId, competitionId);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
