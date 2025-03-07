@@ -18,7 +18,16 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_UPDATEHOUSE = "sp_UpdateHouseDetails";
         public const string SP_DELETEHOUSE = "sp_DeleteHouseDetails";
 
-		public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
+        public const string SP_GETHOUSEPOINT = "sp_GetHousepointbyHouseId";
+
+        public const string SP_GETHOUSEACTIVITY = "[sp_GetHouseActivitypoint]";
+        public const string SP_INSERTHOUSEACTIVITY = "InsertHousePointDetail";
+        public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHousePointDetail";
+        public const string SP_DELETEHOUSEACTIVITY = "[sp_DeleteHousePointDetail]";
+
+
+
+        public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
         public const string SP_BULKFACULTYUPLOAD = "[sp_BulkUploadFaculty]";
         public const string SP_BULKSUBJECTUPLOAD = "[sp_BulkUploadSubject]";
 
@@ -191,10 +200,10 @@ namespace ActivityManagementSystem.DAL.Constants
 		public static string SP_REALLOCATEBUDGET="[sp_ReallocateBudgetDetails]";
 		public static string SP_STOCKREPORTCUM = "[sp_StockReportCum]";
 
-		public static string SP_INSERTODPDETAILS = "sp_InsertOdpForm";
-		public static string SP_GETAllODPDETAILS = "sp_GetAllOdp";
-		public static string SP_UPDATEODPDETAILS = "sp_UpdateOdpForm";
-		public static string SP_DELETEODPFORM = "sp_DeleteOdpForm";
+		public static string SP_INSERTUPCOMINGCOMPETITION = "sp_InsertUpcomingCompetition";
+		public static string SP_GETALLUPCOMINGCOMPETITION = "sp_GetUpcomingCompetitions";
+		public static string SP_UPDATEUPCOMINGCOMPETITION = "sp_UpdateUpcomingCompetition";
+		public static string SP_DELETEUPCOMINGCOMPETITION = "sp_DeleteUpcomingCompetition";
 
 		public static string SP_INSERTBPE = "[sp_InsertBpeForm]";
 		public static string SP_GETAllBPEDETAILS = "sp_GetAllBpe";

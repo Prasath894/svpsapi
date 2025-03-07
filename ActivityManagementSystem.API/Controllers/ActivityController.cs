@@ -33,7 +33,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -673,13 +673,13 @@ namespace ActivityManagementSystem.API.Controllers
                 {
                     Directory.CreateDirectory(target);
                 }
-                Directory.CreateDirectory(target);
+             //   Directory.CreateDirectory(target);
 
 
                 for (int i = 0; i < fileUploadModel.FormFiles.Count; i++)
                 {
                     string path = Path.Combine(target, fileUploadModel.FormFiles[i].FileName);
-                    using (Stream stream = new FileStream(path, FileMode.Create))
+                    using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
                     {
                         await fileUploadModel.FormFiles[i].CopyToAsync(stream);
                     }
@@ -1425,9 +1425,6 @@ namespace ActivityManagementSystem.API.Controllers
                 case 32:
                     return Ok(await _activityService.Service.GetAllGrantsDataForReport(activityFilterModel));
 
-                case 33:
-                    return Ok(await _activityService.Service.GetAlumniReport(activityFilterModel));
-
                 case 34:
                     return Ok(await _activityService.Service.GetAllMiscellaneousDataForReport(activityFilterModel));
                 case 37:
@@ -1874,6 +1871,75 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [ProducesResponseType(200, Type = typeof(HousePointModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetHousePoint()
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.GetHousePointDetails();
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetHouseActivity(int? id)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.GetHouseActivity(id);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> InsertHouseActivity([FromBody] HouseActivity model)
+        {
+            var result = await _activityService.Service.InsertHouseActivity(model);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateHouseActivity([FromBody] HouseActivity model)
+        {
+            var result = await _activityService.Service.UpdateHouseActivity(model);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HouseActivity))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteHouseActivity(int id)
+        {
+            var result = await _activityService.Service.DeleteHouseActivity(id);
+            _logger.LogDebug(result.ToString());
+            //if (result == null)
+            //{
+            //    return NoContent();
+            //}
+            return Ok(result);
+        }
+        [HttpGet]
         public async Task<FileResult> SearchAndReplaceIndentForm(int id)
         {
             try
@@ -1911,12 +1977,12 @@ namespace ActivityManagementSystem.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(FdpModel))]
+        [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllFDPForm(int? id)
+        public async Task<IActionResult> GetAllUpcomingCompetition(string role,int? id)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllFdpDetails(id);
+            var result = await _activityService.Service.GetAllUpcomingCompetition(role,id);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1934,14 +2000,14 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FdpModel))]
+        [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> InsertFDPForm([FromBody] FdpModel fdpModel)
+        public async Task<IActionResult> InsertUpcomingCompetition([FromBody] UpcomingCompetition model)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
             // StudentModel studentDetails = JsonConvert.DeserializeObject<StudentModel>(student);
-            var result = await _activityService.Service.InsertFdpDetails(fdpModel);
+            var result = await _activityService.Service.InsertUpcomingCompetition(model);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1951,11 +2017,11 @@ namespace ActivityManagementSystem.API.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FdpModel))]
+        [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> UpdateFDPForm([FromBody] FdpModel fdpModel)
+        public async Task<IActionResult> UpdateUpcomingCompetition([FromBody] UpcomingCompetition model)
         {
-            var result = await _activityService.Service.UpdateFdpDetails(fdpModel);
+            var result = await _activityService.Service.UpdateUpcomingCompetition(model);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1965,13 +2031,13 @@ namespace ActivityManagementSystem.API.Controllers
 
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FdpModel))]
+        [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteFDPForm(int id)
+        public async Task<IActionResult> DeleteUpcomingCompetition(int id)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = await _activityService.Service.DeleteFdpDetails(id);
+            var result = await _activityService.Service.DeleteUpcomingCompetition(id);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2437,7 +2503,7 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         public async Task<IActionResult> DownloadFdpFiles(int id)
         {
-            var result1 = await _activityService.Service.GetAllFdpDetails(id);
+            var result1 = await _activityService.Service.GetAllOdpDetails(id);
             var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}.zip";
             var filePath = result1[0].Photo;
             var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
@@ -3443,10 +3509,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AssignmentModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllAssignmentByStudent(int studentId)
+        public async Task<IActionResult> GetAllAssignmentByStudent(string role,int studentId)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllAssignmentByStudentDetails(studentId);
+            var result = await _activityService.Service.GetAllAssignmentByStudentDetails(role,studentId);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {

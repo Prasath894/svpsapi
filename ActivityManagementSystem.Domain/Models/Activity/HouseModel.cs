@@ -24,8 +24,8 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// <summary>
         /// Indicates whether the team is active.
         /// </summary>
-        [JsonPropertyName("isActive")]
-        public bool IsActive { get; set; } = true;
+        [JsonPropertyName("is_Active")]
+        public bool Is_Active { get; set; } = true;
 
         /// <summary>
         /// User who created the team record.

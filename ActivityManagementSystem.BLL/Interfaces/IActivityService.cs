@@ -29,8 +29,11 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<HouseModel>> UpdateHouseDetails(HouseModel house);
         Task<List<HouseModel>> DeleteHouseDetails(int id);
 
-
-
+        Task<List<HousePointModel>> GetHousePointDetails();
+        Task<List<HouseActivity>> GetHouseActivity(int? id);
+        Task<List<HouseActivity>> InsertHouseActivity(HouseActivity roleModel);
+        Task<List<HouseActivity>> UpdateHouseActivity(HouseActivity roleModel);
+        Task<string> DeleteHouseActivity(int id);
         Task<List<ExamsModel>> GetExams(int? id);
         Task<List<ExamsModel>> InsertExams(ExamsModel roleModel);
         Task<List<ExamsModel>> UpdateExams(ExamsModel roleModel);
@@ -55,7 +58,6 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SemesterResultResponse>> GetSemesterResultReport(ActivityFilterModel activityFilterModel);
         Task<List<SymposiumExpoResponse>> GetSymposiumResultReport(ActivityFilterModel activityFilterModel);
         Task<List<PlacementResponse>> GetPlacementResultReport(ActivityFilterModel activityFilterModel);
-        Task<List<AlumniResponse>> GetAlumniReport(ActivityFilterModel activityFilterModel);
 
 
         Task<List<ActivityGuestlecturesResponse>> GetGuestlecturesForReport(ActivityFilterModel activityFilterModel);
@@ -127,7 +129,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<AssignmentModel>> InsertAssignmentDetails(AssignmentModel assignmentModel);
         Task<List<AssignmentModel>> UpdateAssignmentDetails(AssignmentModel assignmentModel);
         Task<List<AssignmentModel>> DeleteAssignmentDetails(int id);
-        Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(int studentId);
+        Task<List<AssignmentModel>> GetAllAssignmentByStudentDetails(string role,int studentId);
 
         Task<List<TimetableModel>> GetAllTimetableDetails(int? id);
         Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId);
