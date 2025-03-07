@@ -5534,6 +5534,17 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public virtual async Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetTimeTableBySectionIdDetails(sectionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public virtual async Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel)
         {
             try

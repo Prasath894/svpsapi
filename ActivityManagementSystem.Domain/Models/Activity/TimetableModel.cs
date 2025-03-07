@@ -19,7 +19,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public string Hour6 { get; set; } = string.Empty;
         public string Hour7 { get; set; } = string.Empty;
         public string Hour8 { get; set; } = string.Empty;
-        public string? Hour9 { get; set; } // Nullable since it can be unchecked
+       
         public string CreatedBy { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public string? ModifiedBy { get; set; } // Nullable

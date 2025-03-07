@@ -267,6 +267,8 @@ namespace ActivityManagementSystem.DAL.Constants
 
 
         public const string SP_GETALLTIMETABLEDETAILS = "sp_GetAllTimetable";
+        public const string SP_GetTimeTableBySectionIdDETAILS = "sp_GetTimeTableBySectionId";
+
         public const string SP_INSERTTIMETABLEDETAILS = "[sp_InsertTimetable]";
         public const string SP_UPDATETIMETABLEDETAILS = "[sp_UpdateTimetable]";
         public const string SP_DELETETIMETABLE = "[sp_DeleteTimetable]";

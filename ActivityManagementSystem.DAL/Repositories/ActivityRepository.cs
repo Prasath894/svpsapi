@@ -5794,6 +5794,12 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName,
                 new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
         }
+        public Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId)
+        {
+            var spName = ConstantSPnames.SP_GetTimeTableBySectionIdDETAILS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName,
+                new { SectionId = sectionId }, commandType: CommandType.StoredProcedure).ToList());
+        }
         public Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel)
         {
             //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
@@ -5813,7 +5819,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Hour6 = timetableModel.Hour6,
                 Hour7 = timetableModel.Hour7,
                 Hour8 = timetableModel.Hour8,
-                Hour9 = timetableModel.Hour9,
+                
                 CreatedBy = timetableModel.CreatedBy
 
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -5836,7 +5842,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Hour6 = timetableModel.Hour6,
                 Hour7 = timetableModel.Hour7,
                 Hour8 = timetableModel.Hour8,
-                Hour9 = timetableModel.Hour9,
+               
                 ModifiedBy = timetableModel.ModifiedBy
             },
          commandType: CommandType.StoredProcedure).ToList());
