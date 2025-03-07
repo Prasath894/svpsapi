@@ -110,6 +110,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
 
         Task<List<TimetableModel>> GetAllTimetableDetails(int? id);
+        Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId);
         Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel);
         Task<List<TimetableModel>> UpdateTimetableDetails(TimetableModel timetableModel);
         Task<List<TimetableModel>> DeleteTimetableDetails(int id);
