@@ -4554,6 +4554,18 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+       
+         public virtual async Task<List<UpcomingCompetition>> UpdateInterestedCompetition(int studentId, int competitionId)
+        {
+            try
+            {
+                return await _activityRepository.Repository.UpdateInterestedCompetition(studentId,competitionId);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public virtual async Task<List<UpcomingCompetition>> UpdateUpcomingCompetition(UpcomingCompetition model)
         {
             try
@@ -5053,9 +5065,14 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        
         public virtual string GetAllMarkReport(string Section, string subjects, string test)
         {
             return _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
+        }
+        public virtual string GetInterestedStudentList(int competitionId)
+        {
+            return _activityRepository.Repository.GetInterestedStudentList(competitionId);
         }
         public virtual List<StudentMark> GetStudentMark()
         {

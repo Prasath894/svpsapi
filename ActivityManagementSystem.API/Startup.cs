@@ -82,15 +82,15 @@ namespace ActivityManagementSystem.Service
                 options.AddPolicy(name: "MyAllowSpecificOrigins",
                     builder =>
                     {
-                        builder.AllowAnyOrigin()
+                       // builder.AllowAnyOrigin()
                   //    .AllowAnyHeader()
                   //    .AllowAnyMethod().WithExposedHeaders("Content-Disposition") // If returning files
                   //.AllowCredentials();
-                  // builder.WithOrigins("http://localhost:3000") // ✅ Specify frontend URL
+                  builder.WithOrigins("http://localhost:3000") // ✅ Specify frontend URL
                   .AllowAnyHeader()
                   .AllowAnyMethod()
-                  .WithExposedHeaders("Content-Disposition");// If returning files
-                  //.AllowCredentials();
+                  .WithExposedHeaders("Content-Disposition")// If returning files
+                  .AllowCredentials();
                     });
             });
             services.AddSwaggerGen(c =>

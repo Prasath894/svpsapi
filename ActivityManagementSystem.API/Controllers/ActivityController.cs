@@ -2033,6 +2033,20 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
         [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateInterestedCompetition(int studentId,int competitionId)
+        {
+            var result = await _activityService.Service.UpdateInterestedCompetition(studentId, competitionId);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(UpcomingCompetition))]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteUpcomingCompetition(int id)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
@@ -2854,6 +2868,23 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
                 var result = _activityService.Service.GetAllMarkReport( Section, subjects, test);
+                //_logger.LogDebug(result.ToString());
+                return await PrepareFileForDownload(result.ToString(), "Excel");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+        [HttpGet]
+        // [AllowAnonymous]
+        public async Task<FileResult> GetInterestedStudentList(int competitionId)
+        {
+            try
+            {
+
+                var result = _activityService.Service.GetInterestedStudentList(competitionId);
                 //_logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
             }
