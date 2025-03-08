@@ -5458,11 +5458,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId)
+        public virtual async Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId,string role)
         {
             try
             {
-                return await _activityRepository.Repository.GetTimeTableBySectionIdDetails(sectionId);
+                return await _activityRepository.Repository.GetTimeTableBySectionIdDetails(sectionId,role);
             }
             catch (Exception ex)
             {

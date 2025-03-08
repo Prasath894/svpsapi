@@ -5787,11 +5787,11 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName,
                 new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId)
+        public Task<List<TimetableModel>> GetTimeTableBySectionIdDetails(int sectionId,string role)
         {
             var spName = ConstantSPnames.SP_GetTimeTableBySectionIdDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName,
-                new { SectionId = sectionId }, commandType: CommandType.StoredProcedure).ToList());
+                new { SectionId= sectionId,Role=role }, commandType: CommandType.StoredProcedure).ToList());
         }
         public Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel)
         {

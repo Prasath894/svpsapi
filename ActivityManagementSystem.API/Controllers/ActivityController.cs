@@ -3547,10 +3547,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(TimetableModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetTimeTableBySectionId(int sectionId)
+        public async Task<IActionResult> GetTimeTableBySectionId(int sectionId,string role)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetTimeTableBySectionIdDetails(sectionId);
+            var result = await _activityService.Service.GetTimeTableBySectionIdDetails(sectionId,role);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
