@@ -33,7 +33,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
