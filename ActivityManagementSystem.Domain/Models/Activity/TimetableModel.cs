@@ -11,6 +11,8 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public string SectionId { get; set; } = string.Empty;
         public string HallNo { get; set; } = string.Empty;
 
+
+
         public string GradeOrClass { get; set; } = string.Empty;
         public string Section { get; set; } = string.Empty;
         public DateTime WithEffectFrom { get; set; }

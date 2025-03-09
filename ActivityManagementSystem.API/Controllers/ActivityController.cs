@@ -3590,6 +3590,21 @@ namespace ActivityManagementSystem.API.Controllers
 
             return Ok(result);
         }
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(BatchSubjectFacultyModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetFacultyListBySectionId(int sectionId)
+        {
+            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
+            var result = await _activityService.Service.GetFacultyListBySectionIdDetails(sectionId);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(result);
+        }
 
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(TimetableModel))]

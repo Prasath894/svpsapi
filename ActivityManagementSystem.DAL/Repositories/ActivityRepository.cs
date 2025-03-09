@@ -5889,6 +5889,12 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<TimetableModel>(spName,
                 new { SectionId= sectionId,Role=role }, commandType: CommandType.StoredProcedure).ToList());
         }
+        public Task<List<BatchSubjectFacultyModel>> GetFacultyListBySectionIdDetails(int sectionId)
+        {
+            var spName = ConstantSPnames.SP_GetFacultyListBySectionIdDETAILS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<BatchSubjectFacultyModel>(spName,
+                new { SectionId = sectionId }, commandType: CommandType.StoredProcedure).ToList());
+        }
         public Task<List<TimetableModel>> InsertTimetableDetails(TimetableModel timetableModel)
         {
             //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
