@@ -14,6 +14,8 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public string Section { get; set; }
         public long SubjectID { get; set; }
         public string SubjectName { get; set; }
+        public string FacultyMobileNo_1 { get; set; }
+
         public string SubjectCode { get; set; }
         public long FacultyID { get; set; }
         public bool IsActive { get; set; }
