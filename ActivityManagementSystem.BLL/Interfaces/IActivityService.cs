@@ -73,8 +73,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
         string DeleteRole(int id);
-        Task<List<RoleActivity>> UpdateRoleActivity(RoleActivity roleactivity);
-        Task<List<RoleActivity>> InsertRoleActivity(RoleActivity roleactivity);
+      
         Task<List<RoleActivity>> GetRoleActivity(int? id);
         Task<String> UpdateActivityFilepathdata(string target, int id,string  files);
 
@@ -112,15 +111,11 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
         Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
-        public string generateAttendancesubjectwisereport(string SubjectCode, string Sem, string Year, string DepartmentId);
         public string generateAttendancedynamicreport(string Sem, string Year, int Department,string Section);
         public string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Batch);
         Task<(MemoryStream memory, string path)> DownloadData(string filepath);
 
-        Task<List<MemberDetails>> DeleteMembersDetails(int id);
-        Task<List<MemberDetails>> UpdateMembersDetails(MemberDetails memberDetails);
-        Task<List<MemberDetails>> InsertMembersDetails(MemberDetails memberDetails);
-        Task<List<MemberDetails>> GetMembersDetails(int? id);
+      
         Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId);
         Task<List<StudentAttendanceModel>> GetAttendanceByIdDetails(int studentId, int month, int year);
 
@@ -157,11 +152,8 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<ContentLibModel>> GetAllContentLibByStudentDetails(int studentId);
         Task<List<BirthdayModel>> GetBirthdayListByRole(string role);
 
-        Task<string> UpdateSubmitStatus(int studentId);
-        Task<string> InsertFeedBackDetails(Feedback feedback);
-        Task<Feedback> getFeedbackDetails(int studentId, int subjectId, int facultyId);
+      
         Task<List<Feedbacksubject>> getSubFacultyList(int studentId);
-        Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId);
 
 
         Task<List<AcademicCalender>> GetAllAcademicCalender(string role);

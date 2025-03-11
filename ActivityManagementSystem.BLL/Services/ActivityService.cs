@@ -317,28 +317,8 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<RoleActivity>> UpdateRoleActivity(RoleActivity roleactivity)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateRoleActivity(roleactivity);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<RoleActivity>> InsertRoleActivity(RoleActivity roleactivity)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertRoleActivity(roleactivity);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+       
+      
         public virtual string DeleteRole(int id)
         {
             try
@@ -4188,29 +4168,6 @@ namespace ActivityManagementSystem.BLL.Services
         }
 
 
-        //public virtual async Task<List<BatchStudentSubjectList>> GetBatchWiseStudentList()
-        //{
-        //    try
-        //    {
-        //        return await _activityRepository.Repository.GetBatchWiseStudentList();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
-
-        //public virtual async Task<List<string>> GetSection(SectionModel sectionModel)
-        //{
-        //    try
-        //    {
-        //        return await _activityRepository.Repository.GetSection(sectionModel);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
         public virtual async Task<List<Batchdetails>> GetBatchList(BatchListModel batchListModel)
         {
             try
@@ -4313,26 +4270,14 @@ namespace ActivityManagementSystem.BLL.Services
             return _activityRepository.Repository.generateMonthlyAttendancereport(Sem, Year, Department, AttendanceDate, Section);
 
         }
-        public virtual string generateSubjectwiseMonthlyreport(string Sem, string Year, int Department, DateTime AttendanceDate, string Section, string SubjectCode)
-        {
-            return _activityRepository.Repository.generateSubjectwiseMonthlyreport(Sem, Year, Department, AttendanceDate, Section, SubjectCode);
-
-        }
+     
         public virtual string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section)
         {
             return _activityRepository.Repository.generateAttendancedynamicreport(Sem, Year, Department, Section);
 
         }
 
-        public virtual string generateAttendancesubjectwisereport(string SubjectCode, string Sem, string Year, string DepartmentId)
-        {
-            return _activityRepository.Repository.generateAttendancesubjectwisereport(SubjectCode, Sem, Year, DepartmentId);
-
-        }
-        public virtual string generateAttendanceSemwisereport(string Sem, string Year, int Department, string Section, string AcademicFrom, string AcademicTo)
-        {
-            return _activityRepository.Repository.generateAttendanceSemwisereport(Sem, Year, Department, Section, AcademicFrom, AcademicTo);
-        }
+        
         public virtual async Task<List<FacultyModel>> GetVerifyPassword(string UserName, string Password)
         {
             try
@@ -4355,62 +4300,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<IndentModel>> GetAllIndentDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllIndentDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<IndentModel>> InsertIndentDetails(IndentModel indentModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertIndentDetails(indentModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<IndentModel>> UpdateIndentDetails(IndentModel indentModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateIndentDetails(indentModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<IndentModel>> UpdateQuatationStatusDetails(QuatationModel quatationModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateQuatationStatusDetails(quatationModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<IndentModel>> DeleteIndentDetails(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteIndentDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+     
         public virtual async Task<List<ExamsModel>> GetExams(int? id)
         {
             try
@@ -4510,28 +4400,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string SearchAndReplaceIndentForm(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.SearchAndReplaceIndentForm(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string SearchAndReplaceFdpForm(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.SearchAndReplaceFdpForm(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+     
         public virtual async Task<List<UpcomingCompetition>> GetAllUpcomingCompetition(string role, int? id)
         {
             try
@@ -4588,484 +4457,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string SearchAndReplaceQuatationForm(int id, int flag)
-        {
-            try
-            {
-                return _activityRepository.Repository.SearchAndReplaceQuatationForm(id, flag);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryModel>> GetInventory(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetInventory(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryModel>> InsertInventory(InventoryModel inventoryModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertInventory(inventoryModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryModel>> UpdateInventory(InventoryModel inventoryModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateInventory(inventoryModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DeleteInventory(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.DeleteInventory(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<InventorySpecModel>> GetInventorySpec(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetInventorySpec(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventorySpecModel>> InsertInventorySpec(InventorySpecModel inventorySpecModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertInventorySpec(inventorySpecModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventorySpecModel>> UpdateInventorySpec(InventorySpecModel inventorySpecModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateInventorySpec(inventorySpecModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DeleteInventorySpec(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.DeleteInventorySpec(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<StockInventoryModel>> GetStockInventory(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetStockInventory(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<StockInventoryModel>> InsertStockInventory(StockInventoryModel stockInventoryModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertStockInventory(stockInventoryModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<StockInventoryModel>> UpdateStockInventory(StockInventoryModel stockInventoryModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateStockInventory(stockInventoryModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<StockInventoryModel>> DeleteStockInventory(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteStockInventory(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<InventoryIssuedMappingModel>> GetAllInventoryIssuedDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllInventoryIssuedDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryIssuedMappingModel>> InsertInventoryIssuedDetails(InventoryIssuedMappingModel inventoryIssuedMappingModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertInventoryIssuedDetails(inventoryIssuedMappingModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryIssuedMappingModel>> UpdateInventoryIssuedDetails(InventoryIssuedMappingModel inventoryIssuedMappingModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateInventoryIssuedDetails(inventoryIssuedMappingModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<InventoryIssuedMappingModel>> DeleteInventoryIssuedDetails(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteInventoryIssuedDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DownloadStockReport(DateTime StockDate, string? Store)
-        {
-            return _activityRepository.Repository.DownloadStockReport(StockDate, Store);
-
-        }
-        
-        public virtual async Task<List<HOADetailsModel>> GetAllHOADetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllHOADetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<HOADetailsModel>> InsertHOADetails(HOADetailsModel hoaDetailsModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertHOADetails(hoaDetailsModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<HOADetailsModel>> UpdateHOADetails(HOADetailsModel hoaDetailsModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateHOADetails(hoaDetailsModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DeleteHOADetails(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.DeleteHOADetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<PurchasedOrderModel>> GetPurchasedOrder(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetPurchasedOrder(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<PurchasedOrderModel>> InsertPurchasedOrder(PurchasedOrderModel purchasedOrderModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertPurchasedOrder(purchasedOrderModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<PurchasedOrderModel>> UpdatePurchasedOrder(PurchasedOrderModel purchasedOrderModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdatePurchasedOrder(purchasedOrderModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<PurchasedOrderModel>> DeletePurchasedOrder(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeletePurchasedOrder(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        public virtual async Task<List<BudgetLineModel>> GetBudgetLine(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetBudgetLine(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BudgetLineModel>> InsertBudgetLine(BudgetLineModel budgetLineModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertBudgetLine(budgetLineModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BudgetLineModel>> UpdateBudgetLine(BudgetLineModel budgetLineModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateBudgetLine(budgetLineModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<string> DeleteBudgetLine(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteBudgetLine(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BudgetHeadModel>> GetBudgetHead(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetBudgetHead(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BudgetReallocateModel>> ReallocateBudgetDetails(BudgetReallocateModel budgetReallocateModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.ReallocateBudgetDetails(budgetReallocateModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string DownloadCumulativeReport(string? Store)
-        {
-            return _activityRepository.Repository.DownloadCumulativeReport(Store);
-        }
-        public virtual async Task<List<OdpModel>> GetAllOdpDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllOdpDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<OdpModel>> InsertOdpDetails(OdpModel oDPModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertOdpDetails(oDPModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<OdpModel>> UpdateOdpDetails(OdpModel oDPModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateOdpDetails(oDPModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<OdpModel>> DeleteOdpDetails(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteOdpDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BpeModel>> GetAllBpeDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetAllBpeDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BpeModel>> InsertBpeDetails(BpeModel bpeModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertBpeDetails(bpeModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BpeModel>> UpdateBpeDetails(BpeModel bpeModel)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateBpeDetails(bpeModel);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<BpeModel>> DeleteBpeDetails(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteBpeDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string SearchAndReplaceBpeForm(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.SearchAndReplaceBpeForm(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string SearchAndReplaceOdpForm(int id)
-        {
-            try
-            {
-                return _activityRepository.Repository.SearchAndReplaceOdpForm(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<SubjectAttendanceModel>> Getsubjectsformarks(string Department, string Sem, string Year, string Section)
-        {
-            try
-            {
-                return await _activityRepository.Repository.Getsubjectsformarks(Department, Sem, Year, Section);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        
+       
         public virtual string GetAllMarkReport(string Section, string subjects, string test)
         {
             return _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
@@ -5192,17 +4584,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        //public virtual string DownloadFeedbackQnsReport(long departmentId, long subjectId, long facultyId, string sem, string year, string section)
-        //{
-        //    return _activityRepository.Repository.DownloadFeedbackQnsReport(departmentId, subjectId, facultyId, sem, year, section);
-
-        //}
-
-        //public virtual string DownloadFeedbackFacultyReport(long departmentId, string sem, string year, string section = null)
-        //{
-        //    return _activityRepository.Repository.DownloadFeedbackFacultyReport(departmentId, sem, year, section);
-
-        //}
+      
 
         public virtual string DeleteMark(List<StudentMark> mark)
         {
@@ -5215,15 +4597,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string DownloadSemWiseFeedbackReport(string departmentId, string sem, string year, string section, bool isSubmitted)
-        {
-            return _activityRepository.Repository.DownloadSemWiseFeedbackReport(departmentId, sem, year, section, isSubmitted);
-
-
-
-
-
-        }
+      
         public virtual async Task<List<StudentSemDateModel>> updateStudentSemDateDetails(StudentSemDateModel studentSemDate)
         //(string Sem, DateTime FirstYearStartDate, DateTime FirstYearEndDate, DateTime SecondYearStartDate, DateTime SecondYearEndDate,
         //DateTime ThirdYearStartDate, DateTime ThirdYearEndDate)
@@ -5241,28 +4615,7 @@ namespace ActivityManagementSystem.BLL.Services
 
 
 
-        public Task<List<FacultySubjectMapping>> getFacultySubjectforfeedback(int Department, string Sem, string Year, string Section, int Subject)
-        {
-            try
-            {
-                return _activityRepository.Repository.getFacultySubjectforfeedback(Department, Sem, Year, Section, Subject);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual string UpdateStdconfigFeedback(long? Department, bool IsFeebackSend)
-        {
-            try
-            {
-                return _activityRepository.Repository.UpdateStdconfigFeedback(Department, IsFeebackSend);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        
         public virtual async Task<List<StudentSemDateModel>> GetAllStudentConfiguration(int? id)
         {
             try
@@ -5274,11 +4627,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string GenerateMarkReport(string departmentId, string sem, string year, string section, string test)
-        {
-            return _activityRepository.Repository.GenerateMarkReport(departmentId, sem, year, section, test);
-
-        }
+       
         public virtual string SendStudentFeeedback(string StudentId)
         {
             try
@@ -5304,86 +4653,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        //public virtual string DownloadYearWiseSecFeedbackReport(long subjectId, string sem, string year)
-        //{
-        //    return _activityRepository.Repository.DownloadYearWiseSecFeedbackReport(subjectId, sem, year);
-
-        //}
-        public virtual string GenerateStdAssReports(int departmentId)
-        {
-            return _activityRepository.Repository.GenerateStdAssReports(departmentId);
-
-        }
-        public virtual async Task<List<MemberDetails>> GetMembersDetails(int? id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetMembersDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<MemberDetails>> InsertMembersDetails(MemberDetails memberDetails)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertMembersDetails(memberDetails);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-
-        public virtual async Task<List<MemberDetails>> UpdateMembersDetails(MemberDetails memberDetails)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateMembersDetails(memberDetails);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<List<MemberDetails>> DeleteMembersDetails(int id)
-        {
-            try
-            {
-                return await _activityRepository.Repository.DeleteMembersDetails(id);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        
-        public virtual string SendWhatsAppMsg(long id, string formName, string receiverRoleName, string message, string senderName)
-        {
-            try
-            {
-                return _activityRepository.Repository.SendWhatsAppMsg(id, formName, receiverRoleName, message, senderName);
-
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        //public virtual string UpdateAnnouncement(int id,  bool isReadyToSend)
-        //{
-        //    try
-        //    {
-        //        return _activityRepository.Repository.UpdateAnnouncement( id, isReadyToSend);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+       
         public virtual async Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId)
         {
             try
@@ -5553,17 +4823,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        //public virtual async Task<int> UpdateStudentFeedbackDetails(StudentFeedbackModel studentFeedbackModel)
-        //{
-        //    try
-        //    {
-        //        return await _activityRepository.Repository.UpdateStudentFeedbackDetails(studentFeedbackModel);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+        
         public virtual async Task<List<StudentFeedbackModel>> DeleteStudentFeedbackDetails(string id)
         {
             try
@@ -5685,40 +4945,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<string> UpdateSubmitStatus(int studentId)
-        {
-            try
-            {
-                return await _activityRepository.Repository.UpdateSubmitStatus(studentId);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        public virtual async Task<string> InsertFeedBackDetails(Feedback feedback)
-        {
-            try
-            {
-                return await _activityRepository.Repository.InsertFeedBackDetails(feedback);
-                }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-       
-        public virtual async Task<Feedback> getFeedbackDetails(int studentId, int subjectId, int facultyId)
-        {
-            try
-            {
-                return await _activityRepository.Repository.getFeedbackDetails(studentId,subjectId,facultyId);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        
         public virtual async Task<List<Feedbacksubject>> getSubFacultyList(int studentId)
         {
             try
@@ -5730,17 +4957,7 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId)
-        {
-            try
-            {
-                return await _activityRepository.Repository.checkFeedbackSubmittedAsync(studentId);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+       
 
 
         public virtual async Task<List<AcademicCalender>> GetAllAcademicCalender(string role)

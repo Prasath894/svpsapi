@@ -42,7 +42,6 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
         string DeleteRole(int id);
-        Task<List<RoleActivity>> UpdateRoleActivity(RoleActivity roleactivity);
         Task<List<RoleActivity>> GetRoleActivity(int? id);
 
         Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
@@ -90,14 +89,10 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
 
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
-        public string generateAttendancesubjectwisereport(string SubjectCode, string Sem, string Year, string DepartmentId);
         public string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section);
         public string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Batch);
 
-        Task<List<MemberDetails>> DeleteMembersDetails(int id);
-        Task<List<MemberDetails>> UpdateMembersDetails(MemberDetails memberDetails);
-        Task<List<MemberDetails>> InsertMembersDetails(MemberDetails memberDetails);
-        Task<List<MemberDetails>> GetMembersDetails(int? id);
+       
         Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId);
         Task<List<StudentAttendanceModel>> GetAttendanceByIdDetails(int studentId, int month, int year);
 
@@ -135,12 +130,9 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<ContentLibModel>> GetAllContentLibByStudentDetails(int studentId);
         Task<List<BirthdayModel>> GetBirthdayListByRole(string role);
 
-        Task<string> UpdateSubmitStatus(int studentId);
-        Task<string> InsertFeedBackDetails(Feedback feedback);
-        Task<List<QnsModel>> getQuestions();
-        Task<Feedback> getFeedbackDetails(int studentId, int subjectId, int facultyId);
+        
         Task<List<Feedbacksubject>> getSubFacultyList(int studentId);
-        Task<List<Feedbacksubject>> checkFeedbackSubmittedAsync(int studentId);
+      
 
         Task<List<AcademicCalender>> GetAllAcademicCalender(string role);
         Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender);
