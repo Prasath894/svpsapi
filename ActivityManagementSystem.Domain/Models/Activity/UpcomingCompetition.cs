@@ -85,13 +85,17 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("dressCode")]
         public string DressCode { get; set; } = string.Empty;
-
+        
         /// <summary>
         /// Indicates whether polling is required for the competition.
         /// </summary>
         [JsonPropertyName("isPollingRequired")]
         public bool IsPollingRequired { get; set; } = false;
-
+        /// <summary>
+        /// Indicates whether polling is required for the competition.
+        /// </summary>
+        [JsonPropertyName("isInterested")]
+        public bool IsInterested { get; set; } = false;
         /// <summary>
         /// End date for polling.
         /// </summary>

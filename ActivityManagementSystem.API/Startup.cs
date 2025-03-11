@@ -82,17 +82,13 @@ namespace ActivityManagementSystem.Service
                 options.AddPolicy(name: "MyAllowSpecificOrigins",
                     builder =>
                     {
-                       // builder.AllowAnyOrigin()
-                  //    .AllowAnyHeader()
-                  //    .AllowAnyMethod().WithExposedHeaders("Content-Disposition") // If returning files
-                  //.AllowCredentials();
-                  builder.WithOrigins("http://localhost:3000") // ✅ Specify frontend URL
-                  .AllowAnyHeader()
-                  .AllowAnyMethod()
-                  .WithExposedHeaders("Content-Disposition")// If returning files
-                  .AllowCredentials();
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod()
+                               .WithExposedHeaders("Content-Disposition"); // If returning files
                     });
             });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ActivityManagementSystem.Service.API", Version = "v1" });
