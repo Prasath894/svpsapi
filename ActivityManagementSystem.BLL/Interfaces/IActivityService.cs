@@ -68,8 +68,8 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<ActivityModel>> DeleteActivityData(int id);
         
         Task<List<RoleModel>> GetRole(int? id);
-        
-        Task<List<StudentDropdown>> GetStudentByName(string StudentyName);
+
+        Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentyName, int SectionId);
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
         string DeleteRole(int id);

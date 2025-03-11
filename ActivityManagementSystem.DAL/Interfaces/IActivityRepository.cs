@@ -48,7 +48,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
 
         Task<List<FacultyDropdown>> GetFacultyByName(string facultyName);
-        Task<List<StudentDropdown>> GetStudentByName(string StudentyName);
+        Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentyName,int SectionId);
         Task<string> UpdateActivityFilepathdata(string target, int id, string files);
         
         Task<List<FacultyModel>> GetFacultyDetails(int? Id);

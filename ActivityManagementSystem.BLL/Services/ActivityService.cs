@@ -542,31 +542,10 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<StudentDropdown>> GetStudentByName(string studentName)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetStudentByName(studentName);
+        
 
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        //public virtual async Task<List<DepartmentModel>> GetAllDepartment(int? id)
-        //{
-        //    try
-        //    {
-        //        return await _activityRepository.Repository.GetAllDepartment(id);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+        
         public virtual async Task<List<SubjectModel>> GetAllSubject(int? Id)
         {
             try
@@ -5291,11 +5270,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<StudentDropdown>> GetMappedStudentByName(string StudentName, int DepartmentId, string Sem, string Year)
+        public virtual async Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentName, int SectionId)
         {
             try
             {
-                return await _activityRepository.Repository.GetMappedStudentByName(StudentName, DepartmentId, Sem, Year);
+                return await _activityRepository.Repository.GetMappedStudentByName(StudentName, SectionId);
 
 
             }

@@ -342,15 +342,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
        
-        public Task<List<StudentDropdown>> GetStudentByName(string StudentyName)
-        {
-            var spName = ConstantSPnames.SP_GETSTUDENTBYNAME;
-            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdown>(spName, new
-            {
-                StudentName = StudentyName
-
-            }, commandType: CommandType.StoredProcedure).ToList());
-        }
+        
         public Task<List<StudentModel>> InsertStudentDetails(StudentModel studentDetails)
         {
             var spName = ConstantSPnames.SP_INSERTSTUDENT;
@@ -5353,18 +5345,16 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        public Task<List<StudentDropdown>> GetMappedStudentByName(string StudentName, int DepartmentId, string Sem, string Year)
+        public Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentName, int SectionId)
         {
             var spName = ConstantSPnames.SP_GETMAPPEDSTUDENTBYNAME;
-            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdown>(spName, new
+            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdownModel>(spName, new
             {
-                StudentName = StudentName,
-                DepartmentId = DepartmentId,
-                Sem = Sem,
-                Year = Year
-
+                StudentName = StudentName, // Fixed variable case mismatch
+                SectionId = SectionId      // Fixed variable case mismatch
             }, commandType: CommandType.StoredProcedure).ToList());
         }
+
         //public string DownloadYearWiseSecFeedbackReport(long subjectId, string sem, string year)
         //{
         //    try

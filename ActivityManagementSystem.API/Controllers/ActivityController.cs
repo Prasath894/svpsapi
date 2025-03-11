@@ -131,22 +131,7 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(StudentDropdown))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetStudentByName(string StudentName)
-        {
-            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetStudentByName(StudentName);
-
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
-            return Ok(result);
-        }
-
+       
 
 
 
@@ -3293,12 +3278,12 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(StudentDropdown))]
+        [ProducesResponseType(200, Type = typeof(StudentDropdownModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetMappedStudentByName(string StudentName, int DepartmentId, string Sem, string Year)
+        public async Task<IActionResult> GetMappedStudentByName(string StudentName, int SectionId)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetMappedStudentByName(StudentName, DepartmentId, Sem, Year);
+            var result = await _activityService.Service.GetMappedStudentByName(StudentName, SectionId);
 
             _logger.LogDebug(result.ToString());
             if (result == null)

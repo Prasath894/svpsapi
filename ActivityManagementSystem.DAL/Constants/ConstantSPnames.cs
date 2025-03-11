@@ -64,8 +64,9 @@ namespace ActivityManagementSystem.DAL.Constants
 		public const string SP_DELETEFACULTY = "sp_DeleteFacultyDetails";
 		public const string SP_GETUSERDETAILS= "sp_GetUserDetails";
 		public const string SP_GETFACULTYBYNAME = "getFacultydetailsbyName";
-		public const string SP_GETSTUDENTBYNAME = "getStudentdetailsbyName";
-		public const string SP_GETAlumniBYNAME = "getAlumnidetailsbyName";
+        public static string SP_GETMAPPEDSTUDENTBYNAME = "[getMappedStudentbyName]";
+
+        public const string SP_GETAlumniBYNAME = "getAlumnidetailsbyName";
 		
 		public const string SP_GETALLSUBJECT = "sp_GetAllSubject";
 		public const string SP_INSERTSUBJECT = "sp_InsertSubject";
@@ -252,7 +253,6 @@ namespace ActivityManagementSystem.DAL.Constants
 
 		public static string SP_GETSECWISEFEEDBACKREPORTS = "sp_GetSecWiseFeedbackReports";
 		public static string getFacultySubjectforfeedback = "[getFacultySubjectforfeedback]";
-		public static string SP_GETMAPPEDSTUDENTBYNAME = "[getMappedStudentbyName]";
 
 		public static string SP_GETFEEDBACKEPORTSECTIONWISEWITHSUBREPORT = "[sp_GetFeedbackeportSectionwisewithSubReport]";
 		public static string SP_GETSTUDENTASSREPORTDATA = "[sp_getStudentAssReportData]";
