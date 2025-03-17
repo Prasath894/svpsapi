@@ -1537,7 +1537,7 @@ namespace ActivityManagementSystem.API.Controllers
 
         
         [HttpGet]
-        [EnableCors]
+        //[EnableCors]
         // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
         public async Task<FileResult> generateAttendanceMonthwisereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section)
         {
@@ -1578,7 +1578,7 @@ namespace ActivityManagementSystem.API.Controllers
         }
        
         [HttpGet]
-        [EnableCors]
+        //[EnableCors]
         // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
         public async Task<FileResult> generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
         {
