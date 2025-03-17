@@ -28,6 +28,7 @@ using Microsoft.AspNetCore.Authorization;
 using ActivityManagementSystem.Domain.Models;
 using System.Net.Mail;
 using ActivityManagementSystem.BLL.Common;
+using System.Collections.Concurrent;
 
 namespace ActivityManagementSystem.API.Controllers
 {
@@ -131,22 +132,7 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-        [HttpGet]
-        [ProducesResponseType(200, Type = typeof(StudentDropdown))]
-        [ProducesResponseType(404)]
-        public async Task<IActionResult> GetStudentByName(string StudentName)
-        {
-            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetStudentByName(StudentName);
-
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
-            return Ok(result);
-        }
-
+       
 
 
 
@@ -1288,7 +1274,9 @@ namespace ActivityManagementSystem.API.Controllers
             try
             {
                 // Construct file path
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}", filename);
+
+                string filePath =(type!="InfoGalore") ? Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}", filename):
+                    Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-", filename);
                 _logger.LogInformation("File path: {FilePath}", filePath);
 
                 // Check if the file exists
@@ -1551,13 +1539,54 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [EnableCors]
         // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
-        public async Task<FileResult> generateAttendanceMonthwisereport(string Sem, string Year, int Department, string AttendanceDate, string Section)
+        public async Task<FileResult> generateAttendanceMonthwisereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section)
         {
             try
             {
 
 
-                var result = _activityService.Service.generateMonthlyAttendancereport(Sem, Year, Department,Convert.ToDateTime(AttendanceDate), Section);
+                var result = _activityService.Service.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
+
+                _logger.LogDebug(result.ToString());
+                return await PrepareFileForDownload(result.ToString(), "Excel");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+        [HttpGet]
+        [EnableCors]
+        // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
+        public async Task<FileResult> generateExcelList(string role)
+        {
+            try
+            {
+
+
+                var result = _activityService.Service.generateExcelList(role);
+
+                _logger.LogDebug(result.ToString());
+                return await PrepareFileForDownload(result.ToString(), "Excel");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
+       
+        [HttpGet]
+        [EnableCors]
+        // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
+        public async Task<FileResult> generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
+        {
+            try
+            {
+
+
+                var result = _activityService.Service.generateDailyAttendancereport(month, year, sectionId, grade, section);
 
                 _logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
@@ -1569,9 +1598,9 @@ namespace ActivityManagementSystem.API.Controllers
             }
         }
 
-        
 
-     
+
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(FacultyModel))]
         [ProducesResponseType(404)]
@@ -1674,6 +1703,7 @@ namespace ActivityManagementSystem.API.Controllers
             //}
             return Ok(result);
         }
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(HousePointModel))]
         [ProducesResponseType(404)]
@@ -1828,8 +1858,77 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-        
 
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(LeaveModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetAllLeave(string role, int? id)
+        {
+            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
+            var result = await _activityService.Service.GetAllLeave(role, id);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            for (int i = 0; i<result.Count; i++)
+            {
+                var files = result[i].FileName;
+                if (files != null)
+                {
+                    result[i].FileList = files.Split('|').ToList();
+                    result[i].FileList.RemoveAt(result[i].FileList.Count - 1);
+                }
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(LeaveModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> InsertLeave([FromBody] LeaveModel model)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            // StudentModel studentDetails = JsonConvert.DeserializeObject<StudentModel>(student);
+            var result = await _activityService.Service.InsertLeave(model);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(LeaveModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateLeave([FromBody] LeaveModel model)
+        {
+            var result = await _activityService.Service.UpdateLeave(model);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+
+        }
+       
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(LeaveModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteLeave(int id)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.DeleteLeave(id);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
         [HttpGet]
        // [AllowAnonymous]
         public async Task<FileResult> GetAllMarkReport(string Section, string subjects,string test)
@@ -1847,6 +1946,7 @@ namespace ActivityManagementSystem.API.Controllers
                 throw;
             }
         }
+
         [HttpGet]
         // [AllowAnonymous]
         public async Task<FileResult> GetInterestedStudentList(int competitionId)
@@ -2171,6 +2271,22 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
 
         }
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(StudentDropdownModel))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetMappedStudentByName(string StudentName, int SectionId)
+        {
+            var result = await _activityService.Service.GetMappedStudentByName(StudentName, SectionId);
+            //var groupByData = result.GroupBy(x => x.FacultyId);
+            // var jsonData = JsonConvert.SerializeObject(groupByData);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+
+        }
 
 
         [HttpGet]
@@ -2367,10 +2483,10 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(StudentFeedbackModel))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> GetAllStudentFeedback(int? id)
+        public async Task<IActionResult> GetAllStudentFeedback(int? id, string role)
         {
             // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = await _activityService.Service.GetAllStudentFeedbackDetails(id);
+            var result = await _activityService.Service.GetAllStudentFeedbackDetails(id,role);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2748,58 +2864,68 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]      
-        public async Task<IActionResult> GetAllInfoGalore(int? id)
+        public async Task<IActionResult> GetAllInfoGalore(string infoType,int? id)
         {
-           
-            var result = await _activityService.Service.GetAllInfoGalore(id);
-            //var groupByData = result.GroupBy(x => x.FacultyId);
-            // var jsonData = JsonConvert.SerializeObject(groupByData);
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
-            var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";
 
-            string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", "InfoGalore", $"InfoGalore-{id}");
-            // Ensure the folder exists by deleting it first if it's already there
-            if (Directory.Exists(destination))
-            {
-                // Delete the directory and its contents recursively
-                Directory.Delete(destination, true);
-            }
-            // Recreate the directory
-            Directory.CreateDirectory(destination);
 
-            // Get all files from the source folder
-            List<InfoAttachmentModel> extractedFiles = new List<InfoAttachmentModel>();
-            //   string[] files = Directory.GetFiles(destination);
-            for (int i = 0; i < result.Count(); i++)
-            {
-                var filePath = result[i].InfoFilePath;
-                var fileList = Directory.GetFiles(Path.Combine(filePath)).ToList();
-                foreach (string file in fileList)
+                var result = await _activityService.Service.GetAllInfoGalore(infoType, id);
+
+                _logger.LogDebug(JsonConvert.SerializeObject(result));
+
+                if (result == null || !result.Any())
                 {
-                    var attachment = new InfoAttachmentModel
-                    {
-                        FileName = Path.GetFileName(file),
-                        FilePath = file,
-                        InfoType = result[i].InfoType
-                    };
-
-                    string fileName = Path.GetFileName(file);
-                    string destFile = file;
-
-                    if (FileIsAnImageChecker.IsImageFile(file))
-                    {
-                        attachment.BlobData = await System.IO.File.ReadAllBytesAsync(file);
-                    }
-                    extractedFiles.Add(attachment);
+                    return NoContent();
                 }
-                
+
+                string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", "InfoGalore", $"InfoGalore-{id}");
+
+                // Ensure the directory exists
+                Directory.CreateDirectory(destination);
+
+                var extractedFiles = new ConcurrentBag<InfoAttachmentModel>();
+
+                // Process each entry in parallel
+                await Parallel.ForEachAsync(result, async (entry, _) =>
+                {
+                    try
+                    {
+                        if (!string.IsNullOrEmpty(entry.InfoFilePath) && Directory.Exists(entry.InfoFilePath))
+                        {
+                            var files = Directory.GetFiles(entry.InfoFilePath);
+
+                            foreach (var file in files)
+                            {
+                                var fileName = Path.GetFileName(file);
+                                var destFile = Path.Combine(destination, fileName);
+
+                                System.IO.File.Copy(file, destFile, true);
+
+                                var attachment = new InfoAttachmentModel
+                                {
+                                    FileName = fileName,
+                                    FilePath = destFile,
+                                    InfoType = entry.InfoType
+                                };
+
+                                if (FileIsAnImageChecker.IsImageFile(file))
+                                {
+                                    attachment.BlobData = await System.IO.File.ReadAllBytesAsync(file);
+                                }
+
+                                extractedFiles.Add(attachment);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error processing files for entry {entry.InfoFilePath}: {ex.Message}");
+                    }
+                });
+
+                return Ok(extractedFiles);
             }
-            return Ok(extractedFiles);
-        }
+
+        
 
         [HttpPost] 
         public async Task<IActionResult> InsertInfoGalore([FromForm] InfoGaloreModel infoGaloreModel)

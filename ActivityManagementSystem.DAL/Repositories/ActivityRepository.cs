@@ -22,6 +22,8 @@ using RestSharp;
 
 using Table = Xceed.Document.NET.Table;
 using Color = System.Drawing.Color;
+using DocumentFormat.OpenXml.Wordprocessing;
+using Microsoft.SqlServer.Management.HadrModel;
 
 //using Microsoft.Office.Interop.Word;
 //using Aspose.Words;
@@ -56,6 +58,10 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
                 _db.Connection?.Dispose();
             }
+        }
+        private string NotFound(string v)
+        {
+            throw new NotImplementedException();
         }
 
         public Task<List<ActivityModel>> GetAllActivityData(int Type, long? DepartmentId)
@@ -244,15 +250,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
        
-        public Task<List<StudentDropdown>> GetStudentByName(string StudentyName)
-        {
-            var spName = ConstantSPnames.SP_GETSTUDENTBYNAME;
-            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdown>(spName, new
-            {
-                StudentName = StudentyName
-
-            }, commandType: CommandType.StoredProcedure).ToList());
-        }
+        
         public Task<List<StudentModel>> InsertStudentDetails(StudentModel studentDetails)
         {
             var spName = ConstantSPnames.SP_INSERTSTUDENT;
@@ -1045,21 +1043,12 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Section)
+        public string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId,string grade,string section)
         {
             var spMonthwiseAtt = ConstantSPnames.SP_MonthwiseAttendance;
-            string strfilepath = _appSettings.Settings.DownloadPath.ToString() + "\\" +
-                                 _appSettings.Settings.FileName.ToString();
+            string strfilepath = "";
             // DataTable dtCloned = new DataTable();
-            string MonthTotal = "";
-            string Cumulative = "";
-            int i = 3;
-            string Departmentname = string.Empty;
-            string AttDate = String.Format("{0:MMMM}", AttendanceDate).ToUpper() + ", " + String.Format("{0:yyyy}", AttendanceDate);
-            var YearLtr = Year == "1" ? "I" : Year == "2" ? "II" : "III";
-            string Semester = YearLtr + "/" + Sem.ToUpper();
-            List<String> SubjectCode = new List<String>();
-            List<String> SubjectHours = new List<String>();
+
             try
             {
 
@@ -1071,270 +1060,23 @@ namespace ActivityManagementSystem.DAL.Repositories
                     using (var da = new SqlDataAdapter(objCmd))
                     {
                         DataSet ds = new DataSet();
-                        objCmd.Parameters.Add("@AttMon", SqlDbType.VarChar).Value = String.Format("{0:MM}", AttendanceDate);
-                        objCmd.Parameters.Add("@AttYear", SqlDbType.VarChar).Value = String.Format("{0:yyyy}", AttendanceDate);
-                        objCmd.Parameters.Add("@year", SqlDbType.VarChar).Value = Year;
-                        objCmd.Parameters.Add("@Sem", SqlDbType.VarChar).Value = Sem;
-                        objCmd.Parameters.Add("@Department", SqlDbType.VarChar).Value = Department;
-                        objCmd.Parameters.Add("@Section", SqlDbType.VarChar).Value = Section;
-                        objCmd.Parameters.Add("@Date", SqlDbType.VarChar).Value = (AttendanceDate).ToString("yyyy-MM-dd");
+                        objCmd.Parameters.Add("@StartMonth", SqlDbType.Int).Value = startMonth;
+                        objCmd.Parameters.Add("@StartYear", SqlDbType.Int).Value = startYear;
+                        objCmd.Parameters.Add("@EndMonth", SqlDbType.Int).Value = endMonth;
+                        objCmd.Parameters.Add("@EndYear", SqlDbType.Int).Value = endYear;
+                        objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
+                       
                         objCmd.CommandTimeout = 100000;
                         da.Fill(ds);
                         var dataTable = ds.Tables[0];
                         // Create a new DataTable for the transformed data
-                        var transformedTable = new DataTable();
-
-                        // Define the columns to be added
-                        var columnsToAdd = new List<string> { "SNo", "StudentID", "StudentName" };
-                        List<string> batchNameList = dataTable.AsEnumerable()
-                                        .Select(row => row.Field<string>("BatchName"))
-                                        .Distinct()
-                                        .ToList();
-                        //dataTable.Columns.Remove("BatchName");
-                        // Identify dynamic columns
-                        var dynamicColumns = new List<string>();
-                        // Identify dynamic columns
-                        var batchTotalCount = new List<string>();
-                        foreach (DataColumn column in dataTable.Columns)
-                        {
-                            if (column.ColumnName == "DepartmentName")
-                            {
-                                Departmentname = dataTable.Rows[0][column].ToString();
-                                continue;
-                            }
-                            if (column.ColumnName == "BatchName")
-                            {
-                                continue;
-                            }
-                            if (column.ColumnName == "SNo" || column.ColumnName == "StudentID" || column.ColumnName == "StudentName")
-                            {
-                                columnsToAdd.Add(column.ColumnName);
-                                transformedTable.Columns.Add(column.ColumnName);
-                            }
-                            else if (column.ColumnName.Contains('|') || column.ColumnName == "Attended_Hours" || column.ColumnName == "SemAttended_Hours")
-                            {
-                                var parts = column.ColumnName.Split('|');
-                                dynamicColumns.Add(column.ColumnName);
-                                transformedTable.Columns.Add(parts[0] + "_Part1");
-                                transformedTable.Columns.Add(parts[0] + "_Part2");
-                            }
-                        }
-
-
-
-                        // Copy and transform data
-                        foreach (DataRow row in dataTable.Rows)
-                        {
-                            var newRow = transformedTable.NewRow();
-                            foreach (DataColumn column in dataTable.Columns)
-                            {
-                                if (column.ColumnName == "DepartmentName" || column.ColumnName == "BatchName")
-                                {
-                                    continue; // Skip DepartmentName column
-                                }
-
-                                var value = row[column].ToString();
-
-                                if (columnsToAdd.Contains(column.ColumnName))
-                                {
-                                    newRow[column.ColumnName] = value;
-                                }
-                                else if (dynamicColumns.Contains(column.ColumnName))
-                                {
-
-                                    var parts = value.Split('|');
-                                    if (parts.Length == 2)
-                                    {
-                                        var part1 = Convert.ToDouble(parts[0]);
-                                        var part2 = Convert.ToDouble(parts[1]);
-                                        //batchTotalCount.Add(part2.ToString());
-                                        var colSplit = column.ColumnName.Split('|');
-                                        // Add the part1 value to the new row
-                                        newRow[colSplit[0] + "_Part1"] = part1;
-
-                                        // Calculate the percentage and store it in _Part2
-                                        double percentage = part2 != 0 ? (part1 / part2) * 100 : 0;
-                                        newRow[colSplit[0] + "_Part2"] = percentage.ToString("F0"); // Format to 2 decimal places
-                                    }
-
-                                    else
-                                    {
-                                        var colSplit = column.ColumnName.Split('|');
-                                        // Add the part1 value to the new row
-                                        newRow[colSplit[0] + "_Part1"] = 0;
-                                        newRow[colSplit[0] + "_Part2"] = 0;
-                                    }
-                                }
-                            }
-                            transformedTable.Rows.Add(newRow);
-                        }
-                        // Dictionary to store distinct values for each column
-                        var subjectwiseTotalAtt = new Dictionary<string, List<string>>();
-
-                        // Iterate through each column in the DataTable
-
-
-
-                        // Iterate through each column in the DataTable
-                        foreach (var column in dynamicColumns)
-                        {
-                            // Create a new list for each column iteration to hold distinct values
-                            var columnDistinctValues = new List<string>();
-
-                            // Get distinct values for the current column
-                            for (int j = 0; j < batchNameList.Count; j++)
-                            {
-                                var batchValue = dataTable
-                                    .AsEnumerable() // Convert DataTable to Enumerable
-                                    .Where(row => row["BatchName"].ToString() == batchNameList[j])
-                                    .Select(row => row[column].ToString().Split('|').LastOrDefault())
-                                    .Distinct()
-                                    .FirstOrDefault();  // Get the first distinct value
-
-                                columnDistinctValues.Add(batchNameList[j] + '-' + batchValue);
-                            }
-
-                            // Add the distinct values to the dictionary, ensuring the column name is used as the key
-                            subjectwiseTotalAtt.Add(column.Split('|').FirstOrDefault(), columnDistinctValues);
-                        }
-
-
-                        using (XLWorkbook wb = new XLWorkbook())
-                        {
-                            i = transformedTable.Columns.Count + 1; //Column Max
-                            int j = i / 3;
-                            int j1 = j * 2;
-                            int j2 = j * 3;
-                            int rowNumber = 1;
-                            int ColNumber = 1;
-                            var ws = wb.Worksheets.Add("Attendance_MonthWise_Dynamic");
-                            int count = subjectwiseTotalAtt.Count();
-                            ws.Cell(rowNumber, ColNumber).Value = "THIAGARAJAR POLYTECHNIC COLLEGE, SALEM - 636005";
-                            ws.Range(rowNumber, 1, rowNumber, i).Merge().AddToNamed("Titles");
-                            rowNumber++;
-                            ws.Cell(rowNumber, 1).Value = "STUDENT ATTENDANCE PARTICULARS";
-                            ws.Range(rowNumber, 1, rowNumber, i).Merge().AddToNamed("Titles");
-                            rowNumber++;
-                            ws.Cell(rowNumber, ColNumber).Value = "PROGRAMME: " + Departmentname.ToUpper();
-                            ws.Range(rowNumber, 1, rowNumber, j - 1).Merge().AddToNamed("Titles");
-                            ws.Cell(rowNumber, j).Value = "MONTH: " + AttDate;
-                            ws.Range(rowNumber, j, rowNumber, j1 - 1).Merge().AddToNamed("Titles");
-                            ws.Cell(rowNumber, j1).Value = "SEMESTER: " + Semester;
-                            ws.Range(rowNumber, j1, rowNumber, i).Merge().AddToNamed("Titles");
-                            rowNumber++;
-                            ws.Cell(rowNumber, ColNumber).Value = "S.No";
-                            //ws.Columns(4, 1).AdjustToContents();
-                            ColNumber++;
-                            ws.Range("A4:A6").Merge().AddToNamed("Titles");
-                            ws.Cell(rowNumber, ColNumber).Value = "Student Id";
-                            ws.Range("B4:B6").Merge().AddToNamed("Titles");
-                            ws.Columns(rowNumber, ColNumber).Width = 3;
-                            //ws.Columns(4, 2).AdjustToContents();
-                            ColNumber++;
-                            ws.Cell(rowNumber, ColNumber).Value = "Course Code";
-                            //ws.Cell("C4").Style.Alignment.WrapText = true;
-                            rowNumber++;
-                            ws.Range("C4").Merge().AddToNamed("Titles");
-                            ws.Cell(rowNumber, ColNumber).Value = " Hours handled for this month";
-                            ws.Range("C5").Merge().AddToNamed("Titles");
-                            rowNumber++;
-                            ws.Cell(rowNumber, ColNumber).Value = "Name of the Canditate";
-                            ws.Range("C6").Merge().AddToNamed("Titles");
-                            rowNumber++;
-                            var rangeWithData = ws.Cell(rowNumber, 1).InsertData(transformedTable.AsEnumerable());
-                            rangeWithData.Style.Font.SetFontSize(7);
-                            ws.Cell(4, i).Value = "Student Signature";
-                            ws.Columns(4, i).Width = 3;
-                            ws.Range(4, i, 6, i).Column(1).Merge().AddToNamed("Titles");
-                            ws.Cell(4, (i - 4)).Value = "Curr.Month Total: " + string.Join(",", subjectwiseTotalAtt.ElementAt(count - 2).Value);
-                            ws.Columns(4, i - 4).Width = 3;
-                            ws.Range(4, (i - 4), 4, i - 3).Merge().AddToNamed("Titles");
-                            ws.Cell(5, (i - 4)).Value = "Attended Hours";
-                            ws.Range(5, (i - 4), 6, (i - 4)).Column(1).Merge().AddToNamed("Titles");
-                            ws.Cell(5, (i - 3)).Value = "%";
-                            ws.Range(5, (i - 3), 6, (i - 3)).Column(1).Merge().AddToNamed("Titles");
-                            //ws.Cell(5, i - 4).Value = "%";
-                            //ws.Range(5, i - 4, 6, i - 4).Column(1).Merge().AddToNamed("Titles");
-                            ws.Cell(4, (i - 2)).Value = "Cumulative: " + string.Join(",", subjectwiseTotalAtt.ElementAt(count - 1).Value);
-                            ws.Range(4, i - 2, 4, i - 1).Merge().AddToNamed("Titles");
-                            ws.Columns(4, i - 2).Width = 3;
-                            ws.Cell(5, (i - 2)).Value = "Attended Hours";
-                            ws.Range(5, (i - 2), 6, (i - 2)).Merge().AddToNamed("Titles");
-                            ws.Cell(5, (i - 1)).Value = "%";
-                            ws.Range(5, (i - 1), 6, (i - 1)).Merge().AddToNamed("Titles");
-                            int RowCount = ds.Tables[0].Rows.Count + rowNumber;
-                            ws.Cell(RowCount, 1).Value = "SIGNATURE";
-                            ws.Range(RowCount, 1, RowCount, 3).Merge().AddToNamed("Titles");
-                            ws.Cell(RowCount + 1, 1).Value = "NAME OF THE STAFF";
-                            ws.Range(RowCount + 1, 1, RowCount + 1, 3).Merge().AddToNamed("Titles");
-                            subjectwiseTotalAtt.Remove("Attended_Hours");
-                            subjectwiseTotalAtt.Remove("SemAttended_Hours");
-                            int y = 4;
-                            foreach (var sub in subjectwiseTotalAtt)
-                            {
-                                ws.Cell(4, y).Value = sub.Key;
-                                ws.Range(4, y, 4, y + 1).Merge().AddToNamed("Titles");
-                                ws.Columns(4, y + 1).Width = 3;
-                                ws.Range(5, y, 5, y + 1).Merge().AddToNamed("Titles");
-                                ws.Columns(5, y + 1).Width = 3;
-                                ws.Cell(5, y).Value = "";
-                                ws.Cell(5, y).Value = string.Join(",", sub.Value);
-                                //ws.Cell(RowCount, y).Value = " ";
-                                ws.Range(RowCount, y, RowCount, y + 1).Merge().AddToNamed("Titles");
-                                ws.Cell(RowCount + 1, y).Value = " ";
-                                ws.Range(RowCount + 1, y, RowCount + 1, y + 1).Merge().AddToNamed("Titles");
-                                ws.Cell(6, y).Value = "HP";
-                                ws.Range(6, y, 6, y).Merge().AddToNamed("Titles");
-                                ws.Cell(6, y + 1).Value = "%";
-                                ws.Range(6, y + 1, 6, y + 1).Merge().AddToNamed("Titles");
-                                y = y + 2;
-                            }
-
-                            var titlesStyle = wb.Style;
-                            titlesStyle.Font.Bold = true;
-                            titlesStyle.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                            titlesStyle.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-                            titlesStyle.Border.RightBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Border.LeftBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Border.BottomBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Border.TopBorder = XLBorderStyleValues.Thin;
-                            titlesStyle.Alignment.WrapText = true;
-                            titlesStyle.Font.SetFontSize(7);
-
-
-                            //wb.NamedRanges.NamedRange("Titles").Ranges.Style = titlesStyle;
-                            var namedRange = wb.NamedRanges.NamedRange("Titles");
-
-                            if (namedRange != null)
-                            {
-                                namedRange.Ranges.Style = titlesStyle;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Named range 'Titles' not found.");
-                            }
-                            IXLRange range = ws.Range(ws.Cell(1, 1).Address, ws.Cell(RowCount + 1, i).Address);
-                            range.Style.Border.OutsideBorder = XLBorderStyleValues.Medium;
-                            range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-
-                            ws.Column(1).AdjustToContents();
-
-                            if (File.Exists(strfilepath))
-                            {
-                                File.Delete(strfilepath);
-                            }
-
-                            //lblerror.Text = "three";
-                            wb.SaveAs(strfilepath);
-                            GC.Collect();
-                            GC.WaitForPendingFinalizers();
-                            GC.Collect();
-
-                        }
-
-                        return strfilepath;
+                        if (dataTable.Rows.Count == 0)
+                            return NotFound("No attendance records found.");
+                         strfilepath = GenerateExcel(dataTable, "Cumulative Report- Grade:" + grade + "/ Section: " + section);
                     }
+
                 }
+                return strfilepath;
             }
             catch (Exception ex)
             {
@@ -1343,6 +1085,147 @@ namespace ActivityManagementSystem.DAL.Repositories
 
                 return ex.Message;
             }
+        }
+        public string generateExcelList(string role)
+        {
+            var spMonthwiseAtt = role == "Student"? ConstantSPnames.SP_GETALLSTUDENTDETAILWITHSECTION  : ConstantSPnames.SP_GETALLFACULTYLIST;
+            string strfilepath = "";
+            // DataTable dtCloned = new DataTable();
+
+            try
+            {
+
+                var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
+                using (SqlConnection myConnection = new SqlConnection(con))
+                {
+                    SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    using (var da = new SqlDataAdapter(objCmd))
+                    {
+                        DataSet ds = new DataSet();                      
+
+                        objCmd.CommandTimeout = 100000;
+                        da.Fill(ds);
+                        var dataTable = ds.Tables[0];
+                        // Create a new DataTable for the transformed data
+                        if (dataTable.Rows.Count == 0)
+                            return NotFound("No attendance records found.");
+                        strfilepath = GenerateExcel(dataTable, role +" List") ;
+                    }
+
+                }
+                return strfilepath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //_logger.LogError(ex.InnerException.ToString());
+
+                return ex.Message;
+            }
+        }
+        public string generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
+        {
+            var spMonthwiseAtt = ConstantSPnames.SP_MonthwiseDynamicAttendance;
+            string strfilepath = "";
+            // DataTable dtCloned = new DataTable();
+
+            try
+            {
+
+                var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
+                using (SqlConnection myConnection = new SqlConnection(con))
+                {
+                    SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    using (var da = new SqlDataAdapter(objCmd))
+                    {
+                        DataSet ds = new DataSet();
+                        objCmd.Parameters.Add("@Month", SqlDbType.Int).Value = month;
+                        objCmd.Parameters.Add("@Year", SqlDbType.Int).Value = year;
+                        
+                        objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
+
+                        objCmd.CommandTimeout = 100000;
+                        da.Fill(ds);
+                        var dataTable = ds.Tables[0];
+                        // Create a new DataTable for the transformed data
+                        if (dataTable.Rows.Count == 0)
+                            return NotFound("No attendance records found.");
+                        strfilepath = GenerateExcel(dataTable, "Daily Attendance Report- Grade:" + grade + "/ Section: " + section);
+                    }
+
+                }
+                return strfilepath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //_logger.LogError(ex.InnerException.ToString());
+
+                return ex.Message;
+            }
+        }
+        private string GenerateExcel(DataTable dataTable, string reportname)
+        {
+            // Define folder and file paths
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            string filePath = Path.Combine(folderPath, "Report.xlsx");
+
+            // Ensure the directory exists
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Delete the old file (if it exists)
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Attendance Report");
+
+                // Add title row
+                worksheet.Cell(1, 1).Value = "Sona Valliappa Public School";
+                worksheet.Range(1, 1, 1, dataTable.Columns.Count).Merge();
+                worksheet.Cell(1, 1).Style.Font.Bold = true;
+                worksheet.Cell(1, 1).Style.Font.FontSize = 14;
+                worksheet.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Add report name row
+                worksheet.Cell(2, 1).Value = reportname;
+                worksheet.Range(2, 1, 2, dataTable.Columns.Count).Merge();
+                worksheet.Cell(2, 1).Style.Font.Bold = true;
+                worksheet.Cell(2, 1).Style.Font.FontSize = 14;
+                worksheet.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Add header row
+                for (int col = 0; col < dataTable.Columns.Count; col++)
+                {
+                    worksheet.Cell(3, col + 1).Value = dataTable.Columns[col].ColumnName;
+                    worksheet.Cell(3, col + 1).Style.Font.Bold = true;
+                }
+
+                // Add data rows
+                for (int row = 0; row < dataTable.Rows.Count; row++)
+                {
+                    for (int col = 0; col < dataTable.Columns.Count; col++)
+                    {
+                        worksheet.Cell(row + 4, col + 1).Value = dataTable.Rows[row][col].ToString();
+                    }
+                }
+
+                // Auto adjust column width
+                worksheet.Columns().AdjustToContents();
+
+                // Save the file
+                workbook.SaveAs(filePath);
+            }
+
+            return filePath; // Return the full file path
         }
 
         public string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section)
@@ -1614,8 +1497,52 @@ namespace ActivityManagementSystem.DAL.Repositories
                 _db.Connection.Query<UpcomingCompetition>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
                     .ToList());
         }
+
+        public Task<List<LeaveModel>> GetAllLeave(string role, int? id)
+        {
+            var spName = ConstantSPnames.SP_GETALLLEAVE;
+            return Task.Factory.StartNew(() => _db.Connection.Query<LeaveModel>(spName,
+                new { Role = role, id = id }, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<List<LeaveModel>> InsertLeave(LeaveModel model)
+        {
+            // fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
+
+            var spName = ConstantSPnames.SP_INSERTLEAVE;
+            return Task.Factory.StartNew(() => _db.Connection.Query<LeaveModel>(spName, new
+            {
+                StudentId=model.StudentId,
+                LeaveType =model.LeaveType,
+                Reason =model.Reason,
+                DateOfLeave =model.DateOfLeave,
+                CreatedBy = model.CreatedBy
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+
        
-       
+        public Task<List<LeaveModel>> UpdateLeave(LeaveModel model)
+        {
+            var spName = ConstantSPnames.SP_UPDATELEAVE;
+            return Task.Factory.StartNew(() => _db.Connection.Query<LeaveModel>(spName, new
+            {
+                Id = model.Id,
+                StudentId = model.StudentId,
+                LeaveType = model.LeaveType,
+                Reason = model.Reason,
+                DateOfLeave = model.DateOfLeave,
+                ModifiedBy = model.ModifiedBy
+            }, commandType: CommandType.StoredProcedure).ToList());
+
+        }
+        public Task<List<LeaveModel>> DeleteLeave(int id)
+        {
+            var spName = ConstantSPnames.SP_DELETELEAVE;
+            return Task.Factory.StartNew(() =>
+                _db.Connection.Query<LeaveModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
+                    .ToList());
+        }
+
+
         public string GetInterestedStudentList(int competitionId)
         {
             try
@@ -2324,16 +2251,288 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        public Task<List<StudentDropdown>> GetMappedStudentByName(string StudentName, int DepartmentId, string Sem, string Year)
+        public Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentName, int SectionId)
         {
             var spName = ConstantSPnames.SP_GETMAPPEDSTUDENTBYNAME;
-            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdown>(spName, new
+            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdownModel>(spName, new
             {
-                StudentName = StudentName,
-                DepartmentId = DepartmentId,
-                Sem = Sem,
-                Year = Year
+               
+                StudentName = StudentName, // Fixed variable case mismatch
+                SectionId = SectionId      // Fixed variable case mismatch
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
 
+        //public string DownloadYearWiseSecFeedbackReport(long subjectId, string sem, string year)
+        //{
+        //    try
+        //    {
+        //        List<FacultyFeedbackModel> facultyName = new List<FacultyFeedbackModel>();
+        //        List<CourseModel> courseList = new List<CourseModel>();
+        //        var spName = ConstantSPnames.SP_GETFEEDBACKFACULTYPERCENTAGEREPORT;
+        //        string strfilepath = _appSettings.Settings.DownloadPath.ToString() + "\\" + _appSettings.Settings.FileNames.ToString();
+        //        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Logo", "TptLogo.png");
+        //        DataTable ds = new DataTable();
+
+        //        var section = string.Empty;
+        //        var subjectName = string.Empty;
+        //        long facultyId = 0;
+        //        var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
+        //        using (SqlConnection myConnection = new SqlConnection(con))
+        //        {
+        //            SqlCommand objCmd = new SqlCommand(spName, myConnection);
+        //            objCmd.CommandType = CommandType.StoredProcedure;
+        //            objCmd.Parameters.Add("@Sem", SqlDbType.VarChar).Value = sem;
+        //            objCmd.Parameters.Add("@year", SqlDbType.VarChar).Value = year;
+        //            objCmd.Parameters.Add("@subjectId", SqlDbType.BigInt).Value = subjectId;
+
+        //            objCmd.CommandTimeout = 100000;
+        //            myConnection.Open();
+        //            using (var da = new SqlDataAdapter(objCmd))
+        //            {
+        //                da.Fill(ds);
+        //            }
+        //            var row = ds.Rows;
+        //            for (int i = 0; i < row.Count; i++)
+        //            {
+        //                subjectId = (long)row[i].ItemArray[0];
+        //                subjectName = row[i].ItemArray[1].ToString();
+        //                section = row[i].ItemArray[3].ToString();
+        //                int departmentId = Convert.ToInt32(row[i].ItemArray[4]);
+        //                facultyName = JsonConvert.DeserializeObject<List<FacultyFeedbackModel>>(row[i].ItemArray[2].ToString());
+        //                foreach (var items in facultyName)
+        //                {
+        //                    facultyId = items.Id;
+        //                    DownloadFeedbackQnsReport(departmentId, subjectId, facultyId, sem, year, section);
+        //                }
+        //                myConnection.Close();
+        //            }
+        //        }
+        //        var spNametable = ConstantSPnames.SP_GETFEEDBACKEPORTSECTIONWISEWITHSUBREPORT;
+        //        DataTable dt = new DataTable();
+        //        using (SqlConnection tableConnection = new SqlConnection(con))
+        //        {
+        //            SqlCommand tableCmd = new SqlCommand(spNametable, tableConnection);
+        //            tableCmd.CommandType = CommandType.StoredProcedure;
+        //            tableCmd.Parameters.Add("@Sem", SqlDbType.VarChar).Value = sem;
+        //            tableCmd.Parameters.Add("@year", SqlDbType.VarChar).Value = year;
+        //            tableCmd.Parameters.Add("@SubjectId", SqlDbType.BigInt).Value = subjectId;
+        //            tableConnection.Open();
+        //            tableCmd.CommandTimeout = 100000;
+        //            tableCmd.ExecuteNonQuery();
+        //            using (var dttable = new SqlDataAdapter(tableCmd))
+        //            {
+        //                dttable.Fill(dt);
+        //            }
+        //            var row = dt.Rows;
+        //            var column = dt.Columns;
+        //            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "FormTemplate");
+        //            var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
+        //            var doc = DocX.Load(files.Find(x => Path.GetFileName(x) == "BatchWiseForm.docx"));
+        //            doc.InsertParagraph();
+        //            Table t = doc.AddTable(row.Count + 1, 6);
+        //            t.SetTableCellMargin(TableCellMarginType.top, 10d);
+        //            t.SetTableCellMargin(TableCellMarginType.bottom, 10d);
+        //            t.SetWidths(new float[] { 30, 300, 100, 180, 100, 80 });
+
+        //            t.Alignment = Alignment.center;
+        //            t.Rows[0].Cells[0].Paragraphs.First().Append("S.No.").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            t.Rows[0].Cells[1].Paragraphs.First().Append("Department Name").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            t.Rows[0].Cells[2].Paragraphs.First().Append("Batch Name").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            t.Rows[0].Cells[3].Paragraphs.First().Append("Faculty Name").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            t.Rows[0].Cells[4].Paragraphs.First().Append("Feedback-(%)").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            t.Rows[0].Cells[5].Paragraphs.First().Append("Letter Grade").Bold(true).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(82, 82, 82)).Alignment = Alignment.center;
+        //            for (int k = 0; k < row.Count; k++)
+        //            {
+        //                t.Rows[k + 1].Cells[0].Paragraphs.First().Append(row[k].ItemArray[0].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56)).Alignment = Alignment.center;
+        //                t.Rows[k + 1].Cells[1].Paragraphs.First().Append(row[k].ItemArray[5].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56));
+        //                t.Rows[k + 1].Cells[2].Paragraphs.First().Append(row[k].ItemArray[2].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56)).Alignment = Alignment.center;
+        //                t.Rows[k + 1].Cells[3].Paragraphs.First().Append(row[k].ItemArray[1].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56)).Alignment = Alignment.center;
+        //                t.Rows[k + 1].Cells[4].Paragraphs.First().Append(row[k].ItemArray[3].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56)).Alignment = Alignment.center;
+        //                t.Rows[k + 1].Cells[5].Paragraphs.First().Append(row[k].ItemArray[4].ToString()).Font(new Xceed.Document.NET.Font("Segoe UI")).FontSize(9).Color(Color.FromArgb(59, 56, 56)).Alignment = Alignment.center;
+        //            }
+
+        //            doc.ReplaceTextWithObject("<Table>", t);
+        //            year = year == "1" ? "I" : year == "2" ? "II" : "III";
+        //            if (sem == "Odd")
+        //            {
+        //                sem = (sem == "Odd" && year == "I" ? "1" : sem == "Odd" && year == "II" ? "3" : "5");
+        //            }
+        //            else if (sem == "Even")
+        //            {
+        //                sem = (sem == "Even" && year == "I" ? "2" : sem == "Even" && year == "II" ? "4" : "6");
+        //            }
+        //            doc.ReplaceText("<CourseName>", subjectName.ToString());
+        //            doc.ReplaceText("<Year>", year.ToString());
+        //            doc.ReplaceText("<Sem>", sem.ToString());
+
+
+        //            doc.AddProtection(EditRestrictions.readOnly);
+        //            doc.SaveAs(strfilepath);
+        //            return strfilepath;
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return null;
+        //    }
+        //}
+        public string GenerateStdAssReports(int departmentId)
+        {
+            try
+            {
+                var spName = ConstantSPnames.SP_GETSTUDENTASSREPORTDATA;
+                DateTime currentDate = DateTime.Now;
+                string formattedDate = currentDate.ToString("yyyy_MM_dd-HH_mm_ss");
+                string strfilepath = _appSettings.Settings.DownloadPath.ToString() + "\\" +
+                                    formattedDate;
+                Directory.CreateDirectory(strfilepath);
+                DataTable dtTable = new DataTable();
+                //string[] deptArr = departmentId.Split('-');
+                string Semester = string.Empty;
+                string Section = string.Empty;
+                List<StdAssessmenrReportModel> stdAssessmenrReports = new List<StdAssessmenrReportModel>();
+                List<string[]> headers = new List<string[]> { new string[] { "SNo", "Time Stamp", "Register No", "Student Name", "Email", "Department", "Year", "Sem", "Section", "Score" } };
+                var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
+
+                using SqlConnection sqlconnection = new SqlConnection(con);
+                sqlconnection.Open();
+                SqlCommand command = new SqlCommand(spName, sqlconnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@DepartmentId", SqlDbType.VarChar).Value = departmentId;
+                SqlDataReader result = command.ExecuteReader();
+
+                while (result.Read())
+                {
+
+                    stdAssessmenrReports.Add(new StdAssessmenrReportModel
+                    {
+                        SNo = Convert.ToInt32(result["SNo"]),
+                        TimeStamp = Convert.ToString(result["TimeStamp"]).Split(' ')[0],
+                        StudentName = Convert.ToString(result["StudentName"]),
+                        RegisterNo = Convert.ToString(result["RegisterNo"]),
+                        Email = Convert.ToString(result["Email"]),
+                        Department = Convert.ToString(result["Department"]),
+                        Year = Convert.ToString(result["Year"]),
+                        Sem = Convert.ToString(result["Sem"]),
+                        Section = Convert.ToString(result["Section"]),
+                        Score = Convert.ToString(result["Score"])
+                    });
+                }
+                sqlconnection.Close();
+
+
+                var DeptArr = stdAssessmenrReports.GroupBy(x => new { x.Department, x.Year, x.Section }).ToList();
+                for (int i = 0; i < DeptArr.Count; i++)
+                {
+                    var excelName = strfilepath + "\\" + DeptArr[i].Key.Department + " " + DeptArr[i].Key.Year + " " + DeptArr[i].Key.Section + ".xlsx";
+                    using (XLWorkbook wb = new XLWorkbook())
+                    {
+                        int colCount = 1;
+                        int rowCount = 1;
+                        int colMaxWidth = headers[0].Length;
+
+                        var ws = wb.Worksheets.Add();
+                        ws.Cell(rowCount, colCount).Value = "THIAGARAJAR POLYTECHNIC COLLEGE, SALEM - 636005";
+                        ws.Range(rowCount, colCount, rowCount, colMaxWidth).Merge().AddToNamed("Titles");
+                        ws.Cell(++rowCount, colCount).Value = "STUDENT-ASSESSMENT REPORT ";
+                        ws.Range(rowCount, colCount, rowCount, colMaxWidth).Merge().AddToNamed("Titles");
+
+                        ws.Cell(++rowCount, 1).InsertData(headers).AddToNamed("Titles");
+                        ws.Column(colCount).AdjustToContents().AddToNamed("Tittles");
+
+                        var rangeWithData = ws.Cell(++rowCount, 1).InsertData(DeptArr[i]).AddToNamed("Titles");
+
+
+                        var titlesStyle = wb.Style;
+                        titlesStyle.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        titlesStyle.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                        titlesStyle.Border.RightBorder = XLBorderStyleValues.Thin;
+                        titlesStyle.Border.LeftBorder = XLBorderStyleValues.Thin;
+                        titlesStyle.Border.BottomBorder = XLBorderStyleValues.Thin;
+                        titlesStyle.Border.TopBorder = XLBorderStyleValues.Thin;
+                        titlesStyle.Alignment.WrapText = true;
+                        titlesStyle.Font.SetFontSize(10);
+                        // wb.NamedRanges.NamedRange("Titles").Ranges.Style = titlesStyle;
+                        var namedRange = wb.NamedRanges.NamedRange("Titles");
+
+                        if (namedRange != null)
+                        {
+                            namedRange.Ranges.Style = titlesStyle;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Named range 'Titles' not found.");
+                        }
+                        var stdLength = stdAssessmenrReports.Count(x => x.Department == DeptArr[i].Key.Department && x.Year == DeptArr[i].Key.Year && x.Section == DeptArr[i].Key.Section);
+                        IXLRange range = ws.Range(ws.Cell(1, 1).Address, ws.Cell(stdLength + rowCount - 1, colMaxWidth).Address);
+                        range.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                        range.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+
+
+                        if (File.Exists(excelName))
+                        {
+                            File.Delete(excelName);
+                        }
+                        //lblerror.Text = "three";
+                        wb.SaveAs(excelName);
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        GC.Collect();
+                    }
+                }
+                return strfilepath;
+            }
+
+
+            catch (Exception ex)
+            {
+                //_logger.LogError(ex.InnerException.ToString());
+                return ex.Message;
+            }
+        }
+        public Task<List<MemberDetails>> GetMembersDetails(int? id)
+        {
+            var spName = ConstantSPnames.SP_GETMEMBERS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<MemberDetails>(spName, new
+            {
+                Id = id
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+        public Task<List<MemberDetails>> InsertMembersDetails(MemberDetails memberDetails)
+        {
+            //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
+            var spName = ConstantSPnames.SP_INSERTMEMBERS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<MemberDetails>(spName, new
+            {
+
+                Name = memberDetails.Name,
+                PhoneNumber = memberDetails.PhoneNumber,
+                MemberType = memberDetails.MemberType,
+                Address = memberDetails.Address,
+                Email = memberDetails.Email,
+                Gender = memberDetails.Gender,
+                CreatedBy = memberDetails.CreatedBy,
+                CreatedDate = memberDetails.CreatedDate
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+
+
+        public Task<List<MemberDetails>> UpdateMembersDetails(MemberDetails memberDetails)
+        {
+            //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
+            var spName = ConstantSPnames.SP_UPDATEMEMBERS;
+            return Task.Factory.StartNew(() => _db.Connection.Query<MemberDetails>(spName, new
+            {
+                Id = memberDetails.Id,
+                Name = memberDetails.Name,
+                PhoneNumber = memberDetails.PhoneNumber,
+                MemberType = memberDetails.MemberType,
+                Address = memberDetails.Address,
+                Email = memberDetails.Email,
+                Gender = memberDetails.Gender,
+                ModifiedBy = memberDetails.ModifiedBy,
+                ModifiedDate = memberDetails.ModifiedDate
             }, commandType: CommandType.StoredProcedure).ToList());
         }
       
@@ -2518,11 +2717,11 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
 
-        public Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id)
+        public Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id,string role)
         {
             var spName = ConstantSPnames.SP_GETALLSTUDENTFEEDBACKDETAILS;
             return Task.Factory.StartNew(() => _db.Connection.Query<StudentFeedbackModel>(spName,
-                new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
+                new { Id = id, Role=role }, commandType: CommandType.StoredProcedure).ToList());
         }
         public async Task<string> InsertStudentFeedbackDetails(List<StudentFeedbackModel> data)
         {
@@ -2815,7 +3014,6 @@ namespace ActivityManagementSystem.DAL.Repositories
                 StartDate=academicCalender.StartDate,
                 EndDate =academicCalender.EndDate,
                 CreatedBy = academicCalender.CreatedBy,
-                CreatedDate = academicCalender.CreatedDate
 
             }, commandType: CommandType.StoredProcedure).ToList());
         }
@@ -2840,11 +3038,11 @@ namespace ActivityManagementSystem.DAL.Repositories
              _db.Connection.Query<AcademicCalender>(spName, new { SNo = SNo }, commandType: CommandType.StoredProcedure)
                  .ToList());
         }
-        public Task<List<InfoGaloreModel>> GetAllInfoGalore(int? id)
+        public Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id)
         {
             var spName = ConstantSPnames.SP_GETINFOGALORE;
             return Task.Factory.StartNew(() => _db.Connection.Query<InfoGaloreModel>(spName,
-                new { @Id=id}, commandType: CommandType.StoredProcedure).ToList());
+                new {@InfoType=infoType, @Id=id}, commandType: CommandType.StoredProcedure).ToList());
         }
         public Task<List<InfoGaloreModel>> InsertInfoGalore(InfoGaloreModel infoGaloreModel)
         {

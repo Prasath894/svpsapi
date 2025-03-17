@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -68,8 +69,8 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<ActivityModel>> DeleteActivityData(int id);
         
         Task<List<RoleModel>> GetRole(int? id);
-        
-        Task<List<StudentDropdown>> GetStudentByName(string StudentyName);
+
+        Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentyName, int SectionId);
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
         string DeleteRole(int id);
@@ -111,8 +112,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
         Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
-        public string generateAttendancedynamicreport(string Sem, string Year, int Department,string Section);
-        public string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Batch);
+        public string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section);
         Task<(MemoryStream memory, string path)> DownloadData(string filepath);
 
       
@@ -135,7 +135,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<TimetableModel>> UpdateTimetableDetails(TimetableModel timetableModel);
         Task<List<TimetableModel>> DeleteTimetableDetails(int id);
 
-        Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id);
+        Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id,string role);
         Task<string> InsertStudentFeedbackDetails(List<StudentFeedbackModel> studentFeedbackModel);
         //Task<int> UpdateStudentFeedbackDetails(StudentFeedbackModel studentFeedbackModel);
         Task<List<StudentFeedbackModel>> DeleteStudentFeedbackDetails(string id);
@@ -161,9 +161,13 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);
 
-        Task<List<InfoGaloreModel>> GetAllInfoGalore(int? id);
+        Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id);
         Task<List<InfoGaloreModel>> InsertInfoGalore(InfoGaloreModel infoGaloreModel);
         Task<List<InfoGaloreModel>> UpdateInfoGalore(int id,string target);
 
+        Task<List<LeaveModel>> GetAllLeave(string role, int? id);
+        Task<List<LeaveModel>> InsertLeave(LeaveModel model);
+        Task<List<LeaveModel>> UpdateLeave(LeaveModel model);
+        Task<List<LeaveModel>> DeleteLeave(int id);
     }
 }

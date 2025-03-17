@@ -22,6 +22,10 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// The Name of the login user.
         /// </summary>
         public string Username { get; set; } = string.Empty;
+        /// <summary>
+        /// The Name of the login user.
+        /// </summary>
+        public string FacultyUsername { get; set; } = string.Empty;
 
         /// <summary>
         /// The Role Name of the login user.

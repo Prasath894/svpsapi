@@ -64,8 +64,9 @@ namespace ActivityManagementSystem.DAL.Constants
 		public const string SP_DELETEFACULTY = "sp_DeleteFacultyDetails";
 		public const string SP_GETUSERDETAILS= "sp_GetUserDetails";
 		public const string SP_GETFACULTYBYNAME = "getFacultydetailsbyName";
-		public const string SP_GETSTUDENTBYNAME = "getStudentdetailsbyName";
-		public const string SP_GETAlumniBYNAME = "getAlumnidetailsbyName";
+        public static string SP_GETMAPPEDSTUDENTBYNAME = "[getMappedStudentbyName]";
+
+        public const string SP_GETAlumniBYNAME = "getAlumnidetailsbyName";
 		
 		public const string SP_GETALLSUBJECT = "sp_GetAllSubject";
 		public const string SP_INSERTSUBJECT = "sp_InsertSubject";
@@ -106,14 +107,12 @@ namespace ActivityManagementSystem.DAL.Constants
 
 
 		public static string SP_GetDepartmentName = "sp_GetDepartmentName";
-		public static string SP_MonthwiseAttendance = "sp_Attendance_MonthWise_Dynamic_2";
-		public static string SP_SubjectwiseAttendance = "sp_Attendance_SubjectWise_Monthly_Dynamic_2";
-		public static string SP_MonthwiseDynamicAttendance = "sp_Attendance_MonthWise_Dynamic_4";
+		public static string SP_MonthwiseAttendance = "GetStudentCumulativeAttendanceReport";
+		public static string SP_MonthwiseDynamicAttendance = "sp_GetMonthAttendanceByMONTH";
 
 		public const string TBL_SUBJECT = "dbo.tbl_Subject";
 
-		public static string SP_SemWiseAttendanceReports = "[dbo].[sp_OldAttendance_Semwise_Report]";
-		public static string SP_SubjectwiseMonthlyDynamicAttendance = "[sp_Attendance_MonthlySubjectWise_Dynamic]";
+		public const string SP_GETALLSTUDENTDETAILWITHSECTION = "[Sp_GetAllStudentDetailWithSection]";
 
 
 		
@@ -202,12 +201,19 @@ namespace ActivityManagementSystem.DAL.Constants
 		public static string SP_REALLOCATEBUDGET="[sp_ReallocateBudgetDetails]";
 		public static string SP_STOCKREPORTCUM = "[sp_StockReportCum]";
 
-		public static string SP_INSERTUPCOMINGCOMPETITION = "sp_InsertUpcomingCompetition";
-		public static string SP_GETALLUPCOMINGCOMPETITION = "sp_GetUpcomingCompetitions";
-		public static string SP_UPDATEUPCOMINGCOMPETITION = "sp_UpdateUpcomingCompetition";
-		public static string SP_DELETEUPCOMINGCOMPETITION = "sp_DeleteUpcomingCompetition";
+		public static string SP_INSERTUPCOMINGCOMPETITION = "[sp_InsertLeaveRequests]";
+		public static string SP_GETALLUPCOMINGCOMPETITION = "[sp_GetLeaveRequests]";
 
-		public static string SP_INSERTBPE = "[sp_InsertBpeForm]";
+        public static string SP_UPDATEUPCOMINGCOMPETITION = "[sp_UpdateLeaveRequests]";
+		public static string SP_DELETEUPCOMINGCOMPETITION = "[sp_DeleteLeaveRequests]";
+
+        public static string SP_INSERTLEAVE = "sp_InsertLEAVE";
+        public static string SP_GETALLLEAVE = "sp_GetLEAVEs";
+        public static string SP_UPDATELEAVE = "sp_UpdateLEAVE";
+        public static string SP_DELETELEAVE = "sp_DeleteUpcomingCompetition";
+
+
+        public static string SP_INSERTBPE = "[sp_InsertBpeForm]";
 		public static string SP_GETAllBPEDETAILS = "sp_GetAllBpe";
 		public static string SP_UPDATEBPEDETAILS = "sp_UpdateBpeForm";
 		public static string SP_DELETEBPEFORM = "sp_DeleteBprForm";
@@ -252,7 +258,6 @@ namespace ActivityManagementSystem.DAL.Constants
 
 		public static string SP_GETSECWISEFEEDBACKREPORTS = "sp_GetSecWiseFeedbackReports";
 		public static string getFacultySubjectforfeedback = "[getFacultySubjectforfeedback]";
-		public static string SP_GETMAPPEDSTUDENTBYNAME = "[getMappedStudentbyName]";
 
 		public static string SP_GETFEEDBACKEPORTSECTIONWISEWITHSUBREPORT = "[sp_GetFeedbackeportSectionwisewithSubReport]";
 		public static string SP_GETSTUDENTASSREPORTDATA = "[sp_getStudentAssReportData]";
@@ -281,6 +286,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_GetTimeTableBySectionIdDETAILS = "sp_GetTimeTableBySectionId";
         public const string SP_GetFacultyListBySectionIdDETAILS = "sp_GetFacultyListBySectionId";
 
+		public const string SP_GETALLFACULTYLIST = "[sp_GetAllFacultyList]";
         public const string SP_INSERTTIMETABLEDETAILS = "[sp_InsertTimetable]";
         public const string SP_UPDATETIMETABLEDETAILS = "[sp_UpdateTimetable]";
         public const string SP_DELETETIMETABLE = "[sp_DeleteTimetable]";

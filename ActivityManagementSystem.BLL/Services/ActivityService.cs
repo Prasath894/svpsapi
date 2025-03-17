@@ -77,7 +77,7 @@ namespace ActivityManagementSystem.BLL.Services
 
                     if (faculty != null)
                     {
-                        return GetToken(faculty.FacultyName, userRole, faculty.Id);
+                        return GetToken(faculty.FacultyName, userRole, faculty.Id,faculty.UserName);
                     }
                     else
                     {
@@ -100,7 +100,7 @@ namespace ActivityManagementSystem.BLL.Services
                     {
                         string userName = student.Father_MobileNumber.Equals(user.MobileNo) ?
                             student.FatherName : student.MotherName;
-                        return GetToken(userName, userRole, student.Id);
+                        return GetToken(userName, userRole, student.Id,"empty");
                     }
                     else
                     {
@@ -139,7 +139,7 @@ namespace ActivityManagementSystem.BLL.Services
             }
             else if (type == "Event")
             {
-                actionMethodName = $"Events\\Events-{id}";
+                actionMethodName = $"Event\\Event-{id}";
             }
             else if (type == "PressReports")
             {
@@ -203,7 +203,7 @@ namespace ActivityManagementSystem.BLL.Services
             return extractedFiles;
         }
 
-        private Token GetToken(string userName, string userRole, int userId)
+        private Token GetToken(string userName, string userRole, int userId,string facultyUsername)
         {
             var jwtService = new JwtService(_appSettings.JWTSettings.SecretKey ?? string.Empty,
                     _appSettings.JWTSettings.Issuer ?? string.Empty,_appSettings.JWTSettings.Audience ?? string.Empty);
@@ -224,6 +224,7 @@ namespace ActivityManagementSystem.BLL.Services
                 ExpiresAt = expires,
                 UserRole = userRole,
                 Username = userName,
+                FacultyUsername=facultyUsername,
                 UserId = userId
             };
         }
@@ -522,31 +523,10 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<StudentDropdown>> GetStudentByName(string studentName)
-        {
-            try
-            {
-                return await _activityRepository.Repository.GetStudentByName(studentName);
+        
 
 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
-        //public virtual async Task<List<DepartmentModel>> GetAllDepartment(int? id)
-        //{
-        //    try
-        //    {
-        //        return await _activityRepository.Repository.GetAllDepartment(id);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        throw ex;
-        //    }
-        //}
+        
         public virtual async Task<List<SubjectModel>> GetAllSubject(int? Id)
         {
             try
@@ -4265,15 +4245,23 @@ namespace ActivityManagementSystem.BLL.Services
             }
             return (memory: memorys, path: Path);
         }
-        public virtual string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Section)
+        public virtual string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section)
         {
-            return _activityRepository.Repository.generateMonthlyAttendancereport(Sem, Year, Department, AttendanceDate, Section);
+            return _activityRepository.Repository.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
 
         }
-     
-        public virtual string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section)
+        public virtual string generateExcelList(string role)
         {
-            return _activityRepository.Repository.generateAttendancedynamicreport(Sem, Year, Department, Section);
+            return _activityRepository.Repository.generateExcelList(role);
+
+        }
+
+      
+
+
+        public virtual string generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
+        {
+            return _activityRepository.Repository.generateDailyAttendancereport(month, year, sectionId, grade, section);
 
         }
 
@@ -4457,7 +4445,52 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public virtual async Task<List<LeaveModel>> GetAllLeave(string role, int? id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetAllLeave(role, id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<List<LeaveModel>> InsertLeave(LeaveModel model)
+        {
+            try
+            {
+                return await _activityRepository.Repository.InsertLeave(model);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
        
+        public virtual async Task<List<LeaveModel>> UpdateLeave(LeaveModel model)
+        {
+            try
+            {
+                return await _activityRepository.Repository.UpdateLeave(model);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        public virtual async Task<List<LeaveModel>> DeleteLeave(int id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.DeleteLeave(id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public virtual string GetAllMarkReport(string Section, string subjects, string test)
         {
             return _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
@@ -4640,11 +4673,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<StudentDropdown>> GetMappedStudentByName(string StudentName, int DepartmentId, string Sem, string Year)
+        public virtual async Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentName, int SectionId)
         {
             try
             {
-                return await _activityRepository.Repository.GetMappedStudentByName(StudentName, DepartmentId, Sem, Year);
+                return await _activityRepository.Repository.GetMappedStudentByName(StudentName, SectionId);
 
 
             }
@@ -4801,11 +4834,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id)
+        public virtual async Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id, string role)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllStudentFeedbackDetails(id);
+                return await _activityRepository.Repository.GetAllStudentFeedbackDetails(id,role);
             }
             catch (Exception ex)
             {
@@ -5004,11 +5037,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<InfoGaloreModel>> GetAllInfoGalore(int? id)
+        public virtual async Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id)
         {
             try
             {
-                return await _activityRepository.Repository.GetAllInfoGalore(id);
+                return await _activityRepository.Repository.GetAllInfoGalore(infoType,id);
             }
             catch (Exception ex)
             {

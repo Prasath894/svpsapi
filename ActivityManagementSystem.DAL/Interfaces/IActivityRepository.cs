@@ -47,7 +47,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
 
         Task<List<FacultyDropdown>> GetFacultyByName(string facultyName);
-        Task<List<StudentDropdown>> GetStudentByName(string StudentyName);
+        Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentyName,int SectionId);
         Task<string> UpdateActivityFilepathdata(string target, int id, string files);
         
         Task<List<FacultyModel>> GetFacultyDetails(int? Id);
@@ -89,10 +89,9 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
 
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
-        public string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section);
-        public string generateMonthlyAttendancereport(string Sem, string Year, int Department, DateTime AttendanceDate, string Batch);
+        public string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section);
 
-       
+
         Task<List<StudentMark>> GetStudentMarkByIdDetails(int studentId);
         Task<List<StudentAttendanceModel>> GetAttendanceByIdDetails(int studentId, int month, int year);
 
@@ -114,7 +113,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
 
 
-        Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id);
+        Task<List<StudentFeedbackModel>> GetAllStudentFeedbackDetails(int? id,string role);
         Task<string> InsertStudentFeedbackDetails(List<StudentFeedbackModel> studentFeedbackModel);
         //Task<int> UpdateStudentFeedbackDetails(StudentFeedbackModel studentFeedbackModel);
         Task<List<StudentFeedbackModel>> DeleteStudentFeedbackDetails(string id);
@@ -139,9 +138,15 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);
 
-        Task<List<InfoGaloreModel>> GetAllInfoGalore(int? id);
+        Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id);
         Task<List<InfoGaloreModel>> InsertInfoGalore(InfoGaloreModel infoGaloreModel);
         Task<List<InfoGaloreModel>> UpdateInfoGalore(int id, string target);
+
+
+        Task<List<LeaveModel>> GetAllLeave(string role, int? id);
+        Task<List<LeaveModel>> InsertLeave(LeaveModel model);
+        Task<List<LeaveModel>> UpdateLeave(LeaveModel model);
+        Task<List<LeaveModel>> DeleteLeave(int id);
     }
 
 }
