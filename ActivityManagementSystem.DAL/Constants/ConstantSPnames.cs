@@ -201,11 +201,11 @@ namespace ActivityManagementSystem.DAL.Constants
 		public static string SP_REALLOCATEBUDGET="[sp_ReallocateBudgetDetails]";
 		public static string SP_STOCKREPORTCUM = "[sp_StockReportCum]";
 
-		public static string SP_INSERTUPCOMINGCOMPETITION = "[sp_InsertLeaveRequests]";
-		public static string SP_GETALLUPCOMINGCOMPETITION = "[sp_GetLeaveRequests]";
+		public static string SP_INSERTUPCOMINGCOMPETITION = "[sp_InsertUpcomingCompetition]";
+		public static string SP_GETALLUPCOMINGCOMPETITION = "[sp_GetUpcomingCompetitions]";
 
-        public static string SP_UPDATEUPCOMINGCOMPETITION = "[sp_UpdateLeaveRequests]";
-		public static string SP_DELETEUPCOMINGCOMPETITION = "[sp_DeleteLeaveRequests]";
+        public static string SP_UPDATEUPCOMINGCOMPETITION = "[sp_UpdateUpcomingCompetition]";
+		public static string SP_DELETEUPCOMINGCOMPETITION = "[sp_DeleteUpcomingCompetition]";
 
         public const string SP_GETALLLEAVE = "sp_GetLeaveRequests";
 

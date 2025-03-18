@@ -1548,8 +1548,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             try
             {
                 string spName = ConstantSPnames.SP_INTERESTEDSTUDENTLIST;
-                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
-              
+                
+
                 string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
 
                 using (var connection = new SqlConnection(connectionString))
@@ -1578,7 +1578,8 @@ namespace ActivityManagementSystem.DAL.Repositories
         {
             try
             {
-                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+                string filePath = Path.Combine(folderPath, "Report.xlsx");
 
                 using (var wb = new XLWorkbook())
                 {
@@ -1596,14 +1597,14 @@ namespace ActivityManagementSystem.DAL.Repositories
                     ws.Cell(rowCount++, colCount).Value = "SONA VALLIAPPA PUBLIC SCHOOL";
                     ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
-                    ws.Cell(rowCount++, colCount).Value = $"{eventValue} - INTEREST STUDENT";
+                    ws.Cell(rowCount++, colCount).Value = $"{eventValue} - STUDENT LIST".ToUpper();
                     ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
 
                   
 
                     // Column headers
-                    var headers = new List<string> { "SNo", "Adminssion No", "Name of Student","Grade","Section","Father Mobile No","Polling Status" };
+                    var headers = new List<string> { "S.No", "Adminssion No", "Name of Student","Grade","Section","Father Mobile No","Polling Status" };
                   
                     for (int i = 0; i < headers.Count; i++)
                     {
@@ -1635,7 +1636,8 @@ namespace ActivityManagementSystem.DAL.Repositories
             try
             {
                 string spName = ConstantSPnames.SP_MARKTEMPLATE;
-                string filePath = Path.Combine(_appSettings.Settings.DownloadPath, _appSettings.Settings.FileName);
+                string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+                string filePath = Path.Combine(folderPath, "Report.xlsx");
                 string[] subjectArr = subjects.Split(',');
                 string[] secArr = section.Split('-');
                 string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
@@ -1683,7 +1685,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     ws.Cell(rowCount, colCount).Value = "GRADE: " + secArr[0].ToUpper();
                     ws.Range(rowCount, colCount, rowCount, colPart).Merge().AddToNamed("Titles");
 
-                    ws.Cell(rowCount++, colPart + 1).Value = "SECTION: " + secArr[1];
+                    ws.Cell(rowCount++, colPart + 1).Value = "SECTION: " + secArr[1].ToUpper();
                     ws.Range(rowCount - 1, colPart + 1, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
                     // Column headers
