@@ -153,6 +153,10 @@ namespace ActivityManagementSystem.BLL.Services
             {
                 actionMethodName = "InfoGalore";
             }
+            else if (type == "LeaveRequest")
+            {
+                actionMethodName = $"LeaveRequest\\LeaveRequest-{id}";
+            }
 
             // Step 2: Define the source and destination folders
             string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);

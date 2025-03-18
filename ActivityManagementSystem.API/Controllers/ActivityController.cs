@@ -1873,7 +1873,7 @@ namespace ActivityManagementSystem.API.Controllers
             }
             for (int i = 0; i<result.Count; i++)
             {
-                var files = result[i].FileName;
+                var files = result[i].Filename;
                 if (files != null)
                 {
                     result[i].FileList = files.Split('|').ToList();

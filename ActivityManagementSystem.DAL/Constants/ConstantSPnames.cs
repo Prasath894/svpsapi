@@ -207,10 +207,14 @@ namespace ActivityManagementSystem.DAL.Constants
         public static string SP_UPDATEUPCOMINGCOMPETITION = "[sp_UpdateLeaveRequests]";
 		public static string SP_DELETEUPCOMINGCOMPETITION = "[sp_DeleteLeaveRequests]";
 
-        public static string SP_INSERTLEAVE = "sp_InsertLEAVE";
-        public static string SP_GETALLLEAVE = "sp_GetLEAVEs";
-        public static string SP_UPDATELEAVE = "sp_UpdateLEAVE";
-        public static string SP_DELETELEAVE = "sp_DeleteUpcomingCompetition";
+        public const string SP_GETALLLEAVE = "sp_GetLeaveRequests";
+
+        public const string SP_INSERTLEAVE = "sp_InsertLeaveRequests";
+
+
+        public const string SP_UPDATELEAVE = "sp_UpdateLeaveRequests";
+
+        public const string SP_DELETELEAVE = "sp_DeleteLeaveRequests";
 
 
         public static string SP_INSERTBPE = "[sp_InsertBpeForm]";

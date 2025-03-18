@@ -110,8 +110,8 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("studentName")]
         public string StudentName { get; set; }
-        public string FileName { get; set; }
-        public string FilePath { get; set; }  // varchar(500)
+        //public string FileName { get; set; }
+        //public string FilePath { get; set; }  // varchar(500)
 
         public List<string> FileList { get; set; }
     }
