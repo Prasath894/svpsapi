@@ -684,7 +684,7 @@ namespace ActivityManagementSystem.BLL.Services
         {
             try
             {
-                return await _activityRepository.Repository.bulkuploadfaculty(target);
+                //return await _activityRepository.Repository.bulkuploadfaculty(target);
                 return await _activityRepository.Repository.bulkuploadsubject(target);
             }
             catch (Exception ex)
@@ -709,6 +709,18 @@ namespace ActivityManagementSystem.BLL.Services
             try
             {
                 return await _activityRepository.Repository.bulkuploadmark(target,  section);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<string> bulkuploadholidaycalendar(DataTable target)
+        {
+            try
+            {
+                return await _activityRepository.Repository.bulkuploadholidaycalendar(target);
             }
             catch (Exception ex)
             {
@@ -5068,6 +5080,57 @@ namespace ActivityManagementSystem.BLL.Services
             try
             {
                 return await _activityRepository.Repository.UpdateInfoGalore(id,target);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public virtual async Task<List<HolidayCalendar>> GetHolidayCalendar(int? Id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetHolidayCalendar(Id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        
+        public virtual async Task<List<HolidayCalendar>> InsertHolidayCalendar(HolidayCalendar holiday)
+        {
+            try
+            {
+                return await _activityRepository.Repository.InsertHolidayCalendar(holiday);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        
+        public virtual async Task<List<HolidayCalendar>> UpdateHolidayCalendar(HolidayCalendar holiday)
+        {
+            try
+            {
+                return await _activityRepository.Repository.UpdateHolidayCalendar(holiday);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+      
+        public virtual async Task<List<HolidayCalendar>> DeleteHolidayCalendar(int Id)
+        {
+            try
+            {
+                return await _activityRepository.Repository.DeleteHolidayCalendar(Id);
             }
             catch (Exception ex)
             {

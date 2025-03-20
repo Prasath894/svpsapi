@@ -32,6 +32,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_BULKSTUDENTUPLOAD = "[sp_BulkUploadStudent]";
         public const string SP_BULKFACULTYUPLOAD = "[sp_BulkUploadFaculty]";
         public const string SP_BULKSUBJECTUPLOAD = "[sp_BulkUploadSubject]";
+        public const string SP_BULKHOLIDAYUPLOAD = "[sp_BulkUploadHoliday]";
 
         public const string SP_GETACTIVITIES = "sp_GetActivity";
 		public const string SP_GETACTIVITYDETAILS= "sp_GetActivityData";
@@ -326,5 +327,9 @@ namespace ActivityManagementSystem.DAL.Constants
 		public const string SP_INSERTINFOGALORE = "sp_InsertInfoGalore";
 		public const string SP_UPDATEINFOGALORE = "sp_UpdateInfoGalore";
 
+        public const string SP_GETHOLIDAYCALENDAR = "[sp_GetHolidayCalendar]";
+        public const string SP_DELETEHOLIDAYCALENDAR = "[sp_DeleteHolidayCalendar]";
+        public const string SP_INSERTHOLIDAYCALENDAR = "[sp_InsertHolidayCalendar]";
+        public const string SP_UPDATEHOLIDAYCALENDAR = "[sp_UpdateHolidayCalendar]";
     }
 }

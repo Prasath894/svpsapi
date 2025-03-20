@@ -802,6 +802,35 @@ namespace ActivityManagementSystem.DAL.Repositories
             }
         }
 
+        public async Task<string> bulkuploadholidaycalendar(DataTable target)
+        {
+            try
+            {
+                var spName = ConstantSPnames.SP_BULKHOLIDAYUPLOAD;
+                using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
+                await sqlConnection.OpenAsync();
+
+                using SqlCommand command = new(spName, sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@HolidayTable", SqlDbType.Structured).Value = target;
+
+                SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
+                returnStatusParam.Direction = ParameterDirection.Output;
+
+                await command.ExecuteNonQueryAsync(); // Await this!
+
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
+            }
+            catch (SqlException ex)
+            {
+                return "SQL Error: " + ex.Message;
+            }
+            catch (Exception ex)
+            {
+                return "Error: " + ex.Message;
+            }
+        }
+
         public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             var spName = ConstantSPnames.SP_GETALLATTENDANCE;
@@ -3069,5 +3098,56 @@ namespace ActivityManagementSystem.DAL.Repositories
                 @Id=id,@InfoFilePath =target
             }, commandType: CommandType.StoredProcedure).ToList());
         }
+
+
+        public Task<List<HolidayCalendar>> GetHolidayCalendar(int? id)
+        {
+            var spName = ConstantSPnames.SP_GETHOLIDAYCALENDAR;
+            return Task.Factory.StartNew(() =>
+                _db.Connection.Query<HolidayCalendar>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
+                    .ToList());
+        }
+
+        
+        
+
+
+        public Task<List<HolidayCalendar>> InsertHolidayCalendar(HolidayCalendar holiday)
+        {
+            var spName = ConstantSPnames.SP_INSERTHOLIDAYCALENDAR;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HolidayCalendar>(spName, new
+            {
+                DateofHoliday = holiday.DateofHoliday,
+                HolidayDetails = holiday.HolidayDetails,
+
+
+                CreatedBy = holiday.CreatedBy,
+
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+
+
+        
+
+        public Task<List<HolidayCalendar>> UpdateHolidayCalendar(HolidayCalendar holiday)
+        {
+            var spName = ConstantSPnames.SP_UPDATEHOLIDAYCALENDAR;
+            return Task.Factory.StartNew(() => _db.Connection.Query<HolidayCalendar>(spName, new
+            {
+                Id = holiday.Id,
+                DateofHoliday = holiday.DateofHoliday,
+                HolidayDetails=holiday.HolidayDetails,
+                ModifiedBy = holiday.ModifiedBy,
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+
+        public Task<List<HolidayCalendar>> DeleteHolidayCalendar(int id)
+        {
+            var spName = ConstantSPnames.SP_DELETEHOLIDAYCALENDAR;
+            return Task.Factory.StartNew(() =>
+                _db.Connection.Query<HolidayCalendar>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
+                    .ToList());
+        }
+
     }
 }
