@@ -1139,7 +1139,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                         // Create a new DataTable for the transformed data
                         if (dataTable.Rows.Count == 0)
                             return NotFound("No attendance records found.");
-                        strfilepath = GenerateExcel(dataTable, role +" List") ;
+                        strfilepath = GenerateExcel(dataTable, role.ToUpper() +" List") ;
                     }
 
                 }
