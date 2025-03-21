@@ -1134,7 +1134,11 @@ namespace ActivityManagementSystem.API.Controllers
                 {
                     result = await _activityService.Service.bulkuploadmark(filePath, fileUploadModel.Section);
                 }
-                
+                else if (XlPath == "Timetable.csv")
+                {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
+                    result = await _activityService.Service.bulkuploadtimetable(uploadedFileData);
+                }
             }
             return Ok(result);
         }

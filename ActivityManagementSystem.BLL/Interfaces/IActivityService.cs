@@ -50,6 +50,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<ExtensionServicesResponse>> GetAllExtensionServicesDataForReport(ActivityFilterModel activityFilterModel);
         Task<List<ConsultantResponse>> GetAllConsultantDataForReport(ActivityFilterModel activityFilterModel);
         Task<string> bulkuploadmark(string target,  string section);
+
         Task<List<ProjectModelResponse>> GetProjectModelForReport(ActivityFilterModel activityFilterModel);
         Task<List<ImplantTrainingResponse>> GetImplantTrainingReport(ActivityFilterModel activityFilterModel);
         Task<List<SportsandGamesResponse>> GetSportsGamesReport(ActivityFilterModel activityFilterModel);
@@ -93,6 +94,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
 
         Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
+        Task<string> bulkuploadtimetable(DataTable target);
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);

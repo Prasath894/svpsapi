@@ -715,6 +715,17 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public async Task<string> bulkuploadtimetable(DataTable target)
+        {
+            try
+            {
+                return await _activityRepository.Repository.bulkuploadtimetable(target);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         public virtual async Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
             try
