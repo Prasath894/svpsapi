@@ -34,7 +34,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -1134,6 +1134,12 @@ namespace ActivityManagementSystem.API.Controllers
                 {
                     result = await _activityService.Service.bulkuploadmark(filePath, fileUploadModel.Section);
                 }
+                else if (XlPath == "HolidayCalendar.csv")
+                {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
+                    result = await _activityService.Service.bulkuploadholidaycalendar(uploadedFileData);
+                }
+
                 else if (XlPath == "Timetable.csv")
                 {
                     var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
@@ -2979,6 +2985,75 @@ namespace ActivityManagementSystem.API.Controllers
               
             }
             return Ok();
+        }
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(HolidayCalendar))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetHolidayCalendar(int? Id = null)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = await _activityService.Service.GetHolidayCalendar(Id);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            for (int i = 0; i < result.Count; i++)
+            {
+                var files = result[i].FileNames;
+                if (files != null)
+                {
+                    result[i].Files = files.Split('|').ToList();
+                    result[i].Files.RemoveAt(result[i].Files.Count - 1);
+
+                }
+                //  List<string> lst = 
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HolidayCalendar))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> InsertHolidayCalendar([FromBody] HolidayCalendar holiday)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            // StudentModel studentDetails = JsonConvert.DeserializeObject<StudentModel>(student);
+            var result = await _activityService.Service.InsertHolidayCalendar(holiday);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HolidayCalendar))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> UpdateHolidayCalendar([FromBody] HolidayCalendar holiday)
+        {
+            //StudentModel studentDetails = JsonConvert.DeserializeObject<StudentModel>(student);
+            var result = await _activityService.Service.UpdateHolidayCalendar(holiday);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(HolidayCalendar))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteHolidayCalendar(int Id)
+        {
+            var result = await _activityService.Service.DeleteHolidayCalendar(Id);
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
         }
     }
     }

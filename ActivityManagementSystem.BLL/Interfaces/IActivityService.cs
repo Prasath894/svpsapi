@@ -94,6 +94,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
 
         Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
+        Task<string> bulkuploadholidaycalendar(DataTable target);
         Task<string> bulkuploadtimetable(DataTable target);
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);
@@ -171,5 +172,11 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<LeaveModel>> InsertLeave(LeaveModel model);
         Task<List<LeaveModel>> UpdateLeave(LeaveModel model);
         Task<List<LeaveModel>> DeleteLeave(int id);
+
+
+        Task<List<HolidayCalendar>> GetHolidayCalendar(int? Id);
+        Task<List<HolidayCalendar>> InsertHolidayCalendar(HolidayCalendar holiday);
+        Task<List<HolidayCalendar>> UpdateHolidayCalendar(HolidayCalendar holiday);
+        Task<List<HolidayCalendar>> DeleteHolidayCalendar(int Id);
     }
 }

@@ -67,6 +67,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
 
         Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
+        Task<string> bulkuploadholidaycalendar(DataTable target);
 
         Task<string> bulkuploadtimetable(DataTable target);
 
@@ -149,6 +150,12 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<LeaveModel>> InsertLeave(LeaveModel model);
         Task<List<LeaveModel>> UpdateLeave(LeaveModel model);
         Task<List<LeaveModel>> DeleteLeave(int id);
+
+
+        Task<List<HolidayCalendar>> GetHolidayCalendar(int? Id);
+        Task<List<HolidayCalendar>> InsertHolidayCalendar(HolidayCalendar holiday);
+        Task<List<HolidayCalendar>> UpdateHolidayCalendar(HolidayCalendar holiday);
+        Task<List<HolidayCalendar>> DeleteHolidayCalendar(int Id);
     }
 
 }
