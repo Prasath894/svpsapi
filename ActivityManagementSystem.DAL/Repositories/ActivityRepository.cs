@@ -283,8 +283,16 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Gardian2Name = studentDetails.Gardian2Name,
                 Gardian2MobileNumber = studentDetails.Gardian2MobileNumber,
                 Gardian2Photo = studentDetails.Gardian2Photo,
-               
-               
+
+                Gardian3Name = studentDetails.Gardian3Name,
+                Gardian3MobileNumber = studentDetails.Gardian3MobileNumber,
+                Gardian3Photo = studentDetails.Gardian3Photo,
+
+                Gardian4Name = studentDetails.Gardian4Name,
+                Gardian4MobileNumber = studentDetails.Gardian4MobileNumber,
+                Gardian4Photo = studentDetails.Gardian4Photo,
+
+
                 CreatedBy = studentDetails.CreatedBy,
 
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -338,7 +346,13 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Gardian2Name = studentDetails.Gardian2Name,
                 Gardian2MobileNumber = studentDetails.Gardian2MobileNumber,
                 Gardian2Photo = studentDetails.Gardian2Photo,
-               
+                Gardian3Name = studentDetails.Gardian3Name,
+                Gardian3MobileNumber = studentDetails.Gardian3MobileNumber,
+                Gardian3Photo = studentDetails.Gardian3Photo,
+
+                Gardian4Name = studentDetails.Gardian4Name,
+                Gardian4MobileNumber = studentDetails.Gardian4MobileNumber,
+                Gardian4Photo = studentDetails.Gardian4Photo,
                 ModifiedBy = studentDetails.ModifiedBy,
             }, commandType: CommandType.StoredProcedure).ToList());
         }

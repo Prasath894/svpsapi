@@ -189,6 +189,50 @@ namespace ActivityManagementSystem.Domain.Models.Activity
 
 
         /// <summary>
+        /// Guardian 3 name.
+        /// </summary>
+        [JsonPropertyName("gardian3Name")]
+        public string Gardian3Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Guardian 3 mobile number.
+        /// </summary>
+        [JsonPropertyName("gardian3MobileNumber")]
+        public string Gardian3MobileNumber { get; set; } = string.Empty;
+
+
+
+        /// <summary>
+        /// Guardian 3 photo.
+        /// </summary>
+        [JsonPropertyName("gardian3Photo")]
+        public string Gardian3Photo { get; set; } = string.Empty;
+
+
+        /// <summary>
+        /// Guardian 4 name.
+        /// </summary>
+        [JsonPropertyName("gardian4Name")]
+        public string Gardian4Name { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Guardian 4 mobile number.
+        /// </summary>
+        [JsonPropertyName("gardian4MobileNumber")]
+        public string Gardian4MobileNumber { get; set; } = string.Empty;
+
+
+
+        /// <summary>
+        /// Guardian 4 photo.
+        /// </summary>
+        [JsonPropertyName("gardian4Photo")]
+        public string Gardian4Photo { get; set; } = string.Empty;
+
+
+
+
+        /// <summary>
         /// Section mapping status.
         /// </summary>
         [JsonPropertyName("isSectionMapped")]
