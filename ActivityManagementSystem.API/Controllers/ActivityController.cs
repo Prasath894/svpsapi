@@ -2459,7 +2459,21 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-
+        [HttpPost]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> DeleteuserAccount(int id)
+        {
+            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
+            //$"\r\n product subcategories", ToString());
+            var result = "Account will be deleted in sometime!";
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(TimetableModel))]
         [ProducesResponseType(404)]
