@@ -24,6 +24,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Net.Http.Headers;
 using System.Text;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 namespace ActivityManagementSystem.Service
 {
@@ -65,7 +67,16 @@ namespace ActivityManagementSystem.Service
 
                 return new Serilog.Extensions.Logging.SerilogLoggerFactory(logger, true);
             });
+            // Increase File Upload Size Limits
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 524288000; // 500MB
+            });
 
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.Limits.MaxRequestBodySize = 524288000; // 500MB
+            });
 
             services.AddControllers();
             services.AddSingleton(AppSettings);

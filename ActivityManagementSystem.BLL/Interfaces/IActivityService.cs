@@ -81,8 +81,8 @@ namespace ActivityManagementSystem.BLL.Interfaces
 
         
         Task<List<FacultyModel>> GetFacultyDetails(int? Id);
-        string InsertFacultyDetails(FacultyModel facultyDetails);
-        string UpdateFacultyDetails(FacultyModel facultyDetails);
+        Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails);
+        Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails);
         Task<List<FacultyModel>> DeleteFacultyDetails(int Id);
         //Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);
      

@@ -34,7 +34,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -81,7 +81,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             if (!string.IsNullOrEmpty(user.Role.ToString()))
             {
-                if (((user.Role.ToString() == "Parent") || (user.Role.ToString() == "Student")) && (string.IsNullOrEmpty(user.MobileNo)))
+                if (((user.Role.ToString() == "Parent") || (user.Role.ToString() == "Student")) && (string.IsNullOrEmpty(user.AdmissionNo)))
                 {
                     return BadRequestError("Mobile number cannot be empty.");
                 }
@@ -114,8 +114,55 @@ namespace ActivityManagementSystem.API.Controllers
 
         }
 
-    
-       
+        [AllowAnonymous]
+        [HttpGet]
+        [ProducesResponseType(200 , Type =typeof(StudentMobileList))]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.InternalServerError)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.ServiceUnavailable)]
+        [ProducesResponseType(typeof(ProblemDetails), (int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> GetLoginList(string mobileNo)
+        {
+            
+                if ( (string.IsNullOrEmpty(mobileNo)))
+                {
+                    return BadRequestError("Mobile number cannot be empty.");
+                }
+              
+
+            try
+            {
+                var students = await _activityService.Service.GetStudentDetails(null);
+                var student = students.Select(x =>
+                    (x.Father_MobileNumber?.Equals(mobileNo) ?? false) ||
+                    (x.Mother_MobileNumber?.Equals(mobileNo) ?? false));
+                if (student != null)
+                {
+                    List<StudentMobileList> matchingAdmissionNumbers = students
+                            .Where(s => s.Father_MobileNumber == mobileNo || s.Mother_MobileNumber == mobileNo)
+                            .Select(s => new StudentMobileList
+                            {
+                                AdmissionNo = s.AdmissionNumber,
+                                StudentName = s.StudentName
+                            })
+                            .ToList();
+
+                    return Ok(matchingAdmissionNumbers);
+                }
+                else
+                {
+                    throw new Exception("The mobile number does not match.");
+                }
+               
+            }
+            catch (Exception ex)
+            {
+                return BadRequestError(ex);
+            }
+
+        }
+
 
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(FacultyDropdown))]
@@ -325,12 +372,13 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(FacultyModel))]
+        [ProducesResponseType(200, Type = typeof(List<FacultyModel>))]
         [ProducesResponseType(404)]
         public async Task<IActionResult> InsertFaculty([FromBody] FacultyModel faculty)
         {
             //FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = _activityService.Service.InsertFacultyDetails(faculty);
+            var result = await _activityService.Service.InsertFacultyDetails(faculty);
+            _logger.LogDebug(result.ToString());
             if (result == null)
             {
                 return NoContent();
@@ -1149,6 +1197,7 @@ namespace ActivityManagementSystem.API.Controllers
             return Ok(result);
         }
         [HttpGet]
+        [EnableCors]
         public async Task<IActionResult> DownloadTemplate()
         {
             var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}.zip";
@@ -2887,42 +2936,48 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-        [HttpGet]      
-        public async Task<IActionResult> GetAllInfoGalore(string infoType,int? id)
+        [HttpGet]
+        public async Task<IActionResult> GetAllInfoGalore(string infoType, int? id)
         {
+            var result = await _activityService.Service.GetAllInfoGalore(infoType, id);
 
+            _logger.LogDebug(JsonConvert.SerializeObject(result));
 
-                var result = await _activityService.Service.GetAllInfoGalore(infoType, id);
+            if (result == null || !result.Any())
+            {
+                return NoContent();
+            }
 
-                _logger.LogDebug(JsonConvert.SerializeObject(result));
+            string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", "InfoGalore", $"InfoGalore-{id}");
 
-                if (result == null || !result.Any())
+            // Ensure the directory exists
+            Directory.CreateDirectory(destination);
+
+            var extractedFiles = new ConcurrentBag<InfoAttachmentModel>();
+            var processedFiles = new ConcurrentDictionary<string, bool>(); // Track processed file paths
+
+            // Process each entry in parallel
+            await Parallel.ForEachAsync(result, async (entry, _) =>
+            {
+                try
                 {
-                    return NoContent();
-                }
-
-                string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", "InfoGalore", $"InfoGalore-{id}");
-
-                // Ensure the directory exists
-                Directory.CreateDirectory(destination);
-
-                var extractedFiles = new ConcurrentBag<InfoAttachmentModel>();
-
-                // Process each entry in parallel
-                await Parallel.ForEachAsync(result, async (entry, _) =>
-                {
-                    try
+                    if (!string.IsNullOrEmpty(entry.InfoFilePath) && Directory.Exists(entry.InfoFilePath))
                     {
-                        if (!string.IsNullOrEmpty(entry.InfoFilePath) && Directory.Exists(entry.InfoFilePath))
+                        var files = Directory.GetFiles(entry.InfoFilePath);
+
+                        foreach (var file in files)
                         {
-                            var files = Directory.GetFiles(entry.InfoFilePath);
+                            var fileName = Path.GetFileName(file);
+                            var destFile = Path.Combine(destination, fileName);
 
-                            foreach (var file in files)
+                            if (!processedFiles.ContainsKey(destFile)) // Avoid duplicates
                             {
-                                var fileName = Path.GetFileName(file);
-                                var destFile = Path.Combine(destination, fileName);
+                                processedFiles[destFile] = true; // Mark as processed
 
-                                System.IO.File.Copy(file, destFile, true);
+                                if (!System.IO.File.Exists(destFile))
+                                {
+                                    System.IO.File.Copy(file, destFile, true);
+                                }
 
                                 var attachment = new InfoAttachmentModel
                                 {
@@ -2940,16 +2995,17 @@ namespace ActivityManagementSystem.API.Controllers
                             }
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"Error processing files for entry {entry.InfoFilePath}: {ex.Message}");
-                    }
-                });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing files for entry {entry.InfoFilePath}: {ex.Message}");
+                }
+            });
 
-                return Ok(extractedFiles);
-            }
+            return Ok(extractedFiles);
+        }
 
-        
+
 
         [HttpPost] 
         public async Task<IActionResult> InsertInfoGalore([FromForm] InfoGaloreModel infoGaloreModel)

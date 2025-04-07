@@ -57,6 +57,11 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("houseId")]
         public int HouseId { get; set; } = 0;
+        /// <summary>
+        /// Role ID of the student.
+        /// </summary>
+        [JsonPropertyName("roleId")]
+        public int RoleId { get; set; } = 0;
 
         /// <summary>
         /// Blood group of the student.

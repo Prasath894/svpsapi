@@ -25,7 +25,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHousePointDetail";
         public const string SP_DELETEHOUSEACTIVITY = "[sp_DeleteHousePointDetail]";
 
-        public const string SP_INTERESTEDSTUDENTLIST = "[sp_GetInterestStudentListForCompetition]";
+        public const string SP_INTERESTEDSTUDENTLIST = "[cc]";
         public const string SP_UPDATEINTERESTED = "[sp_UpdateInterestedCompetition]";
         
 
