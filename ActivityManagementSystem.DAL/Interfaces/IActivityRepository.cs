@@ -51,8 +51,8 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<string> UpdateActivityFilepathdata(string target, int id, string files);
         
         Task<List<FacultyModel>> GetFacultyDetails(int? Id);
-        string InsertFacultyDetails(FacultyModel facultyDetails);
-        string UpdateFacultyDetails(FacultyModel facultyDetails);
+        Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails);
+        Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails);
         Task<List<FacultyModel>> DeleteFacultyDetails(int Id);
         Task<List<HouseModel>> GetAllHouse(int? Id);
         Task<List<HouseModel>> InsertHouseDetails(HouseModel house);

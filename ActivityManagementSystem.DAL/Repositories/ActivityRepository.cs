@@ -373,94 +373,68 @@ namespace ActivityManagementSystem.DAL.Repositories
                     .ToList());
         }
 
-        public string InsertFacultyDetails(FacultyModel facultyDetails)
+        public Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails)
         {
             var spName = ConstantSPnames.SP_INSERTFACULTY;
-            using (SqlConnection sqlconnection =
-                     new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
-            {
-                try
-                {
-                    sqlconnection.Open();
-                    SqlCommand command = new SqlCommand(spName, sqlconnection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    // command.Parameters.Add("Id", SqlDbType.Int).Value = facultyDetails.Id;
-                    command.Parameters.Add("UserName", SqlDbType.VarChar).Value = facultyDetails.UserName;
-                    command.Parameters.Add("Password", SqlDbType.VarChar).Value = facultyDetails.Password;
-                    command.Parameters.Add("RoleId", SqlDbType.BigInt).Value = facultyDetails.RoleId;
-                    command.Parameters.Add("FacultyId", SqlDbType.VarChar).Value = facultyDetails.FacultyId;
-                    command.Parameters.Add("Faculty_FirstName", SqlDbType.VarChar).Value = facultyDetails.Faculty_FirstName;
-                    command.Parameters.Add("Faculty_MiddleName", SqlDbType.VarChar).Value = facultyDetails.Faculty_MiddleName;
-                    command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
-                    command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
-                    command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                    command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
-                    command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2;
-                    command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
-                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
-                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
-                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
-                    command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
-                    command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
-                    command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
-                    command.Parameters.Add("ModifiedDate", SqlDbType.DateTime).Value = facultyDetails.ModifiedDate;
-                    int result = command.ExecuteNonQuery();
-                    sqlconnection.Close();
-                    return result.ToString();
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message.ToString();
-                }
 
-                
-            }
+            return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
+            {
+                //Id = facultyDetails.Id,
+                UserName = facultyDetails.UserName,
+                Password = facultyDetails.Password,
+                RoleId = facultyDetails.RoleId,
+                FacultyId = facultyDetails.FacultyId,
+                Faculty_FirstName = facultyDetails.Faculty_FirstName,
+                Faculty_MiddleName = facultyDetails.Faculty_MiddleName,
+                Faculty_LastName = facultyDetails.Faculty_LastName,
+                Gender = facultyDetails.Gender,
+                DOB = facultyDetails.DOB,
+                FacultyMobileNo_1 = facultyDetails.FacultyMobileNo_1,
+                FacultyMobileNo_2 = facultyDetails.FacultyMobileNo_2,
+                Email = facultyDetails.Email,
+                FilePath = facultyDetails.FilePath,
+                FileNames = facultyDetails.FileNames,
+                BloodGroup = facultyDetails.BloodGroup,
+                Address = facultyDetails.Address,
+                CreatedBy = facultyDetails.CreatedBy,
+                CreatedDate = facultyDetails.CreatedDate,
+                ModifiedBy = facultyDetails.ModifiedBy,
+                ModifiedDate = facultyDetails.ModifiedDate
+            }, commandType: CommandType.StoredProcedure).ToList());
+           
+
+
+        
         }
-        public string UpdateFacultyDetails(FacultyModel facultyDetails)
+        public Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
         {
             var spName = ConstantSPnames.SP_UPDATEFACULTY;
 
-            using (SqlConnection sqlconnection =
-                  new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+           
+            return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
             {
-                try
-                {
-                    sqlconnection.Open();
-                    SqlCommand command = new SqlCommand(spName, sqlconnection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("Id", SqlDbType.Int).Value = facultyDetails.Id;
-                    command.Parameters.Add("UserName", SqlDbType.VarChar).Value = facultyDetails.UserName;
-                    command.Parameters.Add("Password", SqlDbType.VarChar).Value = facultyDetails.Password;
-                    command.Parameters.Add("RoleId", SqlDbType.BigInt).Value = facultyDetails.RoleId;
-                    command.Parameters.Add("FacultyId", SqlDbType.VarChar).Value = facultyDetails.FacultyId;
-                    command.Parameters.Add("Faculty_FirstName", SqlDbType.VarChar).Value = facultyDetails.Faculty_FirstName;
-                    command.Parameters.Add("Faculty_MiddleName", SqlDbType.VarChar).Value = facultyDetails.Faculty_MiddleName ?? (object)DBNull.Value;
-                    command.Parameters.Add("Faculty_LastName", SqlDbType.VarChar).Value = facultyDetails.Faculty_LastName;
-                    command.Parameters.Add("Gender", SqlDbType.VarChar).Value = facultyDetails.Gender;
-                    command.Parameters.Add("DOB", SqlDbType.DateTime).Value = facultyDetails.DOB;
-                  
-                    command.Parameters.Add("FacultyMobileNo_1", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_1;
-                    command.Parameters.Add("FacultyMobileNo_2", SqlDbType.VarChar).Value = facultyDetails.FacultyMobileNo_2 ?? (object)DBNull.Value;
-                    command.Parameters.Add("Email", SqlDbType.VarChar).Value = facultyDetails.Email;
-                    command.Parameters.Add("FilePath", SqlDbType.VarChar).Value = facultyDetails.FilePath;
-                    command.Parameters.Add("FileNames", SqlDbType.VarChar).Value = facultyDetails.FileNames;
-                    command.Parameters.Add("BloodGroup", SqlDbType.VarChar).Value = facultyDetails.BloodGroup;
-                    command.Parameters.Add("Address", SqlDbType.VarChar).Value = facultyDetails.Address;
-                    command.Parameters.Add("CreatedBy", SqlDbType.VarChar).Value = facultyDetails.CreatedBy;
-                    command.Parameters.Add("CreatedDate", SqlDbType.DateTime).Value = facultyDetails.CreatedDate;
-                    command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultyDetails.ModifiedBy;
-                    command.Parameters.Add("ModifiedDate", SqlDbType.DateTime).Value = facultyDetails.ModifiedDate;
-                    int result = command.ExecuteNonQuery();
-                    sqlconnection.Close();
-                    return result.ToString();
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message.ToString();
-                }
-               
-            }
+                Id = facultyDetails.Id,
+                UserName = facultyDetails.UserName,
+                Password = facultyDetails.Password,
+                RoleId = facultyDetails.RoleId,
+                FacultyId = facultyDetails.FacultyId,
+                Faculty_FirstName = facultyDetails.Faculty_FirstName,
+                Faculty_MiddleName = facultyDetails.Faculty_MiddleName,
+                Faculty_LastName = facultyDetails.Faculty_LastName,
+                Gender = facultyDetails.Gender,
+                DOB = facultyDetails.DOB,
+                FacultyMobileNo_1 = facultyDetails.FacultyMobileNo_1,
+                FacultyMobileNo_2 = facultyDetails.FacultyMobileNo_2,
+                Email = facultyDetails.Email,
+                FilePath = facultyDetails.FilePath,
+                FileNames = facultyDetails.FileNames,
+                BloodGroup = facultyDetails.BloodGroup,
+                Address = facultyDetails.Address,
+                CreatedBy = facultyDetails.CreatedBy,
+                CreatedDate = facultyDetails.CreatedDate,
+                ModifiedBy = facultyDetails.ModifiedBy,
+                ModifiedDate = facultyDetails.ModifiedDate
+            }, commandType: CommandType.StoredProcedure).ToList());
 
         }
 

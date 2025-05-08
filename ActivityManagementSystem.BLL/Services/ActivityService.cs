@@ -439,22 +439,22 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string InsertFacultyDetails(FacultyModel facultyDetails)
+        public virtual async Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails)
         {
             try
             {
-                return _activityRepository.Repository.InsertFacultyDetails(facultyDetails);
+                return await _activityRepository.Repository.InsertFacultyDetails(facultyDetails);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual string UpdateFacultyDetails(FacultyModel facultyDetails)
+        public virtual async Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
         {
             try
             {
-                return _activityRepository.Repository.UpdateFacultyDetails(facultyDetails);
+                return await _activityRepository.Repository.UpdateFacultyDetails(facultyDetails);
             }
             catch (Exception ex)
             {
