@@ -24,6 +24,7 @@ using Table = Xceed.Document.NET.Table;
 using Color = System.Drawing.Color;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.SqlServer.Management.HadrModel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 //using Microsoft.Office.Interop.Word;
 //using Aspose.Words;
@@ -84,6 +85,18 @@ namespace ActivityManagementSystem.DAL.Repositories
             return Task.Factory.StartNew(() => _db.Connection.Query<FacultyDropdown>(spName, new
             {
                 FacultyName = facultyName
+
+
+            }, commandType: CommandType.StoredProcedure).ToList());
+        }
+
+
+        public Task<List<StudentDropdown>> GetStudentByName(string studentName)
+        {
+            var spName = ConstantSPnames.SP_GETSTUDENTBYNAME;
+            return Task.Factory.StartNew(() => _db.Connection.Query<StudentDropdown>(spName, new
+            {
+                StudentName = studentName
 
 
             }, commandType: CommandType.StoredProcedure).ToList());
@@ -379,7 +392,6 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
             {
-                //Id = facultyDetails.Id,
                 UserName = facultyDetails.UserName,
                 Password = facultyDetails.Password,
                 RoleId = facultyDetails.RoleId,
@@ -401,15 +413,42 @@ namespace ActivityManagementSystem.DAL.Repositories
                 ModifiedBy = facultyDetails.ModifiedBy,
                 ModifiedDate = facultyDetails.ModifiedDate
             }, commandType: CommandType.StoredProcedure).ToList());
+        }
+              
            
 
 
-        
-        }
+
+
+       
         public Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
         {
             var spName = ConstantSPnames.SP_UPDATEFACULTY;
 
+            return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
+            {
+                Id=facultyDetails.Id,
+                UserName = facultyDetails.UserName,
+                Password = facultyDetails.Password,
+                RoleId = facultyDetails.RoleId,
+                FacultyId = facultyDetails.FacultyId,
+                Faculty_FirstName = facultyDetails.Faculty_FirstName,
+                Faculty_MiddleName = facultyDetails.Faculty_MiddleName,
+                Faculty_LastName = facultyDetails.Faculty_LastName,
+                Gender = facultyDetails.Gender,
+                DOB = facultyDetails.DOB,
+                FacultyMobileNo_1 = facultyDetails.FacultyMobileNo_1,
+                FacultyMobileNo_2 = facultyDetails.FacultyMobileNo_2,
+                Email = facultyDetails.Email,
+                FilePath = facultyDetails.FilePath,
+                FileNames = facultyDetails.FileNames,
+                BloodGroup = facultyDetails.BloodGroup,
+                Address = facultyDetails.Address,
+                CreatedBy = facultyDetails.CreatedBy,
+                CreatedDate = facultyDetails.CreatedDate,
+                ModifiedBy = facultyDetails.ModifiedBy,
+                ModifiedDate = facultyDetails.ModifiedDate
+            }, commandType: CommandType.StoredProcedure).ToList());
            
             return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
             {
@@ -1724,7 +1763,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                     ws.Cell(rowCount++, colCount).Value = "SONA VALLIAPPA PUBLIC SCHOOL";
                     ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
-                    ws.Cell(rowCount++, colCount).Value = $"STUDENT MARK REPORT-{test.ToUpper()} TEST";
+                    ws.Cell(rowCount++, colCount).Value = $"STUDENT MARK REPORT-{test.ToUpper()}";
                     ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
                     ws.Cell(rowCount, colCount).Value = "GRADE: " + secArr[0].ToUpper();

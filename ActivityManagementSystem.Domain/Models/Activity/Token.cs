@@ -36,5 +36,18 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// The Id of the user.
         /// </summary>
         public int UserId { get; set; } = 0;
+        /// <summary>
+        /// The Role Id of the user.
+        /// </summary>
+        public int RoleId { get; set; } = 0;
+    }
+    public class StudentMobileList
+    {
+        /// <summary>
+        /// The token to be used for accessing the resources.
+        /// </summary>
+        public string AdmissionNo { get; set; } = string.Empty;
+
+        public string StudentName { get; set; } = string.Empty;
     }
 }

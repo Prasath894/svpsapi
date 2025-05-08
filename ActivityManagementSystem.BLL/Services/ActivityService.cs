@@ -63,12 +63,12 @@ namespace ActivityManagementSystem.BLL.Services
             {
                 string userRole = user.Role.ToString();
 
-                if (user.Role == "Teacher" || user.Role == "Admin" || user.Role =="Principal")
+                if (user.Role == "Teacher" || user.Role == "Admin" || user.Role =="Principal" || user.Role == "Director")
                 {
                     var faculties = await _activityRepository.Repository.GetUserDetails(user.Username, user.Password,user.Role);
                     if (faculties == null || faculties.Count == 0)  // Fix: Count should be compared with 0
                     {
-                        throw new Exception("Server unavailable.");
+                        throw new Exception("The username and password do not match.");
                     }
 
                     var faculty = faculties.FirstOrDefault(x =>
@@ -77,7 +77,7 @@ namespace ActivityManagementSystem.BLL.Services
 
                     if (faculty != null)
                     {
-                        return GetToken(faculty.FacultyName, userRole, faculty.Id,faculty.UserName);
+                        return GetToken(faculty.FacultyName, userRole,faculty.RoleId, faculty.Id,faculty.UserName);
                     }
                     else
                     {
@@ -89,27 +89,37 @@ namespace ActivityManagementSystem.BLL.Services
                     var students = await _activityRepository.Repository.GetStudentDetails(null);
                     if (students == null || students.Count == 0)  // Fix: Count should be compared with 0
                     {
-                        throw new Exception("Server unavailable.");
+                        throw new Exception("The username and password do not match.");
                     }
-
-                    var student = students.FirstOrDefault(x =>
-                        (x.Father_MobileNumber?.Equals(user.MobileNo) ?? false) ||
-                        (x.Mother_MobileNumber?.Equals(user.MobileNo) ?? false));
-
-                    if (student != null)
+                    var student= students.FirstOrDefault(x => x.AdmissionNumber?.Equals(user.AdmissionNo)?? false);
+                    //var student = students.FirstOrDefault(x =>
+                    //    (x.Father_MobileNumber?.Equals(user.MobileNo) ?? false) ||
+                    //    (x.Mother_MobileNumber?.Equals(user.MobileNo) ?? false));
+                    if(student != null)
                     {
-                        string userName = student.Father_MobileNumber.Equals(user.MobileNo) ?
+                        string userName = student.AdmissionNumber.Equals(user.AdmissionNo) ?
                             student.FatherName : student.MotherName;
-                        return GetToken(userName, userRole, student.Id,"empty");
+                        return GetToken(userName, userRole, student.RoleId, student.Id, "empty");
                     }
                     else
                     {
                         throw new Exception("The mobile number does not match.");
                     }
+
+                    //if (student != null)
+                    //{
+                    //    string userName = student.Father_MobileNumber.Equals(user.MobileNo) ?
+                    //        student.FatherName : student.MotherName;
+                    //    return GetToken(userName, userRole,student.RoleId, student.Id,"empty");
+                    //}
+                    //else
+                    //{
+                    //    throw new Exception("The mobile number does not match.");
+                    //}
                 }
 
-                // Default case: if user.Role is not Faculty or Parent
-                throw new Exception("Invalid role specified.");
+                    // Default case: if user.Role is not Faculty or Parent
+                    throw new Exception("Invalid role specified.");
             }
             catch (Exception ex)
             {
@@ -137,9 +147,9 @@ namespace ActivityManagementSystem.BLL.Services
             {
                 actionMethodName = $"ContentLib\\ContentLib-{id}";
             }
-            else if (type == "Event")
+            else if (type == "Events")
             {
-                actionMethodName = $"Event\\Event-{id}";
+                actionMethodName = $"Events\\Events-{id}";
             }
             else if (type == "PressReports")
             {
@@ -207,7 +217,7 @@ namespace ActivityManagementSystem.BLL.Services
             return extractedFiles;
         }
 
-        private Token GetToken(string userName, string userRole, int userId,string facultyUsername)
+        private Token GetToken(string userName, string userRole,int roleId, int userId,string facultyUsername)
         {
             var jwtService = new JwtService(_appSettings.JWTSettings.SecretKey ?? string.Empty,
                     _appSettings.JWTSettings.Issuer ?? string.Empty,_appSettings.JWTSettings.Audience ?? string.Empty);
@@ -227,6 +237,7 @@ namespace ActivityManagementSystem.BLL.Services
                 AccessToken = token,
                 ExpiresAt = expires,
                 UserRole = userRole,
+                RoleId=roleId,
                 Username = userName,
                 FacultyUsername=facultyUsername,
                 UserId = userId
@@ -512,8 +523,22 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
+        public virtual async Task<List<StudentDropdown>> GetStudentByName(string studentName)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetStudentByName(studentName);
 
-     
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
         public virtual async Task<List<HouseModel>> GetAllHouse(int? Id)
         {
             try

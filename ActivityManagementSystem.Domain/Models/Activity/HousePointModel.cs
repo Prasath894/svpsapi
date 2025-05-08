@@ -81,7 +81,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// Gets or sets the date and time when the record was created.
         /// </summary>
         [JsonPropertyName("createdDate")]
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the user who last modified the record.

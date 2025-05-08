@@ -11,8 +11,8 @@ namespace ActivityManagementSystem.Domain.Models
         /// <summary>
         /// The mobile no of the logging-in user.
         /// </summary>
-        [JsonPropertyName("mobileNo")]
-        public string MobileNo { get; set; } = string.Empty;
+        [JsonPropertyName("admissionNo")]
+        public string AdmissionNo { get; set; } = string.Empty;
         /// <summary>
         /// The Username of the logging-in user.
         /// </summary>
@@ -27,6 +27,7 @@ namespace ActivityManagementSystem.Domain.Models
         /// The Role of the logging-in user.
         /// </summary>
         [JsonPropertyName("role")]
-        public string Role { get; set; } 
+        public string Role { get; set; }
+    
     }
 }

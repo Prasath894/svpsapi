@@ -31,8 +31,12 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// </summary>
         [JsonPropertyName("coordinatorId")]
         public int CoordinatorId { get; set; } = 0;
+        /// <summary>
+        /// Coordinator ID for the section.
+        /// </summary>
+        [JsonPropertyName("facultyName")]
+        public string FacultyName { get; set; } = string.Empty;
 
-        
 
         /// <summary>
         /// Indicates whether the section is active.
