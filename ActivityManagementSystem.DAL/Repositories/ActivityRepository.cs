@@ -1237,32 +1237,87 @@ namespace ActivityManagementSystem.DAL.Repositories
                 worksheet.Cell(1, 1).Style.Font.Bold = true;
                 worksheet.Cell(1, 1).Style.Font.FontSize = 14;
                 worksheet.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
+                worksheet.Range(1, 1, 1, dataTable.Columns.Count)
+                 .Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
                 // Add report name row
                 worksheet.Cell(2, 1).Value = reportname;
                 worksheet.Range(2, 1, 2, dataTable.Columns.Count).Merge();
                 worksheet.Cell(2, 1).Style.Font.Bold = true;
                 worksheet.Cell(2, 1).Style.Font.FontSize = 14;
                 worksheet.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-
+                worksheet.Range(2, 1, 2, dataTable.Columns.Count)
+                 .Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
                 // Add header row
-                for (int col = 0; col < dataTable.Columns.Count; col++)
+                int headerRow = 3;
+                int dataStartRow = 4;
+                int totalColumns = dataTable.Columns.Count;
+                int totalRows = dataTable.Rows.Count;
+                int dataEndRow = dataStartRow + totalRows - 1;
+
+                // Write header row
+                for (int col = 0; col < totalColumns; col++)
                 {
-                    worksheet.Cell(3, col + 1).Value = dataTable.Columns[col].ColumnName;
-                    worksheet.Cell(3, col + 1).Style.Font.Bold = true;
+                    var headerCell = worksheet.Cell(headerRow, col + 1);
+                    headerCell.Value = dataTable.Columns[col].ColumnName;
+                    headerCell.Style.Font.Bold = true;
                 }
 
-                // Add data rows
-                for (int row = 0; row < dataTable.Rows.Count; row++)
+                // Write data rows (only once)
+                for (int row = 0; row < totalRows; row++)
                 {
-                    for (int col = 0; col < dataTable.Columns.Count; col++)
+                    for (int col = 0; col < totalColumns; col++)
                     {
-                        worksheet.Cell(row + 4, col + 1).Value = dataTable.Rows[row][col].ToString();
+                        worksheet.Cell(row + dataStartRow, col + 1).Value = dataTable.Rows[row][col]?.ToString();
                     }
                 }
 
+                // Define the full range (header + data)
+                var fullRange = worksheet.Range(headerRow, 1, dataEndRow, totalColumns);
+
+                // Apply border styles to the full table (header + data)
+                fullRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                fullRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
+
+                int lastUsedRow = worksheet.LastRowUsed().RowNumber();
+                int startMergeRow = lastUsedRow + 1;     // First of the 3 rows
+                int endMergeRow = startMergeRow + 2;     // Third row (last row of merge)
+
+               
+
+                // Merge all columns across the 3 rows
+                var signatureRange = worksheet.Range(startMergeRow, 1, endMergeRow, totalColumns);
+                signatureRange.Merge();
+
+                // Set the value only in the last row of the merged range
+                var signatureCell = worksheet.Cell(endMergeRow, totalColumns);
+                signatureRange.Value = "Signature"; // Required for merged cell content
+
+                // Style settings
+                signatureRange.Style.Font.Bold = true;
+                signatureRange.Style.Font.FontSize = 15;
+                signatureRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                signatureRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Bottom;
+                signatureRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+
                 // Auto adjust column width
                 worksheet.Columns().AdjustToContents();
+
+                // Add outer border around the entire content
+                int totalUsedRows = endMergeRow; // Last used row including signature
+                var fullOutlineRange = worksheet.Range(1, 1, totalUsedRows, totalColumns);
+                fullOutlineRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+
+                // Save the file
+                workbook.SaveAs(filePath);
+
+                // Auto adjust column width
+                worksheet.Columns().AdjustToContents();
+                // Calculate the full range including title, report name, headers, data, and signature
+                
+
+                // Apply thick outside border to the full outline
+                fullOutlineRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
                 // Save the file
                 workbook.SaveAs(filePath);
