@@ -12,4 +12,7 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         public string FacultyName { get; set; }
 
     }
+
+    
+   
 }

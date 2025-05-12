@@ -34,7 +34,7 @@ namespace ActivityManagementSystem.API.Controllers
 {
     [Route("api/[Action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ActivityController : ControllerBase
     {
         private readonly AppSettings _appSettings;
@@ -179,7 +179,24 @@ namespace ActivityManagementSystem.API.Controllers
             }
             return Ok(result);
         }
-       
+
+
+        [HttpGet]
+        [ProducesResponseType(200, Type = typeof(StudentDropdown))]
+        [ProducesResponseType(404)]
+        public async Task<IActionResult> GetStudentByName(string StudentName)
+        {
+            // FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
+            var result = await _activityService.Service.GetStudentByName(StudentName);
+
+            _logger.LogDebug(result.ToString());
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
+
 
 
 
@@ -200,11 +217,17 @@ namespace ActivityManagementSystem.API.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 var files = result[i].FileNames;
-                if (files != null)
-                {
-                    result[i].Files = files.Split('|').ToList();
-                    result[i].Files.RemoveAt(result[i].Files.Count - 1);
+                //if (files != null)
+                //{
+                //    result[i].Files = files.Split('|').ToList();
+                //    result[i].Files.RemoveAt(result[i].Files.Count - 1);
 
+                //}
+                if (!string.IsNullOrEmpty(files))
+                {
+                    result[i].Files = files.Split('|')
+                                           .Where(x => !string.IsNullOrWhiteSpace(x)) // Remove empty values
+                                           .ToList();
                 }
                 //  List<string> lst = 
             }
@@ -664,41 +687,47 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(200, Type = typeof(FileUpload))]
         [ProducesResponseType(404)]
 
+        [HttpPost]
+        [ProducesResponseType(200, Type = typeof(FileUpload))]
+        [ProducesResponseType(404)]
         public async Task<IActionResult> UploadfacultystudentFile([FromForm] FileUpload fileUploadModel)
         {
             if (fileUploadModel.FormFiles != null)
             {
-                //subDirectory = subDirectory ?? string.Empty;
                 var target = Path.Combine(Directory.GetCurrentDirectory(), fileUploadModel.TypeofUser, fileUploadModel.TypeofUser + "-" + fileUploadModel.Id);
 
                 if (!Directory.Exists(target))
                 {
                     Directory.CreateDirectory(target);
                 }
-             //   Directory.CreateDirectory(target);
 
+                // Get existing files in the directory
+                List<string> existingFiles = Directory.GetFiles(target).Select(Path.GetFileName).ToList();
 
+                // Upload new files
                 for (int i = 0; i < fileUploadModel.FormFiles.Count; i++)
                 {
                     string path = Path.Combine(target, fileUploadModel.FormFiles[i].FileName);
-                    using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                    // Check if file already exists to prevent duplication
+                    if (!System.IO.File.Exists(path))
                     {
-                        await fileUploadModel.FormFiles[i].CopyToAsync(stream);
+                        using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                        {
+                            await fileUploadModel.FormFiles[i].CopyToAsync(stream);
+                        }
+
+                        // Add new file name to the list
+                        existingFiles.Add(fileUploadModel.FormFiles[i].FileName);
                     }
                 }
-                string filenames = "";
-                if (target != "")
-                {
-                    string[] filePaths = Directory.GetFiles(target);
-                    foreach (var file in filePaths)
-                    {
-                        filenames = filenames + Path.GetFileName(file) + "|";
 
-                    }
+                // Join filenames with '|'
+                string filenames = string.Join("|", existingFiles);
 
-                }
+                // Update file path data in the database
                 var result = await _activityService.Service.UpdateFilepathdata(target, fileUploadModel.Id, filenames, fileUploadModel.TypeofUser);
             }
+
             return Ok();
         }
         [HttpGet]

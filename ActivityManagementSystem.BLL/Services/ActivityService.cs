@@ -450,22 +450,22 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails)
+        public virtual async Task<List<FacultyModel>> InsertFacultyDetails(FacultyModel facultyDetails)
         {
             try
             {
-                return _activityRepository.Repository.InsertFacultyDetails(facultyDetails);
+                return await _activityRepository.Repository.InsertFacultyDetails(facultyDetails);
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        public virtual Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
+        public virtual async Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
         {
             try
             {
-                return _activityRepository.Repository.UpdateFacultyDetails(facultyDetails);
+                return await _activityRepository.Repository.UpdateFacultyDetails(facultyDetails);
             }
             catch (Exception ex)
             {
@@ -523,8 +523,22 @@ namespace ActivityManagementSystem.BLL.Services
             }
         }
 
+        public virtual async Task<List<StudentDropdown>> GetStudentByName(string studentName)
+        {
+            try
+            {
+                return await _activityRepository.Repository.GetStudentByName(studentName);
 
-     
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
+
         public virtual async Task<List<HouseModel>> GetAllHouse(int? Id)
         {
             try

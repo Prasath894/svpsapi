@@ -66,6 +66,7 @@ namespace ActivityManagementSystem.DAL.Constants
 		public const string SP_DELETEFACULTY = "sp_DeleteFacultyDetails";
 		public const string SP_GETUSERDETAILS= "sp_GetUserDetails";
 		public const string SP_GETFACULTYBYNAME = "getFacultydetailsbyName";
+        public const string SP_GETSTUDENTBYNAME = "getStudentdetailsbyName";
         public static string SP_GETMAPPEDSTUDENTBYNAME = "[getMappedStudentbyName]";
 
         public const string SP_GETAlumniBYNAME = "getAlumnidetailsbyName";
