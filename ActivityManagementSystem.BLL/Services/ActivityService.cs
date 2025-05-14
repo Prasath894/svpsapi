@@ -4317,7 +4317,13 @@ namespace ActivityManagementSystem.BLL.Services
 
         }
 
-        
+        public virtual string generateAttendanceCumulativereport(int startYear, int endYear, int sectionId)
+        {
+            return _activityRepository.Repository.generateAttendanceCumulativereport(startYear, endYear, sectionId);
+
+        }
+
+
         public virtual async Task<List<FacultyModel>> GetVerifyPassword(string UserName, string Password)
         {
             try

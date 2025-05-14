@@ -1686,6 +1686,26 @@ namespace ActivityManagementSystem.API.Controllers
             }
         }
 
+        [HttpGet]
+        //[EnableCors]
+        // [EnableCors(origin:"http://103.53.52.215", Headers:"*")]
+        public async Task<FileResult> generateAttendanceCumulativereport(int startYear, int endYear, int sectionId)
+        {
+            try
+            {
+
+
+                var result = _activityService.Service.generateAttendanceCumulativereport(startYear, endYear, sectionId);
+
+                _logger.LogDebug(result.ToString());
+                return await PrepareFileForDownload(result.ToString(), "Excel");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                throw;
+            }
+        }
 
 
 

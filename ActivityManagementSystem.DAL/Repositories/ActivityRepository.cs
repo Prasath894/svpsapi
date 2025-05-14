@@ -1170,6 +1170,67 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
+        private string GenerateExcel(DataTable dataTable, string reportname)
+        {
+            // Define folder and file paths
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            string filePath = Path.Combine(folderPath, "Report.xlsx");
+
+            // Ensure the directory exists
+            if (!Directory.Exists(folderPath))
+            {
+                Directory.CreateDirectory(folderPath);
+            }
+
+            // Delete the old file (if it exists)
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Attendance Report");
+
+                // Add title row
+                worksheet.Cell(1, 1).Value = "Sona Valliappa Public School";
+                worksheet.Range(1, 1, 1, dataTable.Columns.Count).Merge();
+                worksheet.Cell(1, 1).Style.Font.Bold = true;
+                worksheet.Cell(1, 1).Style.Font.FontSize = 14;
+                worksheet.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Add report name row
+                worksheet.Cell(2, 1).Value = reportname;
+                worksheet.Range(2, 1, 2, dataTable.Columns.Count).Merge();
+                worksheet.Cell(2, 1).Style.Font.Bold = true;
+                worksheet.Cell(2, 1).Style.Font.FontSize = 14;
+                worksheet.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Add header row
+                for (int col = 0; col < dataTable.Columns.Count; col++)
+                {
+                    worksheet.Cell(3, col + 1).Value = dataTable.Columns[col].ColumnName;
+                    worksheet.Cell(3, col + 1).Style.Font.Bold = true;
+                }
+
+                // Add data rows
+                for (int row = 0; row < dataTable.Rows.Count; row++)
+                {
+                    for (int col = 0; col < dataTable.Columns.Count; col++)
+                    {
+                        worksheet.Cell(row + 4, col + 1).Value = dataTable.Rows[row][col].ToString();
+                    }
+                }
+
+                // Auto adjust column width
+                worksheet.Columns().AdjustToContents();
+
+                // Save the file
+                workbook.SaveAs(filePath);
+            }
+
+            return filePath; // Return the full file path
+        }
         public string generateExcelList(string role)
         {
             var spMonthwiseAtt = role == "Student"? ConstantSPnames.SP_GETALLSTUDENTDETAILWITHSECTION  : ConstantSPnames.SP_GETALLFACULTYLIST;
@@ -1236,7 +1297,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                         // Create a new DataTable for the transformed data
                         if (dataTable.Rows.Count == 0)
                             return NotFound("No attendance records found.");
-                        strfilepath = GenerateExcel(dataTable, "Daily Attendance Report- Grade:" + grade + "/ Section: " + section);
+                        strfilepath = GenerateExcelSheet(dataTable, "Daily Attendance Report- Grade:" + grade + "/ Section: " + section);
                     }
 
                 }
@@ -1250,122 +1311,297 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        private string GenerateExcel(DataTable dataTable, string reportname)
+        public string generateAttendanceCumulativereport(int startYear, int endyear, int sectionId)
+        {
+            var spMonthwiseAtt = ConstantSPnames.SP_CumulativeAttendance;
+            string strfilepath = "";
+            // DataTable dtCloned = new DataTable();
+
+            try
+            {
+
+                var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
+                using (SqlConnection myConnection = new SqlConnection(con))
+                {
+                    SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
+                    objCmd.CommandType = CommandType.StoredProcedure;
+                    using (var da = new SqlDataAdapter(objCmd))
+                    {
+                        DataSet ds = new DataSet();
+                        objCmd.Parameters.Add("@StartYear", SqlDbType.Int).Value = startYear;
+                        objCmd.Parameters.Add("@EndYear", SqlDbType.Int).Value = endyear;
+
+                        objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
+
+                        objCmd.CommandTimeout = 100000;
+                        da.Fill(ds);
+                        var dataTable = ds.Tables[0];
+                        // Create a new DataTable for the transformed data
+                        if (dataTable.Rows.Count == 0)
+                            return NotFound("No attendance records found.");
+                        strfilepath = GenerateExcelReport(dataTable, "Attendance Cumulative Report");
+                    }
+
+                }
+                return strfilepath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //_logger.LogError(ex.InnerException.ToString());
+
+                return ex.Message;
+            }
+        }
+        private string GenerateExcelReport(DataTable dataTable, string reportname)
         {
             // Define folder and file paths
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-            string filePath = Path.Combine(folderPath, "Report.xlsx");
+            string filePath = Path.Combine(folderPath, "CUMReport.xlsx");
 
-            // Ensure the directory exists
+            // Ensure directory exists
             if (!Directory.Exists(folderPath))
-            {
                 Directory.CreateDirectory(folderPath);
-            }
 
-            // Delete the old file (if it exists)
             if (File.Exists(filePath))
-            {
                 File.Delete(filePath);
-            }
 
             using (var workbook = new XLWorkbook())
             {
-                var worksheet = workbook.Worksheets.Add("Attendance Report");
+                var worksheet = workbook.Worksheets.Add("Cumulative Attendance Report");
 
-                // Add title row
+                // Title Row
                 worksheet.Cell(1, 1).Value = "Sona Valliappa Public School";
-                worksheet.Range(1, 1, 1, dataTable.Columns.Count).Merge();
-                worksheet.Cell(1, 1).Style.Font.Bold = true;
-                worksheet.Cell(1, 1).Style.Font.FontSize = 14;
-                worksheet.Cell(1, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range(1, 1, 1, dataTable.Columns.Count)
-                 .Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                // Add report name row
+                worksheet.Range(1, 1, 1, dataTable.Columns.Count).Merge().Style
+                    .Font.SetBold()
+                    .Font.SetFontSize(14)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                    .Border.OutsideBorder = XLBorderStyleValues.Thick;
+
+                // Report Name Row
                 worksheet.Cell(2, 1).Value = reportname;
-                worksheet.Range(2, 1, 2, dataTable.Columns.Count).Merge();
-                worksheet.Cell(2, 1).Style.Font.Bold = true;
-                worksheet.Cell(2, 1).Style.Font.FontSize = 14;
-                worksheet.Cell(2, 1).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                worksheet.Range(2, 1, 2, dataTable.Columns.Count)
-                 .Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-                // Add header row
+                worksheet.Range(2, 1, 2, dataTable.Columns.Count).Merge().Style
+                    .Font.SetBold()
+                    .Font.SetFontSize(14)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                    .Border.OutsideBorder = XLBorderStyleValues.Thick;
+
                 int headerRow = 3;
                 int dataStartRow = 4;
-                int totalColumns = dataTable.Columns.Count;
-                int totalRows = dataTable.Rows.Count;
-                int dataEndRow = dataStartRow + totalRows - 1;
 
-                // Write header row
-                for (int col = 0; col < totalColumns; col++)
+                // Write headers
+                for (int col = 0; col < dataTable.Columns.Count; col++)
                 {
                     var headerCell = worksheet.Cell(headerRow, col + 1);
                     headerCell.Value = dataTable.Columns[col].ColumnName;
                     headerCell.Style.Font.Bold = true;
+                    headerCell.Style.Fill.BackgroundColor = XLColor.LightGray;
+                    headerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 }
 
-                // Write data rows (only once)
-                for (int row = 0; row < totalRows; row++)
+                // Write data rows
+                for (int row = 0; row < dataTable.Rows.Count; row++)
                 {
-                    for (int col = 0; col < totalColumns; col++)
+                    for (int col = 0; col < dataTable.Columns.Count; col++)
                     {
-                        worksheet.Cell(row + dataStartRow, col + 1).Value = dataTable.Rows[row][col]?.ToString();
+                        var value = dataTable.Rows[row][col];
+                        var cell = worksheet.Cell(row + dataStartRow, col + 1);
+
+                        if (value == DBNull.Value)
+                            cell.Value = ""; // or "N/A"
+                        else
+                            cell.Value = value?.ToString() ?? string.Empty;
+
+
                     }
                 }
 
-                // Define the full range (header + data)
-                var fullRange = worksheet.Range(headerRow, 1, dataEndRow, totalColumns);
+                int totalColumns = dataTable.Columns.Count;
+                int dataEndRow = dataStartRow + dataTable.Rows.Count - 1;
 
-                // Apply border styles to the full table (header + data)
+                // Apply table border
+                var fullRange = worksheet.Range(headerRow, 1, dataEndRow, totalColumns);
                 fullRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
                 fullRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
 
+                // Apply percentage format
+                string[] percentCols = { "% for L.T.", "% for S.T.", "Overall %" };
+                foreach (string colName in percentCols)
+                {
+                    if (dataTable.Columns.Contains(colName))
+                    {
+                        int colIndex = dataTable.Columns.IndexOf(colName) + 1;
+                        var percentRange = worksheet.Range(dataStartRow, colIndex, dataEndRow, colIndex);
+                        percentRange.Style.NumberFormat.Format = "0.00";
+                        // Optional: highlight low attendance
+                        percentRange.AddConditionalFormat()
+                            .WhenLessThan(75)
+                            .Fill.SetBackgroundColor(XLColor.LightPink);
+                    }
+                }
 
-                int lastUsedRow = worksheet.LastRowUsed().RowNumber();
-                int startMergeRow = lastUsedRow + 1;     // First of the 3 rows
-                int endMergeRow = startMergeRow + 2;     // Third row (last row of merge)
-
-               
-
-                // Merge all columns across the 3 rows
-                var signatureRange = worksheet.Range(startMergeRow, 1, endMergeRow, totalColumns);
+                // Signature section
+                int signatureRowStart = dataEndRow + 1;
+                int signatureRowEnd = signatureRowStart + 2;
+                var signatureRange = worksheet.Range(signatureRowStart, 1, signatureRowEnd, totalColumns);
                 signatureRange.Merge();
+                signatureRange.Value = "Signature";
+                signatureRange.Style
+                    .Font.SetBold()
+                    .Font.SetFontSize(15)
+                    .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Right)
+                    .Alignment.SetVertical(XLAlignmentVerticalValues.Bottom)
+                    .Border.OutsideBorder = XLBorderStyleValues.Thick;
 
-                // Set the value only in the last row of the merged range
-                var signatureCell = worksheet.Cell(endMergeRow, totalColumns);
-                signatureRange.Value = "Signature"; // Required for merged cell content
-
-                // Style settings
-                signatureRange.Style.Font.Bold = true;
-                signatureRange.Style.Font.FontSize = 15;
-                signatureRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
-                signatureRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Bottom;
-                signatureRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
-
-                // Auto adjust column width
-                worksheet.Columns().AdjustToContents();
-
-                // Add outer border around the entire content
-                int totalUsedRows = endMergeRow; // Last used row including signature
-                var fullOutlineRange = worksheet.Range(1, 1, totalUsedRows, totalColumns);
+                // Outer border
+                var fullOutlineRange = worksheet.Range(1, 1, signatureRowEnd, totalColumns);
                 fullOutlineRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
-                // Save the file
-                workbook.SaveAs(filePath);
-
-                // Auto adjust column width
+                // Auto fit
                 worksheet.Columns().AdjustToContents();
-                // Calculate the full range including title, report name, headers, data, and signature
-                
-
-                // Apply thick outside border to the full outline
-                fullOutlineRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
 
                 // Save the file
                 workbook.SaveAs(filePath);
             }
 
-            return filePath; // Return the full file path
+            return filePath;
         }
+
+
+
+        private string GenerateExcelSheet(DataTable dataTable, string reportname)
+        {
+            string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+            string filePath = Path.Combine(folderPath, "Report.xlsx");
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Attendance Report");
+                int totalColumns = dataTable.Columns.Count;
+                int totalRows = dataTable.Rows.Count;
+
+                // 1. School Title
+                // 1. School Title with separate thick border
+                worksheet.Cell(1, 1).Value = "Sona Valliappa Public School";
+                var schoolTitleRange = worksheet.Range(1, 1, 1, totalColumns);
+                schoolTitleRange.Merge();
+                schoolTitleRange.Style.Font.SetBold()
+                                  .Font.SetFontSize(14)
+                                  .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                                  .Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                // Apply full thick border to school title
+                schoolTitleRange.Style.Border.TopBorder = XLBorderStyleValues.Thick;
+                schoolTitleRange.Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+                schoolTitleRange.Style.Border.LeftBorder = XLBorderStyleValues.Thick;
+                schoolTitleRange.Style.Border.RightBorder = XLBorderStyleValues.Thick;
+
+
+                // 2. Report Title with separate thick border
+                worksheet.Cell(2, 1).Value = reportname;
+                var reportTitleRange = worksheet.Range(2, 1, 2, totalColumns);
+                reportTitleRange.Merge();
+                reportTitleRange.Style.Font.SetBold()
+                                   .Font.SetFontSize(13)
+                                   .Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center)
+                                   .Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                // Apply full thick border to report title
+                reportTitleRange.Style.Border.TopBorder = XLBorderStyleValues.Thick;
+                reportTitleRange.Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+                reportTitleRange.Style.Border.LeftBorder = XLBorderStyleValues.Thick;
+                reportTitleRange.Style.Border.RightBorder = XLBorderStyleValues.Thick;
+                // 3. Column Headers
+                int headerRow = 3;
+                for (int col = 0; col < totalColumns; col++)
+                {
+                    worksheet.Cell(headerRow, col + 1).Value = dataTable.Columns[col].ColumnName;
+                    worksheet.Cell(headerRow, col + 1).Style.Font.SetBold().Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                }
+
+                // 4. Attendance Data Rows
+                int dataStartRow = headerRow + 1;
+                for (int row = 0; row < totalRows; row++)
+                {
+                    for (int col = 0; col < totalColumns; col++)
+                    {
+                        worksheet.Cell(dataStartRow + row, col + 1).Value = dataTable.Rows[row][col]?.ToString();
+                        worksheet.Cell(dataStartRow + row, col + 1).Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                    }
+                }
+
+                int dataEndRow = dataStartRow + totalRows - 1;
+                
+
+                // 5. Number Present Daily & Initials of Teacher (below data)
+                int summaryRowStart = dataEndRow + 1;
+
+                // "Number Present Daily" - Column B
+                worksheet.Cell(summaryRowStart, 1).Value = "Number Present Daily";
+                worksheet.Range(summaryRowStart, 1, summaryRowStart + 1, 2).Merge().Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                worksheet.Cell(summaryRowStart, 3).Value = "M";
+                worksheet.Cell(summaryRowStart + 1, 3).Value = "E";
+                summaryRowStart= summaryRowStart+2;
+                worksheet.Cell(summaryRowStart, 1).Value = "Initials Of Teachers";
+                worksheet.Range(summaryRowStart, 1, summaryRowStart + 1, 2).Merge().Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                worksheet.Cell(summaryRowStart, 3).Value = "M";
+                worksheet.Cell(summaryRowStart + 1, 3).Value = "E";
+
+
+
+               
+
+
+
+                // 6. Monthly Summary Rows
+                int rollSummaryStart = summaryRowStart + 2;
+                worksheet.Cell(rollSummaryStart, 1).Value = "No. on Roll at the beginning of Month ..........   No. of School Days ..........   Average No. on Roll ..........";
+                worksheet.Range(rollSummaryStart, 1, rollSummaryStart, totalColumns - 8).Merge();
+
+                worksheet.Cell(rollSummaryStart + 1, 1).Value = "Admitted during the month ..........   Left ..........   Average Attendance ..........   During Month ..................";
+                worksheet.Range(rollSummaryStart + 1, 1, rollSummaryStart + 1, totalColumns - 8).Merge();
+
+                worksheet.Cell(rollSummaryStart + 2, 1).Value = "No. on Roll at the end of Month ..........   During Month ..................";
+                worksheet.Range(rollSummaryStart + 2, 1, rollSummaryStart + 2, totalColumns - 8).Merge();
+
+                // 7. Certification Box - aligned right
+                int certifyStartCol = totalColumns - 7;
+                var certifyRange = worksheet.Range(rollSummaryStart, certifyStartCol, rollSummaryStart + 2, totalColumns);
+                certifyRange.Merge();
+                certifyRange.Value = "Certified attendance marked is correct\nH. M. / Teacher";
+                certifyRange.Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                certifyRange.Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                certifyRange.Style.Alignment.SetWrapText(true);
+                certifyRange.Style.Font.SetBold();
+                certifyRange.Style.Font.SetFontSize(8);
+
+                // 8. Adjustments
+                worksheet.Columns().AdjustToContents();
+                worksheet.Rows().AdjustToContents();
+
+                worksheet.RangeUsed().Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+                worksheet.RangeUsed().Style.Alignment.SetHorizontal(XLAlignmentHorizontalValues.Center);
+                // 9. Apply thick outside border around the entire document content
+            
+                var usedRange = worksheet.RangeUsed();
+                usedRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+                usedRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                usedRange.Style.Border.InsideBorderColor = XLColor.Black;
+                usedRange.Style.Border.OutsideBorderColor = XLColor.Black;
+
+
+                workbook.SaveAs(filePath);
+            }
+
+            return filePath;
+        }
+
 
         public string generateAttendancedynamicreport(string Sem, string Year, int Department, string Section)
         {
@@ -1724,52 +1960,102 @@ namespace ActivityManagementSystem.DAL.Repositories
                 {
                     var ws = wb.Worksheets.Add("Competition");
                     int colCount = 1, rowCount = 1;
-                    
-                  
+
                     string eventValue = studentTable.Rows[0]["EventName"].ToString();
                     if (studentTable.Columns.Contains("EventName"))
                     {
                         studentTable.Columns.Remove("EventName");
                     }
+
                     int colMaxWidth = studentTable.Columns.Count;
-                    // Headers
-                    ws.Cell(rowCount++, colCount).Value = "SONA VALLIAPPA PUBLIC SCHOOL";
-                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
 
-                    ws.Cell(rowCount++, colCount).Value = $"{eventValue} - STUDENT LIST".ToUpper();
-                    ws.Range(rowCount - 1, colCount, rowCount - 1, colMaxWidth).Merge().AddToNamed("Titles");
+                    // === Title Row: School Name ===
+                    var titleRange = ws.Range(rowCount, colCount, rowCount, colMaxWidth);
+                    titleRange.Merge();
+                    titleRange.Value = "SONA VALLIAPPA PUBLIC SCHOOL";
+                    titleRange.Style.Font.Bold = true;
+                    titleRange.Style.Font.FontSize = 14;
+                    titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    titleRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    titleRange.Style.Border.TopBorder = XLBorderStyleValues.Thick;
+                    titleRange.Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+                    titleRange.Style.Border.LeftBorder = XLBorderStyleValues.Thick;
+                    titleRange.Style.Border.RightBorder = XLBorderStyleValues.Thick;
+                    rowCount++;
 
+                    // === Subtitle Row: Event Name - STUDENT LIST ===
+                    var subtitleRange = ws.Range(rowCount, colCount, rowCount, colMaxWidth);
+                    subtitleRange.Merge();
+                    subtitleRange.Value = $"{eventValue} - STUDENT LIST".ToUpper();
+                    subtitleRange.Style.Font.Bold = true;
+                    subtitleRange.Style.Font.FontSize = 12;
+                    subtitleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                    subtitleRange.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                    subtitleRange.Style.Border.TopBorder = XLBorderStyleValues.Thick;
+                    subtitleRange.Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+                    subtitleRange.Style.Border.LeftBorder = XLBorderStyleValues.Thick;
+                    subtitleRange.Style.Border.RightBorder = XLBorderStyleValues.Thick;
+                    rowCount++;
 
-                  
+                    // === Column Headers ===
+                    var headers = new List<string> {
+                "S.No", "Adminssion No", "Name of Student", "Grade", "Section", "Father Mobile No", "Polling Status"
+            };
 
-                    // Column headers
-                    var headers = new List<string> { "S.No", "Adminssion No", "Name of Student","Grade","Section","Father Mobile No","Polling Status" };
-                  
                     for (int i = 0; i < headers.Count; i++)
                     {
-                        ws.Cell(rowCount, i + 1).Value = headers[i];
-                        ws.Column(i + 1).AdjustToContents().AddToNamed("Titles");
+                        var cell = ws.Cell(rowCount, i + 1);
+                        cell.Value = headers[i];
+                        cell.Style.Font.Bold = true;
+                        cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                        cell.Style.Border.TopBorder = XLBorderStyleValues.Thick;
+                        cell.Style.Border.BottomBorder = XLBorderStyleValues.Thick;
+                        cell.Style.Border.LeftBorder = XLBorderStyleValues.Thick;
+                        cell.Style.Border.RightBorder = XLBorderStyleValues.Thick;
+
+                        ws.Column(i + 1).AdjustToContents();
                     }
                     rowCount++;
 
-                   
+                    // === Insert Student Data ===
+                    ws.Cell(rowCount, 1).InsertData(studentTable);
 
-                    // Insert Data
-                    ws.Cell(rowCount, 1).InsertData(studentTable).AddToNamed("Titles");
+                    // === Apply Style to Data Rows ===
+                    var dataStartRow = rowCount;
+                    var totalRows = studentTable.Rows.Count;
+                    var totalCols = colMaxWidth;
 
-                    ApplyStyles(wb, ws, studentTable.Rows.Count, colMaxWidth);
+                    for (int i = 0; i < totalRows; i++)
+                    {
+                        for (int j = 0; j < totalCols; j++)
+                        {
+                            var cell = ws.Cell(dataStartRow + i, j + 1);
+                            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Left;
+                            cell.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
+                            cell.Style.Border.TopBorder = XLBorderStyleValues.Thin;
+                            cell.Style.Border.BottomBorder = XLBorderStyleValues.Thin;
+                            cell.Style.Border.LeftBorder = XLBorderStyleValues.Thin;
+                            cell.Style.Border.RightBorder = XLBorderStyleValues.Thin;
+                        }
+                    }
 
+                    var fullRange = ws.Range(1, 1, rowCount + totalRows - 1, colMaxWidth);
+                    fullRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thick;
+
+                    // === Save File ===
                     if (File.Exists(filePath)) File.Delete(filePath);
                     wb.SaveAs(filePath);
                 }
+
                 return filePath;
             }
             catch (Exception ex)
             {
-                //_logger.LogError(ex, "Error generating Excel report");
                 return ex.Message;
             }
         }
+
         public string GetAllMarkReport(string section, string subjects, string test)
         {
             try

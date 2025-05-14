@@ -25,7 +25,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_UPDATEHOUSEACTIVITY = "sp_UpdateHousePointDetail";
         public const string SP_DELETEHOUSEACTIVITY = "[sp_DeleteHousePointDetail]";
 
-        public const string SP_INTERESTEDSTUDENTLIST = "[cc]";
+        public const string SP_INTERESTEDSTUDENTLIST = "[sp_GetInterestStudentListForCompetition]";
         public const string SP_UPDATEINTERESTED = "[sp_UpdateInterestedCompetition]";
         
 
@@ -112,8 +112,11 @@ namespace ActivityManagementSystem.DAL.Constants
 		public static string SP_GetDepartmentName = "sp_GetDepartmentName";
 		public static string SP_MonthwiseAttendance = "GetStudentCumulativeAttendanceReport";
 		public static string SP_MonthwiseDynamicAttendance = "sp_GetMonthAttendanceByMONTH";
+        public static string SP_CumulativeAttendance= "GetAnnualAttendanceRegister";
 
-		public const string TBL_SUBJECT = "dbo.tbl_Subject";
+
+
+        public const string TBL_SUBJECT = "dbo.tbl_Subject";
 
 		public const string SP_GETALLSTUDENTDETAILWITHSECTION = "[Sp_GetAllStudentDetailWithSection]";
 
