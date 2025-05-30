@@ -139,7 +139,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<AcademicCalender>> GetAllAcademicCalender(string role);
         Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender);
         Task<List<AcademicCalender>> UpdateAcademicCalender(AcademicCalender academicCalender);
-        Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo);
+        Task<List<AcademicCalender>> DeleteAcademicCalender(int Id);
 
         Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id);
         Task<List<InfoGaloreModel>> InsertInfoGalore(InfoGaloreModel infoGaloreModel);

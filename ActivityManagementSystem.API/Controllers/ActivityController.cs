@@ -2973,11 +2973,11 @@ namespace ActivityManagementSystem.API.Controllers
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(AcademicCalender))]
         [ProducesResponseType(404)]
-        public async Task<IActionResult> DeleteAcademicCalender(int SNo)
+        public async Task<IActionResult> DeleteAcademicCalender(int Id)
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = await _activityService.Service.DeleteAcademicCalender(SNo);
+            var result = await _activityService.Service.DeleteAcademicCalender(Id);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {

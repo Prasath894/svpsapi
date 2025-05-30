@@ -3431,6 +3431,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
         public Task<List<AcademicCalender>> InsertAcademicCalender(AcademicCalender academicCalender)
         {
+            
             //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
             var spName = ConstantSPnames.SP_INSERTACADEMICCALENDER;
             return Task.Factory.StartNew(() => _db.Connection.Query<AcademicCalender>(spName, new
@@ -3449,7 +3450,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             var spName = ConstantSPnames.SP_UPDATEACADEMICCALENDER;
             return Task.Factory.StartNew(() => _db.Connection.Query<AcademicCalender>(spName, new
             {
-                SNo = academicCalender.SNo,
+                Id = academicCalender.Id,
                 AcademicActivities = academicCalender.AcademicActivities,
                 StartDate = academicCalender.StartDate,
                 EndDate = academicCalender.EndDate,
@@ -3458,11 +3459,11 @@ namespace ActivityManagementSystem.DAL.Repositories
             },
         commandType: CommandType.StoredProcedure).ToList());
         }
-        public Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo)
+        public Task<List<AcademicCalender>> DeleteAcademicCalender(int id)
         {
             var spName = ConstantSPnames.SP_DELETEACADEMICCALENDER;
             return Task.Factory.StartNew(() =>
-             _db.Connection.Query<AcademicCalender>(spName, new { SNo = SNo }, commandType: CommandType.StoredProcedure)
+             _db.Connection.Query<AcademicCalender>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
                  .ToList());
         }
         public Task<List<InfoGaloreModel>> GetAllInfoGalore(string infoType, int? id)
