@@ -19,7 +19,16 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         [JsonPropertyName("admissionNumber")]
         public string AdmissionNumber { get; set; } = string.Empty;
 
-
+        /// <summary>
+        /// Date of Joining.
+        /// </summary>
+        [JsonPropertyName("dOJ")]
+        public DateTime DOJ { get; set; } = DateTime.Now;
+        /// <summary>
+        /// Date of Joining.
+        /// </summary>
+        [JsonPropertyName("dOL")]
+        public DateTime DOL { get; set; } = DateTime.Now;
 
         /// <summary>
         /// First name of the student.

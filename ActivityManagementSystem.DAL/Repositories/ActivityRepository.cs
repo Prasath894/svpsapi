@@ -278,7 +278,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 BloodGroup=studentDetails.BloodGroup,
                 Gender = studentDetails.Gender,
                 Dob = studentDetails.Dob,
-                
+                DOJ=studentDetails.DOJ,
+                DOL =studentDetails.DOL,
                 CommunicationAddress = studentDetails.CommunicationAddress,
                 PermanentAddress = studentDetails.PermanentAddress,
                 Student_AadhaarNumber = studentDetails.Student_AadhaarNumber,
@@ -341,7 +342,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 BloodGroup = studentDetails.BloodGroup,
                 Gender = studentDetails.Gender,
                 Dob = studentDetails.Dob,
-
+                DOJ = studentDetails.DOJ,
+                DOL = studentDetails.DOL,
                 CommunicationAddress = studentDetails.CommunicationAddress,
                 PermanentAddress = studentDetails.PermanentAddress,
                 Student_AadhaarNumber = studentDetails.Student_AadhaarNumber,
@@ -952,7 +954,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 SqlCommand command = new SqlCommand(spName, sqlconnection);
                 command.CommandType = CommandType.StoredProcedure;
 
-                command.Parameters.Add("xml", SqlDbType.VarChar).Value = xml;
+                command.Parameters.Add("@xml", SqlDbType.VarChar).Value = xml;
                 command.CommandTimeout = 100000;
                 command.ExecuteNonQuery();
                 return "Success";
