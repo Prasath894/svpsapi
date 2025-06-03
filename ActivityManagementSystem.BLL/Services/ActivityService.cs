@@ -752,6 +752,18 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public async Task<string> bulkuploadacademiccalendar(DataTable target)
+        {
+            try
+            {
+                return await _activityRepository.Repository.bulkuploadacademiccalendar(target);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+       
         public async Task<string> bulkuploadtimetable(DataTable target)
         {
             try
@@ -5084,11 +5096,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual async Task<List<AcademicCalender>> DeleteAcademicCalender(int SNo)
+        public virtual async Task<List<AcademicCalender>> DeleteAcademicCalender(int Id)
         {
             try
             {
-                return await _activityRepository.Repository.DeleteAcademicCalender(SNo);
+                return await _activityRepository.Repository.DeleteAcademicCalender(Id);
             }
             catch (Exception ex)
             {
