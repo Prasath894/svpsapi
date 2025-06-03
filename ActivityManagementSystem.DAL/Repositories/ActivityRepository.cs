@@ -25,6 +25,7 @@ using Color = System.Drawing.Color;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Microsoft.SqlServer.Management.HadrModel;
 using DocumentFormat.OpenXml.Office2010.Excel;
+using System.Globalization;
 
 //using Microsoft.Office.Interop.Word;
 //using Aspose.Words;
@@ -1292,12 +1293,21 @@ namespace ActivityManagementSystem.DAL.Repositories
                         objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
 
                         objCmd.CommandTimeout = 100000;
+                        //SqlParameter activeStudentCountParam = new SqlParameter("@ActiveStudentCount", SqlDbType.Int);
+                        //activeStudentCountParam.Direction = ParameterDirection.Output;
+                        //objCmd.Parameters.Add(activeStudentCountParam);
+
                         da.Fill(ds);
-                        var dataTable = ds.Tables[0];
+                        //int activeStudentCount = (int)activeStudentCountParam.Value;
+                        //var dataTable = ds.Tables[0];
                         // Create a new DataTable for the transformed data
-                        if (dataTable.Rows.Count == 0)
+                        //if (dataTable.Rows.Count == 0)
+                        if(ds.Tables.Count ==0)
                             return NotFound("No attendance records found.");
-                        strfilepath = GenerateExcelSheet(dataTable, "Daily Attendance Report- Grade:" + grade + "/ Section: " + section);
+                        strfilepath = GenerateExcelSheet(ds.Tables[0],
+        ds.Tables[1],
+        ds.Tables[2],
+        ds.Tables[3], "Daily Attendance Report- Grade:" + grade + "/ Section: " + section,month);
                     }
 
                 }
@@ -1469,7 +1479,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
 
 
-        private string GenerateExcelSheet(DataTable dataTable, string reportname)
+        private string GenerateExcelSheet(DataTable dataTable, DataTable table2, DataTable table3, DataTable table4, string reportname,int month)
         {
             string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "Data");
             string filePath = Path.Combine(folderPath, "Report.xlsx");
@@ -1479,7 +1489,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             if (File.Exists(filePath))
                 File.Delete(filePath);
-
+            string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month);
             using (var workbook = new XLWorkbook())
             {
                 var worksheet = workbook.Worksheets.Add("Attendance Report");
@@ -1527,6 +1537,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
                 // 4. Attendance Data Rows
                 int dataStartRow = headerRow + 1;
+
                 for (int row = 0; row < totalRows; row++)
                 {
                     for (int col = 0; col < totalColumns; col++)
@@ -1547,27 +1558,156 @@ namespace ActivityManagementSystem.DAL.Repositories
                 worksheet.Range(summaryRowStart, 1, summaryRowStart + 1, 2).Merge().Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
                 worksheet.Cell(summaryRowStart, 3).Value = "M";
                 worksheet.Cell(summaryRowStart + 1, 3).Value = "E";
-                summaryRowStart= summaryRowStart+2;
+                // Add days as headers (1 to 31) starting from column 4
+                int totalDays = table2.Rows.Count;
+                //int totalDaysColumn = table2.Column.Count;
+                int dayColumnStart = 4;
+                /*for (int i = 0; i < totalDays; i++)
+                {
+                    int day = Convert.ToInt32(table2.Rows[i]["Day"]); // Get the day value from table2
+                    worksheet.Cell(summaryRowStart, dayColumnStart + i).Value = day.ToString(); // Day header
+                    worksheet.Cell(summaryRowStart, dayColumnStart + i).Style.Font.SetBold();
+                }*/
+
+                // Populate Students Present based on Day column from table2
+                for (int i = 0; i < totalDays; i++)
+                {
+                    int studentsPresent = Convert.ToInt32(table2.Rows[i]["StudentsPresent"]); // Get Students Present value
+
+                    worksheet.Cell(summaryRowStart, dayColumnStart + i).Value = studentsPresent;       // Morning (moved up by 1 row)
+                    worksheet.Cell(summaryRowStart + 1, dayColumnStart + i).Value = studentsPresent;   // Evening (moved up by 1 row)
+                }
+
+                // Adjust styling and formatting for the new range
+                worksheet.Range(summaryRowStart, dayColumnStart, summaryRowStart + 1, dayColumnStart + totalDays - 1).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Range(summaryRowStart, dayColumnStart, summaryRowStart + 1, dayColumnStart + totalDays - 1).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                worksheet.Range(summaryRowStart, dayColumnStart, summaryRowStart + 1, dayColumnStart + totalDays - 1).Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
+
+                summaryRowStart = summaryRowStart+2;
                 worksheet.Cell(summaryRowStart, 1).Value = "Initials Of Teachers";
                 worksheet.Range(summaryRowStart, 1, summaryRowStart + 1, 2).Merge().Style.Alignment.SetVertical(XLAlignmentVerticalValues.Center);
                 worksheet.Cell(summaryRowStart, 3).Value = "M";
                 worksheet.Cell(summaryRowStart + 1, 3).Value = "E";
 
 
+                // Calculate total students
+                int totalStudents = 0;
+                if (table2.Rows.Count > 0 && table2.Columns.Contains("TotalStudents"))
+                {
+                    totalStudents = Convert.ToInt32(table2.Rows[0]["TotalStudents"]);
+                }
 
-               
+                int newJoinedCount = 0;
+                if (table3.Columns.Contains("StudentCount"))
+                {
+                    foreach (DataRow row in table3.Rows)
+                    {
+                        //newJoinedCount += Convert.ToInt32(row["StudentCount"]);
+                        if (int.TryParse(row["StudentCount"]?.ToString(), out int studentCount))
+                        {
+                            newJoinedCount += studentCount;
+                        }
+                    }
+                }
 
+              
+                int LeftStudnetCount = 0;
+                if (table4.Columns.Contains("StudentCount"))
+                {
+                    foreach (DataRow row in table4.Rows)
+                    {
+                        //newJoinedCount += Convert.ToInt32(row["StudentCount"]);
+                        if (int.TryParse(row["StudentCount"]?.ToString(), out int studentCount))
+                        {
+                            LeftStudnetCount += studentCount;
+                        }
+                    }
+                }
+                int totalEnrolled = totalStudents + newJoinedCount -LeftStudnetCount;
+                // Calculate total working days
+                /*int totalWorkingDays = 0;
+                if (table2.Rows.Count > 0 && table2.Columns.Contains("StudentsPresent"))
+                {
+                    foreach (DataRow row in table2.Rows)
+                    {
+                        if (int.TryParse(row["StudentsPresent"]?.ToString(), out int studentsPresent) && studentsPresent > 0)
+                        {
+                            totalWorkingDays++;
+                        }
+                    }
+                }
+                */
+                int dayColumn = 0;
+                int dayColumnEnd = 0;
 
+                // Dynamically find the range of day columns (1-31)
+                for (int col = 0; col < dataTable.Columns.Count; col++)
+                {
+                    if (int.TryParse(dataTable.Columns[col].ColumnName, out int day))
+                    {
+                        if (dayColumn == 0) dayColumn = col + 1; // Set start column
+                        dayColumnEnd = col + 1; // Continuously update the end column
+                    }
+                }
+
+                // Calculate total working days
+                int totalWorkingDays = 0;
+
+                // Loop through each day column to determine working days
+                for (int colIndex = dayColumn; colIndex <= dayColumnEnd; colIndex++)
+                {
+                    bool isWorkingDay = false;
+
+                    // Check if any row has either 'P' or 'A' for the current day
+                    foreach (DataRow row in dataTable.Rows)
+                    {
+                        string attendanceMark = row[colIndex - 1]?.ToString()?.Trim().ToUpper();
+
+                        if (attendanceMark == "P" || attendanceMark == "A")
+                        {
+                            isWorkingDay = true;
+                            break; // No need to check further rows for this day
+                        }
+                    }
+
+                    if (isWorkingDay)
+                    {
+                        totalWorkingDays++;
+                    }
+                }
+
+                // Calculate total present count
+                int totalPresentCount = 0;
+                for (int rowIndex = 0; rowIndex < totalRows; rowIndex++)
+                {
+                    for (int colIndex = dayColumn - 1; colIndex < dayColumnEnd; colIndex++)
+                    {
+                        string attendanceMark = dataTable.Rows[rowIndex][colIndex]?.ToString()?.Trim().ToUpper();
+                        if (attendanceMark == "P")
+                        {
+                            totalPresentCount++;
+                        }
+                    }
+                }
+                double averageNoOnRoll = totalStudents > 0 ? (double)totalPresentCount / totalStudents : 0;
+                // Calculate average attendance
+                double averageAttendance = totalWorkingDays > 0 ? (double)totalPresentCount / totalWorkingDays : 0;
 
                 // 6. Monthly Summary Rows
                 int rollSummaryStart = summaryRowStart + 2;
-                worksheet.Cell(rollSummaryStart, 1).Value = "No. on Roll at the beginning of Month ..........   No. of School Days ..........   Average No. on Roll ..........";
+                worksheet.Cell(rollSummaryStart, 1).Value =
+                $"No. on Roll at the beginning of Month: {totalStudents}  No. of School Days: {totalWorkingDays}   Average No. on Roll: {averageNoOnRoll}";
                 worksheet.Range(rollSummaryStart, 1, rollSummaryStart, totalColumns - 8).Merge();
 
-                worksheet.Cell(rollSummaryStart + 1, 1).Value = "Admitted during the month ..........   Left ..........   Average Attendance ..........   During Month ..................";
+                // Calculate the number of students admitted during the month from table3
+                
+                // Add the calculated value for "Admitted during the month" to the summary
+                worksheet.Cell(rollSummaryStart + 1, 1).Value =
+                    $"Admitted during the month: {newJoinedCount}   Left: {LeftStudnetCount}   Average Attendance: {averageAttendance}   During Month: {monthName}";
                 worksheet.Range(rollSummaryStart + 1, 1, rollSummaryStart + 1, totalColumns - 8).Merge();
 
-                worksheet.Cell(rollSummaryStart + 2, 1).Value = "No. on Roll at the end of Month ..........   During Month ..................";
+                worksheet.Cell(rollSummaryStart + 2, 1).Value = $"No. on Roll at the end of: {totalEnrolled}     During Month: {monthName} ";
+
                 worksheet.Range(rollSummaryStart + 2, 1, rollSummaryStart + 2, totalColumns - 8).Merge();
 
                 // 7. Certification Box - aligned right

@@ -111,7 +111,8 @@ namespace ActivityManagementSystem.DAL.Constants
 
 		public static string SP_GetDepartmentName = "sp_GetDepartmentName";
 		public static string SP_MonthwiseAttendance = "GetStudentCumulativeAttendanceReport";
-		public static string SP_MonthwiseDynamicAttendance = "sp_GetMonthAttendanceByMONTH";
+		//public static string SP_MonthwiseDynamicAttendance = "sp_GetMonthAttendanceByMONTH";
+		public static string SP_MonthwiseDynamicAttendance = "[sp_GetMonthAttendanceByMonth_prasath]";
         public static string SP_CumulativeAttendance= "GetAnnualAttendanceRegister";
 
 
