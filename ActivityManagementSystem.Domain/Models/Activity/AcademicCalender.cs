@@ -12,14 +12,14 @@ namespace ActivityManagementSystem.Domain.Models.Activity
         /// <summary>
         /// Gets or sets the serial number.
         /// </summary>
-        [JsonPropertyName("sNo")]
-        public int SNo { get; set; }
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
 
         /// <summary>
         /// Gets or sets the academic activity description.
         /// </summary>
         [JsonPropertyName("academicActivities")]
-        public string AcademicActivities { get; set; } = "Reopening of the Institution";
+        public string AcademicActivities { get; set; } = string.Empty;
 
         /// <summary>
         /// Gets or sets the start date of the academic activity.
