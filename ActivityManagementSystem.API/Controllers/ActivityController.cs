@@ -1216,6 +1216,11 @@ namespace ActivityManagementSystem.API.Controllers
                     var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
                     result = await _activityService.Service.bulkuploadholidaycalendar(uploadedFileData);
                 }
+                else if (XlPath == "AcademicCalendar.csv")
+                {
+                    var uploadedFileData = DataTableConverter.ConvertCsvToDataTable(filePath);
+                    result = await _activityService.Service.bulkuploadacademiccalendar(uploadedFileData);
+                }
 
                 else if (XlPath == "Timetable.csv")
                 {

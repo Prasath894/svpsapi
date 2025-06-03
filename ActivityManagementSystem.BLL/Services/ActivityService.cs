@@ -752,6 +752,18 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
+        public async Task<string> bulkuploadacademiccalendar(DataTable target)
+        {
+            try
+            {
+                return await _activityRepository.Repository.bulkuploadacademiccalendar(target);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+       
         public async Task<string> bulkuploadtimetable(DataTable target)
         {
             try

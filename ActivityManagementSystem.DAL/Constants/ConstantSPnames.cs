@@ -34,6 +34,7 @@ namespace ActivityManagementSystem.DAL.Constants
         public const string SP_BULKSUBJECTUPLOAD = "[sp_BulkUploadSubject]";
         public const string SP_BULKHOLIDAYUPLOAD = "[sp_BulkUploadHoliday]";
         public const string SP_BULKTIMETABLEUPLOAD = "[sp_BulkUploadTimetable]";
+        public const string SP_BULKACADEMICUPLOAD = "[sp_BulkUploadAcademicCalendar]";
 
         public const string SP_GETACTIVITIES = "sp_GetActivity";
 		public const string SP_GETACTIVITYDETAILS= "sp_GetActivityData";

@@ -93,8 +93,11 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<string> bulkuploadstudent(DataTable target);
 
         Task<string> bulkuploadfaculty(DataTable target);
-        Task<string> bulkuploadsubject(DataTable target);
+        Task<string> bulkuploadsubject(DataTable target); 
         Task<string> bulkuploadholidaycalendar(DataTable target);
+
+        Task<string> bulkuploadacademiccalendar(DataTable target);
+
         Task<string> bulkuploadtimetable(DataTable target);
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
         string InsertAttendance(List<AttendanceModel> attendance);

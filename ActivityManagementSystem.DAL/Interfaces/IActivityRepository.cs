@@ -68,6 +68,8 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<string> bulkuploadfaculty(DataTable target);
         Task<string> bulkuploadsubject(DataTable target);
         Task<string> bulkuploadholidaycalendar(DataTable target);
+        Task<string> bulkuploadacademiccalendar(DataTable target);
+
 
         Task<string> bulkuploadtimetable(DataTable target);
 

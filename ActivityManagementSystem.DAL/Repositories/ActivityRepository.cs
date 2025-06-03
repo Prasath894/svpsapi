@@ -885,6 +885,34 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return "Error: " + ex.Message;
             }
         }
+        public async Task<string> bulkuploadacademiccalendar(DataTable target)
+        {
+            try
+            {
+                var spName = ConstantSPnames.SP_BULKACADEMICUPLOAD;
+                using SqlConnection sqlConnection = new(_db.Connection.ConnectionString);
+                await sqlConnection.OpenAsync();
+
+                using SqlCommand command = new(spName, sqlConnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("@AcademicCalendarTable", SqlDbType.Structured).Value = target;
+
+                SqlParameter returnStatusParam = command.Parameters.Add("@UploadStatus", SqlDbType.NVarChar, 50);
+                returnStatusParam.Direction = ParameterDirection.Output;
+
+                await command.ExecuteNonQueryAsync(); // Await this!
+
+                return returnStatusParam.Value?.ToString() ?? string.Empty;
+            }
+            catch (SqlException ex)
+            {
+                return "SQL Error: " + ex.Message;
+            }
+            catch (Exception ex)
+            {
+                return "Error: " + ex.Message;
+            }
+        }
 
         public Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday)
         {
