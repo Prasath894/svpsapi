@@ -3450,7 +3450,7 @@ namespace ActivityManagementSystem.DAL.Repositories
         public  Task<List<Feedbacksubject>> getSubFacultyList(int studentId)
         {
 
-            List<Feedbacksubject> subjectDetails;
+            //List<Feedbacksubject> subjectDetails;
             string spToGetfb = "sp_GetSubFacultyFeedbackNew";
             return Task.Factory.StartNew(() => _db.Connection.Query<Feedbacksubject>(spToGetfb,
               new { @StudentId = studentId }, commandType: CommandType.StoredProcedure).ToList());
@@ -3461,7 +3461,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             List<Feedback> fb;
             int a;
             string GetFeedback = "[sp_GetFeedbackFormNew]";
-            string GetInsertedFeedback = "[sp_GetInsertedFeedback]";
+            //string GetInsertedFeedback = "[sp_GetInsertedFeedback]";
 
             using (SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
             {
@@ -3509,26 +3509,22 @@ namespace ActivityManagementSystem.DAL.Repositories
             List<QnsModel> _questions = new List<QnsModel>();
             string selectSQL = "[sp_GetQuestionsMaster]";
 
-            using (SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+            await using (SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
             {
                 await con.OpenAsync(); // Open the connection asynchronously
 
-                using (SqlCommand cmd = new SqlCommand(selectSQL, con))
-                {
-                    cmd.CommandType = CommandType.StoredProcedure;
+                using SqlCommand cmd = new SqlCommand(selectSQL, con);
+                cmd.CommandType = CommandType.StoredProcedure;
 
-                    using (SqlDataReader GrReader = await cmd.ExecuteReaderAsync()) // Execute reader asynchronously
+                using SqlDataReader GrReader = await cmd.ExecuteReaderAsync(); // Execute reader asynchronously
+                while (await GrReader.ReadAsync()) // Read asynchronously
+                {
+                    _questions.Add(new QnsModel
                     {
-                        while (await GrReader.ReadAsync()) // Read asynchronously
-                        {
-                            _questions.Add(new QnsModel
-                            {
-                                QnsId = Convert.ToInt32(GrReader["QnsId"]),
-                                QnsCode = Convert.ToString(GrReader["QnsCode"]),
-                                QnsDescription = Convert.ToString(GrReader["QnsDescription"]),
-                            });
-                        }
-                    }
+                        QnsId = Convert.ToInt32(GrReader["QnsId"]),
+                        QnsCode = Convert.ToString(GrReader["QnsCode"]),
+                        QnsDescription = Convert.ToString(GrReader["QnsDescription"]),
+                    });
                 }
             }
             return _questions;
@@ -3541,28 +3537,25 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             try
             {
-                using (SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
-                {
-                    SqlCommand cmd = new SqlCommand(selectSQL, con);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@Id", feedback.Id);
-                    cmd.Parameters.AddWithValue("@StudentId", feedback.StudentId);
-                    cmd.Parameters.AddWithValue("@SubjectId", feedback.SubjectId);
-                    cmd.Parameters.AddWithValue("@Sem", feedback.Sem);
-                    cmd.Parameters.AddWithValue("@Year", feedback.Year);
-                    cmd.Parameters.AddWithValue("@Section", feedback.Section);
-                    cmd.Parameters.AddWithValue("@FacultyId", feedback.facultyId);
-                    cmd.Parameters.AddWithValue("@DepartmentId", feedback.DepartmentId);
-                    cmd.Parameters.AddWithValue("@FeedbackData", JsonConvert.SerializeObject(feedback.Questions));
-                    cmd.Parameters.AddWithValue("@FeedbackReviewScore", feedback.FeedbackReviewScore == null ? "0" : feedback.FeedbackReviewScore);
-                    cmd.Parameters.AddWithValue("@StudentNote", feedback.StudentNote == null ? "" : feedback.StudentNote);
-                    cmd.Parameters.AddWithValue("@IsCompleted", true);
-                    cmd.Parameters.AddWithValue("@CreatedBy", feedback.StudentName);
-                    cmd.Parameters.AddWithValue("@CreatedDate", now);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-
-                }
+                await using SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
+                SqlCommand cmd = new SqlCommand(selectSQL, con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@Id", feedback.Id);
+                cmd.Parameters.AddWithValue("@StudentId", feedback.StudentId);
+                cmd.Parameters.AddWithValue("@SubjectId", feedback.SubjectId);
+                cmd.Parameters.AddWithValue("@Sem", feedback.Sem);
+                cmd.Parameters.AddWithValue("@Year", feedback.Year);
+                cmd.Parameters.AddWithValue("@Section", feedback.Section);
+                cmd.Parameters.AddWithValue("@FacultyId", feedback.facultyId);
+                cmd.Parameters.AddWithValue("@DepartmentId", feedback.DepartmentId);
+                cmd.Parameters.AddWithValue("@FeedbackData", JsonConvert.SerializeObject(feedback.Questions));
+                cmd.Parameters.AddWithValue("@FeedbackReviewScore", feedback.FeedbackReviewScore == null ? "0" : feedback.FeedbackReviewScore);
+                cmd.Parameters.AddWithValue("@StudentNote", feedback.StudentNote == null ? "" : feedback.StudentNote);
+                cmd.Parameters.AddWithValue("@IsCompleted", true);
+                cmd.Parameters.AddWithValue("@CreatedBy", feedback.StudentName);
+                cmd.Parameters.AddWithValue("@CreatedDate", now);
+                con.Open();
+                cmd.ExecuteNonQuery();
                 return ("Success");
             }
             catch (Exception ex)
@@ -3577,15 +3570,12 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             try
             {
-                using (SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
-                {
-                    SqlCommand cmd = new SqlCommand(selectSQL, con);
-                    cmd.CommandType = CommandType.StoredProcedure;
-                    cmd.Parameters.AddWithValue("@StudentId", studentId);
-                    con.Open();
-                    cmd.ExecuteNonQuery();
-
-                }
+                await using SqlConnection con = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
+                SqlCommand cmd = new SqlCommand(selectSQL, con);
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@StudentId", studentId);
+                con.Open();
+                cmd.ExecuteNonQuery();
                 return ("Success");
             }
             catch (Exception ex)
