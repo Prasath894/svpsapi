@@ -16,15 +16,10 @@ using System.Linq;
 
 using System.Threading.Tasks;
 using System.Xml;
-using Xceed.Words.NET;
-using Xceed.Document.NET;
+
 using RestSharp;
 
-using Table = Xceed.Document.NET.Table;
-using Color = System.Drawing.Color;
-using DocumentFormat.OpenXml.Wordprocessing;
-using Microsoft.SqlServer.Management.HadrModel;
-using DocumentFormat.OpenXml.Office2010.Excel;
+
 using System.Globalization;
 
 //using Microsoft.Office.Interop.Word;
