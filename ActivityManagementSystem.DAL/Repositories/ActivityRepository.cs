@@ -199,35 +199,35 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
 
-        public string DeleteRole(int id)
+        public async Task<string> DeleteRole(int id)
         {
             var spName = ConstantSPnames.SP_DELETEROLEMASTER;
+
             try
             {
-                using (SqlConnection sqlconnection =
-                       new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+                await using (SqlConnection sqlconnection =
+                    new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
                 {
-                    sqlconnection.Open();
+                    await sqlconnection.OpenAsync();
 
+                    using (SqlCommand command = new SqlCommand(spName, sqlconnection))
+                    {
+                        command.CommandType = CommandType.StoredProcedure;
+                        command.Parameters.Add("@roleId", SqlDbType.Int).Value = id;
 
-                    SqlCommand command = new SqlCommand(spName, sqlconnection);
-                    command.CommandType = CommandType.StoredProcedure;
+                        await command.ExecuteNonQueryAsync();
+                    }
 
-                    command.Parameters.Add("roleId", SqlDbType.Int).Value = id;
-
-                    command.ExecuteNonQuery();
                     return "Success";
                 }
-
-                //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
             }
             catch (Exception ex)
             {
-                return (ex.Message);
+                // You can log ex here before returning if needed
+                return $"Error: {ex.Message}";
             }
-
-            // return Task.Factory.StartNew(() => _db.Connection.Query<RoleModel>(spName, new { RoleId = id }, commandType: CommandType.StoredProcedure).ToList());
         }
+
 
         public Task<List<StudentModel>> GetStudentDetails(int? id)
         {

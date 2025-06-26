@@ -217,19 +217,13 @@ namespace ActivityManagementSystem.API.Controllers
             for (int i = 0; i < result.Count; i++)
             {
                 var files = result[i].FileNames;
-                //if (files != null)
-                //{
-                //    result[i].Files = files.Split('|').ToList();
-                //    result[i].Files.RemoveAt(result[i].Files.Count - 1);
-
-                //}
+             
                 if (!string.IsNullOrEmpty(files))
                 {
                     result[i].Files = files.Split('|')
                                            .Where(x => !string.IsNullOrWhiteSpace(x)) // Remove empty values
                                            .ToList();
                 }
-                //  List<string> lst = 
             }
             return Ok(result);
         }
@@ -327,14 +321,14 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteHouse(int Id)
         {
-            var result = _activityService.Service.DeleteHouseDetails(Id);
+            var result = await _activityService.Service.DeleteHouseDetails(Id);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
                 return NoContent();
             }
             return Ok(result);
-        }
+        } 
 
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(StudentModel))]
@@ -607,7 +601,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = _activityService.Service.DeleteRole(id);
+            var result = await _activityService.Service.DeleteRole(id);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -722,7 +716,7 @@ namespace ActivityManagementSystem.API.Controllers
                 }
 
                 // Join filenames with '|'
-                string filenames = string.Join("|", existingFiles);
+                string filenames = string.Join("|", existingFiles) + "|";
 
                 // Update file path data in the database
                 var result = await _activityService.Service.UpdateFilepathdata(target, fileUploadModel.Id, filenames, fileUploadModel.TypeofUser);
@@ -908,7 +902,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             var result1 = await _activityService.Service.GetAllAssignmentDetails(id);
             var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";
-            var filePath = result1[0].FilePath;
+            var filePath = result1[0].FileName;
             var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
 
 
@@ -946,7 +940,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             var result1 = await _activityService.Service.GetAllContentLibDetails(id);
             var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}";
-            var filePath = result1[0].FilePath;
+            var filePath = result1[0].FileName;
             var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
 
 

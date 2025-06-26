@@ -41,7 +41,7 @@ namespace ActivityManagementSystem.DAL.Interfaces
         Task<List<RoleModel>> GetRole(int? id);
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
-        string DeleteRole(int id);
+        Task<string> DeleteRole(int id);
         Task<List<RoleActivity>> GetRoleActivity(int? id);
 
         Task<List<UserModel>> GetUserDetails(string Username, string Password,string role);

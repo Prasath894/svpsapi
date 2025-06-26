@@ -74,7 +74,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<StudentDropdownModel>> GetMappedStudentByName(string StudentyName, int SectionId);
         Task<List<RoleModel>> InsertRole(RoleModel rolemaster);
         Task<List<RoleModel>> UpdateRole(RoleModel rolemaster);
-        string DeleteRole(int id);
+        Task<string> DeleteRole(int id);
       
         Task<List<RoleActivity>> GetRoleActivity(int? id);
         Task<String> UpdateActivityFilepathdata(string target, int id,string  files);

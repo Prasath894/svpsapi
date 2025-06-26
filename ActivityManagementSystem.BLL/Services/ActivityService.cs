@@ -335,11 +335,11 @@ namespace ActivityManagementSystem.BLL.Services
         }
        
       
-        public virtual string DeleteRole(int id)
+        public async virtual Task<string> DeleteRole(int id)
         {
             try
             {
-                return _activityRepository.Repository.DeleteRole(id);
+                return await _activityRepository.Repository.DeleteRole(id);
 
             }
             catch (Exception ex)
