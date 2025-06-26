@@ -2157,7 +2157,7 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateFacultySubMapping([FromBody] FacultySubjectMapping facultySubjectMapping)
         {
-            var result = _activityService.Service.UpdateFacultySubMapping(facultySubjectMapping);
+            var result =  _activityService.Service.UpdateFacultySubMapping(facultySubjectMapping);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
