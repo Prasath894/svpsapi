@@ -622,7 +622,7 @@ namespace ActivityManagementSystem.API.Controllers
         public async Task<IActionResult> UpdateFaculty([FromBody] FacultyModel faculty)
         {
             //FacultyModel facultyDetails = JsonConvert.DeserializeObject<FacultyModel>(faculty);
-            var result = _activityService.Service.UpdateFacultyDetails(faculty);
+            var result = await _activityService.Service.UpdateFacultyDetails(faculty);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {

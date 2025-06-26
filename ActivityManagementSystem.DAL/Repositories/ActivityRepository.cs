@@ -419,11 +419,11 @@ namespace ActivityManagementSystem.DAL.Repositories
 
 
        
-        public Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
+        public async Task<List<FacultyModel>> UpdateFacultyDetails(FacultyModel facultyDetails)
         {
             var spName = ConstantSPnames.SP_UPDATEFACULTY;
 
-            return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
+            return await Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
             {
                 Id=facultyDetails.Id,
                 UserName = facultyDetails.UserName,
@@ -448,30 +448,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 ModifiedDate = facultyDetails.ModifiedDate
             }, commandType: CommandType.StoredProcedure).ToList());
            
-            return Task.Factory.StartNew(() => _db.Connection.Query<FacultyModel>(spName, new
-            {
-                Id = facultyDetails.Id,
-                UserName = facultyDetails.UserName,
-                Password = facultyDetails.Password,
-                RoleId = facultyDetails.RoleId,
-                FacultyId = facultyDetails.FacultyId,
-                Faculty_FirstName = facultyDetails.Faculty_FirstName,
-                Faculty_MiddleName = facultyDetails.Faculty_MiddleName,
-                Faculty_LastName = facultyDetails.Faculty_LastName,
-                Gender = facultyDetails.Gender,
-                DOB = facultyDetails.DOB,
-                FacultyMobileNo_1 = facultyDetails.FacultyMobileNo_1,
-                FacultyMobileNo_2 = facultyDetails.FacultyMobileNo_2,
-                Email = facultyDetails.Email,
-                FilePath = facultyDetails.FilePath,
-                FileNames = facultyDetails.FileNames,
-                BloodGroup = facultyDetails.BloodGroup,
-                Address = facultyDetails.Address,
-                CreatedBy = facultyDetails.CreatedBy,
-                CreatedDate = facultyDetails.CreatedDate,
-                ModifiedBy = facultyDetails.ModifiedBy,
-                ModifiedDate = facultyDetails.ModifiedDate
-            }, commandType: CommandType.StoredProcedure).ToList());
+            
 
         }
 
