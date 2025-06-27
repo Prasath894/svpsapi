@@ -580,11 +580,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string DeleteSubjectDetails(int Id)
+        public async virtual Task<string> DeleteSubjectDetails(int Id)
         {
             try
             {
-                return _activityRepository.Repository.DeleteSubjectDetails(Id);
+                return await _activityRepository.Repository.DeleteSubjectDetails(Id);
             }
             catch (Exception ex)
             {
@@ -788,11 +788,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string InsertAttendance(List<AttendanceModel> attendance)
+        public virtual async Task<string> InsertAttendance(List<AttendanceModel> attendance)
         {
             try
             {
-                return _activityRepository.Repository.InsertAttendance(attendance);
+                return await _activityRepository.Repository.InsertAttendance(attendance);
             }
             catch (Exception ex)
             {
@@ -810,11 +810,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string DeleteAttendance(List<AttendanceModel> attendance)
+        public virtual async Task<string> DeleteAttendance(List<AttendanceModel> attendance)
         {
             try
             {
-                return _activityRepository.Repository.DeleteAttendance(attendance);
+                return await _activityRepository.Repository.DeleteAttendance(attendance);
             }
             catch (Exception ex)
             {
@@ -4271,11 +4271,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual  string DeleteBatchSubMapping(int id)
+        public virtual  async Task<string> DeleteBatchSubMapping(int id)
         {
             try
             {
-                return  _activityRepository.Repository.DeleteBatchSubMapping(id);
+                return  await _activityRepository.Repository.DeleteBatchSubMapping(id);
             }
             catch (Exception ex)
             {
@@ -4309,29 +4309,29 @@ namespace ActivityManagementSystem.BLL.Services
             }
             return (memory: memorys, path: Path);
         }
-        public virtual string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section)
+        public virtual async Task<string> generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section)
         {
-            return _activityRepository.Repository.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
+            return await _activityRepository.Repository.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
 
         }
-        public virtual string generateExcelList(string role)
+        public virtual async Task<string> generateExcelList(string role)
         {
-            return _activityRepository.Repository.generateExcelList(role);
+            return await _activityRepository.Repository.generateExcelList(role);
 
         }
 
       
 
 
-        public virtual string generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
+        public virtual async Task<string> generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
         {
-            return _activityRepository.Repository.generateDailyAttendancereport(month, year, sectionId, grade, section);
+            return await _activityRepository.Repository.generateDailyAttendancereport(month, year, sectionId, grade, section);
 
         }
 
-        public virtual string generateAttendanceCumulativereport(int startYear, int endYear, int sectionId)
+        public virtual async Task<string> generateAttendanceCumulativereport(int startYear, int endYear, int sectionId)
         {
-            return _activityRepository.Repository.generateAttendanceCumulativereport(startYear, endYear, sectionId);
+            return await _activityRepository.Repository.generateAttendanceCumulativereport(startYear, endYear, sectionId);
 
         }
 
@@ -4347,11 +4347,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string UpdateVerifyPassword(string UserName, string NewPassword, string OldPassword, long FacultyId)
+        public virtual async Task<string> UpdateVerifyPassword(string UserName, string NewPassword, string OldPassword, long FacultyId)
         {
             try
             {
-                return _activityRepository.Repository.UpdateVerifyPassword(UserName, NewPassword, OldPassword, FacultyId);
+                return await _activityRepository.Repository.UpdateVerifyPassword(UserName, NewPassword, OldPassword, FacultyId);
             }
             catch (Exception ex)
             {
@@ -4561,19 +4561,19 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string GetAllMarkReport(string Section, string subjects, string test)
+        public virtual async Task<string> GetAllMarkReport(string Section, string subjects, string test)
         {
-            return _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
+            return await _activityRepository.Repository.GetAllMarkReport(Section, subjects, test);
         }
-        public virtual string GetInterestedStudentList(int competitionId)
+        public virtual async Task<string> GetInterestedStudentList(int competitionId)
         {
-            return _activityRepository.Repository.GetInterestedStudentList(competitionId);
+            return await _activityRepository.Repository.GetInterestedStudentList(competitionId);
         }
-        public virtual List<StudentMark> GetStudentMark()
+        public virtual async Task<List<StudentMark>> GetStudentMark()
         {
             try
             {
-                return _activityRepository.Repository.GetStudentMark();
+                return await _activityRepository.Repository.GetStudentMark();
 
 
             }
@@ -4605,11 +4605,11 @@ namespace ActivityManagementSystem.BLL.Services
                 throw ex;
             }
         }
-        public virtual string InsertFacultySubMappings(FacultySubjectMapping facultySubjectMapping)
+        public virtual async Task<string> InsertFacultySubMappings(FacultySubjectMapping facultySubjectMapping)
         {
             try
             {
-                return _activityRepository.Repository.InsertFacultySubMappings(facultySubjectMapping);
+                return await _activityRepository.Repository.InsertFacultySubMappings(facultySubjectMapping);
             }
             catch (Exception ex)
             {
@@ -4618,11 +4618,11 @@ namespace ActivityManagementSystem.BLL.Services
         }
 
 
-        public virtual string UpdateFacultySubMapping(FacultySubjectMapping facultySubjectMapping)
+        public virtual async Task<string> UpdateFacultySubMapping(FacultySubjectMapping facultySubjectMapping)
         {
             try
             {
-                return _activityRepository.Repository.UpdateFacultySubMapping(facultySubjectMapping);
+                return await _activityRepository.Repository.UpdateFacultySubMapping(facultySubjectMapping);
             }
             catch (Exception ex)
             {
@@ -4689,11 +4689,11 @@ namespace ActivityManagementSystem.BLL.Services
         }
       
 
-        public virtual string DeleteMark(List<StudentMark> mark)
+        public virtual async Task<string> DeleteMark(List<StudentMark> mark)
         {
             try
             {
-                return _activityRepository.Repository.DeleteMark(mark);
+                return await _activityRepository.Repository.DeleteMark(mark);
             }
             catch (Exception ex)
             {

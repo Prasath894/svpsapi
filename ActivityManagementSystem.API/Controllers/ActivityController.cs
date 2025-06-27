@@ -1053,7 +1053,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = _activityService.Service.DeleteSubjectDetails(id);
+            var result = await _activityService.Service.DeleteSubjectDetails(id);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -1228,34 +1228,33 @@ namespace ActivityManagementSystem.API.Controllers
         [EnableCors]
         public async Task<IActionResult> DownloadTemplate()
         {
-            var zipName = $"archive-{DateTime.Now.ToString("yyyy_MM_dd-HH_mm_ss")}.zip";
+            var zipName = $"archive-{DateTime.Now:yyyy_MM_dd-HH_mm_ss}.zip";
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Template");
-            var files = Directory.GetFiles(Path.Combine(filePath)).ToList();
-            MemoryStream compressedFileStream = new MemoryStream();
+            var files = Directory.GetFiles(filePath).ToList();
+
+            await using var compressedFileStream = new MemoryStream();
             using (var zipArchive = new ZipArchive(compressedFileStream, ZipArchiveMode.Create, true))
             {
-                files.ForEach(file =>
+                foreach (var file in files)
                 {
-                    //Create a zip entry for each attachment
                     var zipEntry = zipArchive.CreateEntry(Path.GetFileName(file));
-                    byte[] bytes = System.IO.File.ReadAllBytes(file);
-                    //Get the stream of the attachment
-                    using (var originalFileStream = new MemoryStream(bytes))
-                    using (var zipEntryStream = zipEntry.Open())
-                    {
-                        //Copy the attachment stream to the zip entry stream
-                        originalFileStream.CopyTo(zipEntryStream);
-                    }
-                });
+
+                    // Use async read
+                    byte[] bytes = await System.IO.File.ReadAllBytesAsync(file);
+
+                    await using var originalFileStream = new MemoryStream(bytes);
+                    await using var zipEntryStream = zipEntry.Open();
+
+                    await originalFileStream.CopyToAsync(zipEntryStream);
+                }
             }
+
+            compressedFileStream.Position = 0; // Reset stream position before returning
             const string contentType = "application/zip";
-            HttpContext.Response.ContentType = contentType;
-            var result = new FileContentResult(compressedFileStream.ToArray(), contentType)
-            {
-                FileDownloadName = $"{zipName}.zip"
-            };
-            return result;
+
+            return File(compressedFileStream.ToArray(), contentType, zipName);
         }
+
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(AttendanceModel))]
         [ProducesResponseType(404)]
@@ -1282,7 +1281,7 @@ namespace ActivityManagementSystem.API.Controllers
             //RoleModel role = JsonConvert.DeserializeObject<RoleModel>(rolemaster);
 
 
-            var result = _activityService.Service.InsertAttendance(attendance);
+            var result = await _activityService.Service.InsertAttendance(attendance);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1318,7 +1317,7 @@ namespace ActivityManagementSystem.API.Controllers
         public async Task<IActionResult> DeleteAttendance([FromBody] List<AttendanceModel> attendance)
 
         {
-            var result = _activityService.Service.DeleteAttendance(attendance);
+            var result = await _activityService.Service.DeleteAttendance(attendance);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -1376,7 +1375,7 @@ namespace ActivityManagementSystem.API.Controllers
                 // Prepare memory stream
                 MemoryStream memory = new MemoryStream();
 
-                using (var stream = new FileStream(filePath, FileMode.Open))
+                await using(var stream = new FileStream(filePath, FileMode.Open))
                 {
                     await stream.CopyToAsync(memory);
                 }
@@ -1603,7 +1602,7 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteBatchSubMapping(int ids)
         {
-            var result = _activityService.Service.DeleteBatchSubMapping(ids);
+            var result = await _activityService.Service.DeleteBatchSubMapping(ids);
 
             _logger.LogDebug(result.ToString());
             if (result == null)
@@ -1632,7 +1631,7 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
 
-                var result = _activityService.Service.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
+                var result = await _activityService.Service.generateMonthlyAttendancereport(startMonth, startYear, endMonth, endYear, sectionId,grade,section);
 
                 _logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
@@ -1652,7 +1651,7 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
 
-                var result = _activityService.Service.generateExcelList(role);
+                var result = await _activityService.Service.generateExcelList(role);
 
                 _logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
@@ -1673,7 +1672,7 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
 
-                var result = _activityService.Service.generateDailyAttendancereport(month, year, sectionId, grade, section);
+                var result = await _activityService.Service.generateDailyAttendancereport(month, year, sectionId, grade, section);
 
                 _logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
@@ -1694,7 +1693,7 @@ namespace ActivityManagementSystem.API.Controllers
             {
 
 
-                var result = _activityService.Service.generateAttendanceCumulativereport(startYear, endYear, sectionId);
+                var result = await _activityService.Service.generateAttendanceCumulativereport(startYear, endYear, sectionId);
 
                 _logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
@@ -1732,7 +1731,7 @@ namespace ActivityManagementSystem.API.Controllers
         {
             //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
             //$"\r\n product subcategories", ToString());
-            var result = _activityService.Service.UpdateVerifyPassword(UserName, NewPassword, OldPassword, FacultyId);
+            var result = await _activityService.Service.UpdateVerifyPassword(UserName, NewPassword, OldPassword, FacultyId);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2043,7 +2042,7 @@ namespace ActivityManagementSystem.API.Controllers
             try
             {
 
-                var result = _activityService.Service.GetAllMarkReport( Section, subjects, test);
+                var result = await _activityService.Service.GetAllMarkReport( Section, subjects, test);
                 //_logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
             }
@@ -2061,7 +2060,7 @@ namespace ActivityManagementSystem.API.Controllers
             try
             {
 
-                var result = _activityService.Service.GetInterestedStudentList(competitionId);
+                var result = await _activityService.Service.GetInterestedStudentList(competitionId);
                 //_logger.LogDebug(result.ToString());
                 return await PrepareFileForDownload(result.ToString(), "Excel");
             }
@@ -2079,7 +2078,7 @@ namespace ActivityManagementSystem.API.Controllers
             //List<MarkDetails>= JsonConvert.DeserializeObject(studentmark.Data.ToString());
             //var items = JsonConvert.DeserializeObject<List<MarkDetails>>(studentmark.Data.ToString());            
 
-            var result = _activityService.Service.GetStudentMark();
+            var result = await _activityService.Service.GetStudentMark();
 
             //var data = result.Select(x => JsonConvert.DeserializeObject<StudentMark>(x.Data)).ToList();
 
@@ -2136,7 +2135,7 @@ namespace ActivityManagementSystem.API.Controllers
             //$"\r\n product subcategories", ToString());
 
             // StudentModel studentDetails = JsonConvert.DeserializeObject<StudentModel>(student);
-            var result = _activityService.Service.InsertFacultySubMappings(facultySubjectMapping);
+            var result = await _activityService.Service.InsertFacultySubMappings(facultySubjectMapping);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2151,7 +2150,7 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> UpdateFacultySubMapping([FromBody] FacultySubjectMapping facultySubjectMapping)
         {
-            var result =  _activityService.Service.UpdateFacultySubMapping(facultySubjectMapping);
+            var result = await _activityService.Service.UpdateFacultySubMapping(facultySubjectMapping);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2298,7 +2297,7 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteMark([FromBody] List<StudentMark> mark)
         {
-            var result = _activityService.Service.DeleteMark(mark);
+            var result = await _activityService.Service.DeleteMark(mark);
             _logger.LogDebug(result.ToString());
             if (result == null)
             {
@@ -2561,16 +2560,14 @@ namespace ActivityManagementSystem.API.Controllers
         [ProducesResponseType(404)]
         public async Task<IActionResult> DeleteuserAccount(int id)
         {
-            //   _logger.LogDebug($" at product sub categories {{@this}} in Get method." +
-            //$"\r\n product subcategories", ToString());
+            await System.Threading.Tasks.Task.CompletedTask; // No real async work — placeholder only
+
             var result = "Account will be deleted in sometime!";
-            _logger.LogDebug(result.ToString());
-            if (result == null)
-            {
-                return NoContent();
-            }
+            _logger.LogDebug(result);
+
             return Ok(result);
         }
+
         [HttpPost]
         [ProducesResponseType(200, Type = typeof(TimetableModel))]
         [ProducesResponseType(404)]

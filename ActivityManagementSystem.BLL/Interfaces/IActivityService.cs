@@ -89,7 +89,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<SubjectModel>> GetAllSubject(int? Id);
         Task<List<SubjectModel>> InsertSubjectDetails(SubjectModel subject);
         Task<List<SubjectModel>> UpdateSubjectDetails(SubjectModel subject);
-        string DeleteSubjectDetails(int id);
+        Task<string> DeleteSubjectDetails(int id);
         Task<string> bulkuploadstudent(DataTable target);
 
         Task<string> bulkuploadfaculty(DataTable target);
@@ -100,7 +100,7 @@ namespace ActivityManagementSystem.BLL.Interfaces
 
         Task<string> bulkuploadtimetable(DataTable target);
         Task<List<AttendanceModel>> GetAllAttendance(DateTime? AttendanceDate, int sectionId, string Hoursday);
-        string InsertAttendance(List<AttendanceModel> attendance);
+        Task<string> InsertAttendance(List<AttendanceModel> attendance);
         Task<List<AttendanceModel>> UpdateAttendance(AttendanceModel attendance);
        // Task<List<SectionStudentSubjectList>> GetBatchWiseStudentList();
         Task<int> PasswordReset(string userName, string password);
@@ -111,14 +111,14 @@ namespace ActivityManagementSystem.BLL.Interfaces
         Task<List<BatchSubjectFacultyModel>> GetAllBatchSubMappings(int? id);
         Task<List<BatchSubjectFacultyModel>> InsertBatchSubMappings(BatchSubjectFacultyModel data);
         Task<List<BatchSubjectFacultyModel>> UpdateBatchSubMapping(BatchSubjectFacultyModel data);
-        string DeleteBatchSubMapping(int id);
+        Task<string> DeleteBatchSubMapping(int id);
         //string generateAttendancereport();
         Task<List<BatchStudMappingModel>> GetAllSectionStudMappings(int? id);
         Task<int> InsertSectionStudMappings(List<BatchStudMappingModel> data);
         Task<int> UpdateSectionStudMapping(List<BatchStudMappingModel> model);
         Task<int> DeleteSectionStudMapping(int[] ids, int batchId);
         Task<List<SubjectAttendanceModel>> Getsubjectsforattendance(string batch, string Department, string Sem, string Year, string Section);
-        public string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section);
+        public Task<string> generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId, string grade, string section);
         Task<(MemoryStream memory, string path)> DownloadData(string filepath);
 
       

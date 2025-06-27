@@ -545,12 +545,12 @@ namespace ActivityManagementSystem.DAL.Repositories
 
         }
 
-        public string DeleteSubjectDetails(int id)
+        public async Task<string> DeleteSubjectDetails(int id)
         {
             try
             {
                 var spName = ConstantSPnames.SP_DELETESUBJECT;
-                using (SqlConnection sqlconnection =
+                await using (SqlConnection sqlconnection =
                        new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
                 {
                     sqlconnection.Open();
@@ -901,12 +901,12 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public string InsertAttendance(List<AttendanceModel> attendance)
+        public async Task<string> InsertAttendance(List<AttendanceModel> attendance)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = false;
             settings.OmitXmlDeclaration = true;
-            using (XmlWriter writer = XmlWriter.Create("text.xml", settings))
+            await using (XmlWriter writer = XmlWriter.Create("text.xml", settings))
             {
                 writer.WriteStartElement("Paramters");
                 if (attendance != null)
@@ -946,7 +946,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             //XmlDocument xmlDoc = new XmlDocument();
             //xmlDoc.LoadXml(xml);
 
-            using (SqlConnection sqlconnection =
+            await using (SqlConnection sqlconnection =
                    new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
             {
                 sqlconnection.Open();
@@ -981,7 +981,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
     
 
-        public string DeleteAttendance(List<AttendanceModel> attendance)
+        public async Task<string> DeleteAttendance(List<AttendanceModel> attendance)
         {
             var spName = ConstantSPnames.SP_DELETEATTENDANCE;
             var sendToDB = new ArrayList();
@@ -999,7 +999,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                         });
                 }
 
-                var delte = _db.Connection.Execute(spName, sendToDB.ToArray(),
+                var delte =await _db.Connection.ExecuteAsync(spName, sendToDB.ToArray(),
                     commandType: CommandType.StoredProcedure);
                 return "Success";
             }
@@ -1081,19 +1081,18 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
 
         }
-       
 
-       
-            public string DeleteBatchSubMapping(int id)
+
+
+        public async Task<string> DeleteBatchSubMapping(int id)
             {
                 try
                 {
 
                     var spName = ConstantSPnames.SP_DELETEBATCHSUBMAP;
 
-            using (SqlConnection sqlconnection =
-                      new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
-            {
+                await using SqlConnection sqlconnection =
+                      new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
                 sqlconnection.Open();
 
 
@@ -1104,10 +1103,9 @@ namespace ActivityManagementSystem.DAL.Repositories
 
                 command.ExecuteNonQuery();
                 return "Success";
-            }
 
-            //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
-        }
+                //return Task.Factory.StartNew(() => _db.Connection.Query<Department>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
+            }
             catch (Exception ex)
             {
                 return (ex.Message);
@@ -1130,7 +1128,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public string generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId,string grade,string section)
+        public async Task<string> generateMonthlyAttendancereport(int startMonth, int startYear, int endMonth, int endYear, int sectionId,string grade,string section)
         {
             var spMonthwiseAtt = ConstantSPnames.SP_MonthwiseAttendance;
             string strfilepath = "";
@@ -1140,27 +1138,25 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
 
                 var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
-                using (SqlConnection myConnection = new SqlConnection(con))
+                await using (SqlConnection myConnection = new SqlConnection(con))
                 {
                     SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
                     objCmd.CommandType = CommandType.StoredProcedure;
-                    using (var da = new SqlDataAdapter(objCmd))
-                    {
-                        DataSet ds = new DataSet();
-                        objCmd.Parameters.Add("@StartMonth", SqlDbType.Int).Value = startMonth;
-                        objCmd.Parameters.Add("@StartYear", SqlDbType.Int).Value = startYear;
-                        objCmd.Parameters.Add("@EndMonth", SqlDbType.Int).Value = endMonth;
-                        objCmd.Parameters.Add("@EndYear", SqlDbType.Int).Value = endYear;
-                        objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
-                       
-                        objCmd.CommandTimeout = 100000;
-                        da.Fill(ds);
-                        var dataTable = ds.Tables[0];
-                        // Create a new DataTable for the transformed data
-                        if (dataTable.Rows.Count == 0)
-                            return NotFound("No attendance records found.");
-                         strfilepath = GenerateExcel(dataTable, "Cumulative Report- Grade:" + grade + "/ Section: " + section);
-                    }
+                    using var da = new SqlDataAdapter(objCmd);
+                    DataSet ds = new DataSet();
+                    objCmd.Parameters.Add("@StartMonth", SqlDbType.Int).Value = startMonth;
+                    objCmd.Parameters.Add("@StartYear", SqlDbType.Int).Value = startYear;
+                    objCmd.Parameters.Add("@EndMonth", SqlDbType.Int).Value = endMonth;
+                    objCmd.Parameters.Add("@EndYear", SqlDbType.Int).Value = endYear;
+                    objCmd.Parameters.Add("@SectionId", SqlDbType.Int).Value = sectionId;
+
+                    objCmd.CommandTimeout = 100000;
+                    da.Fill(ds);
+                    var dataTable = ds.Tables[0];
+                    // Create a new DataTable for the transformed data
+                    if (dataTable.Rows.Count == 0)
+                        return NotFound("No attendance records found.");
+                    strfilepath = GenerateExcel(dataTable, "Cumulative Report- Grade:" + grade + "/ Section: " + section);
 
                 }
                 return strfilepath;
@@ -1234,7 +1230,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
             return filePath; // Return the full file path
         }
-        public string generateExcelList(string role)
+        public async Task<string> generateExcelList(string role)
         {
             var spMonthwiseAtt = role == "Student"? ConstantSPnames.SP_GETALLSTUDENTDETAILWITHSECTION  : ConstantSPnames.SP_GETALLFACULTYLIST;
             string strfilepath = "";
@@ -1244,7 +1240,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
 
                 var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
-                using (SqlConnection myConnection = new SqlConnection(con))
+                await using (SqlConnection myConnection = new SqlConnection(con))
                 {
                     SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
                     objCmd.CommandType = CommandType.StoredProcedure;
@@ -1272,7 +1268,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        public string generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
+        public async Task<string> generateDailyAttendancereport(int month, int year, int sectionId, string grade, string section)
         {
             var spMonthwiseAtt = ConstantSPnames.SP_MonthwiseDynamicAttendance;
             string strfilepath = "";
@@ -1282,7 +1278,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
 
                 var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
-                using (SqlConnection myConnection = new SqlConnection(con))
+                await using (SqlConnection myConnection = new SqlConnection(con))
                 {
                     SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
                     objCmd.CommandType = CommandType.StoredProcedure;
@@ -1307,9 +1303,9 @@ namespace ActivityManagementSystem.DAL.Repositories
                         if(ds.Tables.Count ==0)
                             return NotFound("No attendance records found.");
                         strfilepath = GenerateExcelSheet(ds.Tables[0],
-        ds.Tables[1],
-        ds.Tables[2],
-        ds.Tables[3], "Daily Attendance Report- Grade:" + grade + "/ Section: " + section,month);
+                        ds.Tables[1],
+                        ds.Tables[2],
+                        ds.Tables[3], "Daily Attendance Report- Grade:" + grade + "/ Section: " + section,month);
                     }
 
                 }
@@ -1323,7 +1319,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                 return ex.Message;
             }
         }
-        public string generateAttendanceCumulativereport(int startYear, int endyear, int sectionId)
+        public async Task<string> generateAttendanceCumulativereport(int startYear, int endyear, int sectionId)
         {
             var spMonthwiseAtt = ConstantSPnames.SP_CumulativeAttendance;
             string strfilepath = "";
@@ -1333,7 +1329,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             {
 
                 var con = _appSettings.ConnectionInfo.TransactionDatabase.ToString();
-                using (SqlConnection myConnection = new SqlConnection(con))
+                await using (SqlConnection myConnection = new SqlConnection(con))
                 {
                     SqlCommand objCmd = new SqlCommand(spMonthwiseAtt, myConnection);
                     objCmd.CommandType = CommandType.StoredProcedure;
@@ -1810,12 +1806,12 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
         }
 
-        public string UpdateVerifyPassword(string UserName, string NewPassword, string OldPassword, long FacultyId)
+        public async Task<string> UpdateVerifyPassword(string UserName, string NewPassword, string OldPassword, long FacultyId)
         {
             var spName = ConstantSPnames.SP_UPDATEVERIFYPASSWORD;
             try
             {
-                using (SqlConnection sqlconnection =
+                await using (SqlConnection sqlconnection =
                        new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
                 {
 
@@ -2051,16 +2047,15 @@ namespace ActivityManagementSystem.DAL.Repositories
             }, commandType: CommandType.StoredProcedure).ToList());
 
         }
-        public Task<List<LeaveModel>> DeleteLeave(int id)
+        public async Task<List<LeaveModel>> DeleteLeave(int id)
         {
             var spName = ConstantSPnames.SP_DELETELEAVE;
-            return Task.Factory.StartNew(() =>
-                _db.Connection.Query<LeaveModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure)
-                    .ToList());
+            return await Task.Factory.StartNew(() =>
+                 _db.Connection.Query<LeaveModel>(spName, new { Id = id }, commandType: CommandType.StoredProcedure).ToList());
         }
 
 
-        public string GetInterestedStudentList(int competitionId)
+        public async Task<string> GetInterestedStudentList(int competitionId)
         {
             try
             {
@@ -2069,8 +2064,8 @@ namespace ActivityManagementSystem.DAL.Repositories
 
                 string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
 
-                using (var connection = new SqlConnection(connectionString))
-                using (var command = new SqlCommand(spName, connection))
+                await using (var connection = new SqlConnection(connectionString))
+                await using (var command = new SqlCommand(spName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.Add("@CompetitionId", SqlDbType.Int).Value = competitionId;
@@ -2198,7 +2193,7 @@ namespace ActivityManagementSystem.DAL.Repositories
             }
         }
 
-        public string GetAllMarkReport(string section, string subjects, string test)
+        public async Task<string> GetAllMarkReport(string section, string subjects, string test)
         {
             try
             {
@@ -2209,8 +2204,8 @@ namespace ActivityManagementSystem.DAL.Repositories
                 string[] secArr = section.Split('-');
                 string connectionString = _appSettings.ConnectionInfo.TransactionDatabase;
 
-                using (var connection = new SqlConnection(connectionString))
-                using (var command = new SqlCommand(spName, connection))
+                await using (var connection = new SqlConnection(connectionString))
+                await using (var command = new SqlCommand(spName, connection))
                 {
                     command.CommandType = CommandType.StoredProcedure;
                     command.Parameters.Add("@SectionId", SqlDbType.Int).Value = Convert.ToInt64(secArr[2]);
@@ -2472,11 +2467,11 @@ namespace ActivityManagementSystem.DAL.Repositories
                 }
             }
         }
-        public List<StudentMark> GetStudentMark()
+        public async Task<List<StudentMark>> GetStudentMark()
         {
             var spName = ConstantSPnames.SP_GETSTUDENTMARKS;
 
-            using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
+            await using SqlConnection sqlconnection = new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
             sqlconnection.Open();
             SqlCommand command = new SqlCommand(spName, sqlconnection);
             command.CommandType = CommandType.StoredProcedure;
@@ -2526,11 +2521,11 @@ namespace ActivityManagementSystem.DAL.Repositories
                 Id = id
             }, commandType: CommandType.StoredProcedure).ToList());
         }
-        public string InsertFacultySubMappings(FacultySubjectMapping facultySubjectMapping)
+        public async Task<string> InsertFacultySubMappings(FacultySubjectMapping facultySubjectMapping)
         {
             //fdpModel.MakerDate = fdpModel.IsMakerCompleted == true ? DateTime.Now : DateTime.MinValue;
             var spName = ConstantSPnames.SP_INSERTFACULTYSUBMAP;
-            using (SqlConnection sqlconnection =
+            await using (SqlConnection sqlconnection =
                     new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
             {
                 try
@@ -2560,38 +2555,35 @@ namespace ActivityManagementSystem.DAL.Repositories
         }
 
 
-        public string UpdateFacultySubMapping(FacultySubjectMapping facultySubjectMapping)
+        public async Task<string> UpdateFacultySubMapping(FacultySubjectMapping facultySubjectMapping)
         {
 
 
             var spName = ConstantSPnames.SP_UPDATEFACULTYSUBMAP;
-            using (SqlConnection sqlconnection =
-                    new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString()))
+            await using SqlConnection sqlconnection =
+                    new SqlConnection(_appSettings.ConnectionInfo.TransactionDatabase.ToString());
+            try
             {
-                try
-                {
-                    sqlconnection.Open();
-                    SqlCommand command = new SqlCommand(spName, sqlconnection);
-                    command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.Add("Id", SqlDbType.BigInt).Value = facultySubjectMapping.Id;
-                    command.Parameters.Add("FacultyId", SqlDbType.VarChar).Value = facultySubjectMapping.FacultyId;
-                    command.Parameters.Add("SubjectId", SqlDbType.BigInt).Value = facultySubjectMapping.SubjectId;
-                    command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultySubjectMapping.DepartmentId;
-                    command.Parameters.Add("Sem", SqlDbType.VarChar).Value = facultySubjectMapping.Sem;
-                    command.Parameters.Add("Year", SqlDbType.VarChar).Value = facultySubjectMapping.Year;
-                    command.Parameters.Add("Section", SqlDbType.VarChar).Value = facultySubjectMapping.Section;
-                    command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultySubjectMapping.ModifiedBy;
-                    command.Parameters.Add("ModifiedDate", SqlDbType.DateTime).Value = facultySubjectMapping.ModifiedDate;
+                sqlconnection.Open();
+                SqlCommand command = new SqlCommand(spName, sqlconnection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.Add("Id", SqlDbType.BigInt).Value = facultySubjectMapping.Id;
+                command.Parameters.Add("FacultyId", SqlDbType.VarChar).Value = facultySubjectMapping.FacultyId;
+                command.Parameters.Add("SubjectId", SqlDbType.BigInt).Value = facultySubjectMapping.SubjectId;
+                command.Parameters.Add("DepartmentId", SqlDbType.BigInt).Value = facultySubjectMapping.DepartmentId;
+                command.Parameters.Add("Sem", SqlDbType.VarChar).Value = facultySubjectMapping.Sem;
+                command.Parameters.Add("Year", SqlDbType.VarChar).Value = facultySubjectMapping.Year;
+                command.Parameters.Add("Section", SqlDbType.VarChar).Value = facultySubjectMapping.Section;
+                command.Parameters.Add("ModifiedBy", SqlDbType.VarChar).Value = facultySubjectMapping.ModifiedBy;
+                command.Parameters.Add("ModifiedDate", SqlDbType.DateTime).Value = facultySubjectMapping.ModifiedDate;
 
-                    int result = command.ExecuteNonQuery();
-                    sqlconnection.Close();
-                    return result.ToString();
-                }
-                catch (Exception ex)
-                {
-                    return ex.Message.ToString();
-                }
-
+                int result = command.ExecuteNonQuery();
+                sqlconnection.Close();
+                return result.ToString();
+            }
+            catch (Exception ex)
+            {
+                return ex.Message.ToString();
             }
         }
 
@@ -2675,7 +2667,7 @@ namespace ActivityManagementSystem.DAL.Repositories
 
   
 
-        public string DeleteMark(List<StudentMark> mark)
+        public async Task<string> DeleteMark(List<StudentMark> mark)
         {
             var spName = ConstantSPnames.SP_DELETEMARK;
             var sendToDB = new ArrayList();
@@ -2689,7 +2681,7 @@ namespace ActivityManagementSystem.DAL.Repositories
                             Id = item.Id
                         });
                 }
-                var delte = _db.Connection.Execute(spName, sendToDB.ToArray(),
+                var delte = await _db.Connection.ExecuteAsync(spName, sendToDB.ToArray(),
                     commandType: CommandType.StoredProcedure);
                 return "Success";
             }
