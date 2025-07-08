@@ -210,7 +210,9 @@ namespace ActivityManagementSystem.BLL.Services
             }
 
             // Step 2: Define the source and destination folders
-            string outputFolder = $"/app/{actionMethodName}";
+          //  string basePath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data"); // or "wwwroot", etc.
+            string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
+           // string outputFolder = $"/app/{actionMethodName}";
            // string destination = $"/app/Attachment/{actionMethodName}";
             // string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
 
@@ -229,7 +231,8 @@ namespace ActivityManagementSystem.BLL.Services
 
             // Step 4: Get all files from the source folder
             //Directory.GetFiles(Path.Combine(filePath)).ToList();
-            string[] files = Directory.GetFiles(Path.Combine(outputFolder));
+
+            var files = Directory.GetFiles(Path.Combine(outputFolder)).ToList();
 
             //foreach (string file in files)
             //{
