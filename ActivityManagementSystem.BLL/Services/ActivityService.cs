@@ -131,33 +131,74 @@ namespace ActivityManagementSystem.BLL.Services
         {
             // Step 1: Define the action method based on the file type
             string actionMethodName = string.Empty;
+            //if (type == "Assignment")
+            //{
+
+            //    actionMethodName = $"Assignment\\Assignment-{id}";
+            //}
+            //if (type == "Announcement")
+            //{
+            //    actionMethodName = $"Announcement\\Announcement-{id}";
+            //}
+            //else if (type == "Students")
+            //{
+            //    actionMethodName = $"Students\\Students-{id}";
+            //}
+            //else if (type == "ContentLib")
+            //{
+            //    actionMethodName = $"ContentLib\\ContentLib-{id}";
+            //}
+            //else if (type == "Events")
+            //{
+            //    actionMethodName = $"Events\\Events-{id}";
+            //}
+            //else if (type == "PressReports")
+            //{
+            //    actionMethodName = $"PressReports\\PressReports-{id}";
+            //}
+            //else if (type == "Faculty")
+            //{
+            //    actionMethodName = $"Facultys\\Facultys-{id}";
+            //}
+            //else if (type == "InfoGalore")
+            //{
+            //    actionMethodName = "InfoGalore";
+            //}
+            //else if (type == "LeaveRequest")
+            //{
+            //    actionMethodName = $"LeaveRequest\\LeaveRequest-{id}";
+            //}
+
+            //// Step 2: Define the source and destination folders
+            //string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
+
             if (type == "Assignment")
             {
-                actionMethodName = $"Assignment\\Assignment-{id}";
+                actionMethodName = $"Assignment/Assignment-{id}";
             }
-            if (type == "Announcement")
+            else if (type == "Announcement")
             {
-                actionMethodName = $"Announcement\\Announcement-{id}";
+                actionMethodName = $"Announcement/Announcement-{id}";
             }
             else if (type == "Students")
             {
-                actionMethodName = $"Students\\Students-{id}";
+                actionMethodName = $"Students/Students-{id}";
             }
             else if (type == "ContentLib")
             {
-                actionMethodName = $"ContentLib\\ContentLib-{id}";
+                actionMethodName = $"ContentLib/ContentLib-{id}";
             }
             else if (type == "Events")
             {
-                actionMethodName = $"Events\\Events-{id}";
+                actionMethodName = $"Events/Events-{id}";
             }
             else if (type == "PressReports")
             {
-                actionMethodName = $"PressReports\\PressReports-{id}";
+                actionMethodName = $"PressReports/PressReports-{id}";
             }
             else if (type == "Faculty")
             {
-                actionMethodName = $"Facultys\\Facultys-{id}";
+                actionMethodName = $"Facultys/Facultys-{id}";
             }
             else if (type == "InfoGalore")
             {
@@ -165,11 +206,12 @@ namespace ActivityManagementSystem.BLL.Services
             }
             else if (type == "LeaveRequest")
             {
-                actionMethodName = $"LeaveRequest\\LeaveRequest-{id}";
+                actionMethodName = $"LeaveRequest/LeaveRequest-{id}";
             }
 
             // Step 2: Define the source and destination folders
-            string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
+            string outputFolder = $"/app/{actionMethodName}";
+
             string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
 
             // Step 3: Check if the source folder exists; if not, return an empty list
