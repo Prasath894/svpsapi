@@ -211,36 +211,53 @@ namespace ActivityManagementSystem.BLL.Services
 
             // Step 2: Define the source and destination folders
             string outputFolder = $"/app/{actionMethodName}";
-            string destination = $"/app/Attachment/{actionMethodName}";
+           // string destination = $"/app/Attachment/{actionMethodName}";
             // string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
 
             // Step 3: Check if the source folder exists; if not, return an empty list
-            if (!Directory.Exists(outputFolder))
-            {
-                return new List<AttachmentModel>(); // Return an empty list if folder does not exist
-            }
+            //if (!Directory.Exists(outputFolder))
+            //{
+            //    return new List<AttachmentModel>(); // Return an empty list if folder does not exist
+            //}
 
             // Ensure the folder exists by deleting it first if it's already there
-            if (Directory.Exists(destination))
-            {
-                Directory.Delete(destination, true);
-            }
-            Directory.CreateDirectory(destination);
+            //if (Directory.Exists(destination))
+            //{
+            //    Directory.Delete(destination, true);
+            //}
+            //Directory.CreateDirectory(destination);
 
             // Step 4: Get all files from the source folder
-            string[] files = Directory.GetFiles(outputFolder);
+            //Directory.GetFiles(Path.Combine(filePath)).ToList();
+            string[] files = Directory.GetFiles(Path.Combine(outputFolder));
 
-            foreach (string file in files)
-            {
-                string fileName = Path.GetFileName(file);
-                string destFile = Path.Combine(destination, fileName);
-                File.Copy(file, destFile, true); // Overwrites if file exists
-            }
+            //foreach (string file in files)
+            //{
+            //    string fileName = Path.GetFileName(file);
+            //    string destFile = Path.Combine(destination, fileName);
+            //    File.Copy(file, destFile, true); 
+            // Overwrites if file exists
+            //}
 
             List<AttachmentModel> extractedFiles = new List<AttachmentModel>();
 
             // Step 5: Process extracted files
-            foreach (var filePath in Directory.GetFiles(destination))
+            //foreach (var filePath in Directory.GetFiles(destination))
+            //{
+            //    var attachment = new AttachmentModel
+            //    {
+            //        FileName = Path.GetFileName(filePath),
+            //        FilePath = filePath
+            //    };
+
+            //    if (FileIsAnImageChecker.IsImageFile(filePath))
+            //    {
+            //        attachment.BlobData = await File.ReadAllBytesAsync(filePath);
+            //    }
+
+            //    extractedFiles.Add(attachment);
+            //}
+            foreach (var filePath in files)
             {
                 var attachment = new AttachmentModel
                 {
