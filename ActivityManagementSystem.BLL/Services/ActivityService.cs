@@ -211,8 +211,8 @@ namespace ActivityManagementSystem.BLL.Services
 
             // Step 2: Define the source and destination folders
             string outputFolder = $"/app/{actionMethodName}";
-
-            string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
+            string destination = $"/app/Attachment/{actionMethodName}";
+            // string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
 
             // Step 3: Check if the source folder exists; if not, return an empty list
             if (!Directory.Exists(outputFolder))
