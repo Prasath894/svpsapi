@@ -211,8 +211,8 @@ namespace ActivityManagementSystem.BLL.Services
 
             // Step 2: Define the source and destination folders
           //  string basePath = Path.Combine(Directory.GetCurrentDirectory(), "App_Data"); // or "wwwroot", etc.
-            string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
-           // string outputFolder = $"/app/{actionMethodName}";
+           // string outputFolder = Path.Combine(Directory.GetCurrentDirectory(), actionMethodName);
+            string outputFolder = $"/app/{actionMethodName}";
            // string destination = $"/app/Attachment/{actionMethodName}";
             // string destination = Path.Combine(Directory.GetCurrentDirectory(), "Attachments", type, $"{type}-{id}");
 
