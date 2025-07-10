@@ -688,7 +688,7 @@ namespace ActivityManagementSystem.API.Controllers
             string folderPath = $"{fileUploadModel.ActivityName}/{fileUploadModel.ActivityName}-{fileUploadModel.Id}";
             List<string> fileNames = new();
 
-            var connectionString = _config["AppSettings:AzureBlobStorage:ConnectionString"];
+            var connectionString = Environment.GetEnvironmentVariable("AZURE_STORAGE_CONNECTION_STRING"); 
             var containerName = _config["AppSettings:AzureBlobStorage:ContainerName"];
 
             var containerClient = new BlobContainerClient(connectionString, containerName);
