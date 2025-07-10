@@ -7,8 +7,8 @@ namespace ActivityManagementSystem.Domain.AppSettings
         public Settings Settings { get; set; }
         public SmsSettings SmsSettings { get; set; }
         public JWTSettings JWTSettings { get; set; }
-        
 
+        public AzureBlobStorageSettings AzureBlobStorage { get; set; } // Add this
         public EmailSettings EmailSettings { get; set; }
         public ImageResizerSettings ImageResizerSettings { get; set; }
     }

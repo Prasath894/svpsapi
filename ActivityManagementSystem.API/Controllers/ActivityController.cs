@@ -19,16 +19,14 @@ using System.Net;
 using System.Web;
 using System.Net.Http;
 using System.Text;
-using Microsoft.Extensions.Configuration.UserSecrets;
-using ActivityManagementSystem.BLL.Interfaces;
-using DocumentFormat.OpenXml.Bibliography;
-using Microsoft.SqlServer.Management.XEvent;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using ActivityManagementSystem.Domain.Models;
 using System.Net.Mail;
 using ActivityManagementSystem.BLL.Common;
 using System.Collections.Concurrent;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
 
 namespace ActivityManagementSystem.API.Controllers
 {
@@ -40,16 +38,21 @@ namespace ActivityManagementSystem.API.Controllers
         private readonly AppSettings _appSettings;
         private readonly IServices<ActivityService> _activityService;
         private readonly ILogger<ActivityController> _logger;
+        private readonly IConfiguration _config;
+
+
         protected string Role => User.FindFirst("userRole")?.Value;
 
         // Get the UserId claim value
         protected int UserId => Convert.ToInt32(User.FindFirst("userId")?.Value);
 
-        public ActivityController(ILogger<ActivityController> logger, AppSettings appSettings, IServices<ActivityService> activityService)
+        public ActivityController(ILogger<ActivityController> logger, AppSettings appSettings, IServices<ActivityService> activityService, IConfiguration config)
         {
-            this._activityService = activityService;
+           
             this._appSettings = appSettings;
             this._logger = logger;
+             this._config = config;
+            this._activityService = activityService;
             //_appSettings = appSettings;
         }
         protected IActionResult BadRequestError(Exception ex)
@@ -640,41 +643,77 @@ namespace ActivityManagementSystem.API.Controllers
         }
 
 
+        //[HttpPost]
+        //public async Task<IActionResult> UploadFile([FromForm] FileUploadModel fileUploadModel)
+        //{
+        //    if (fileUploadModel.FormFiles != null)
+        //    {
+        //        //subDirectory = subDirectory ?? string.Empty;
+        //        var target = Path.Combine(Directory.GetCurrentDirectory().ToString(), fileUploadModel.ActivityName, fileUploadModel.ActivityName + "-" + fileUploadModel.Id);
+
+        //        //Path.Combine(_appSettings.Settings.UploadFilePath.ToString(), fileUploadModel.ActivityName, fileUploadModel.ActivityName + "-" + fileUploadModel.Id);
+        //        if (!Directory.Exists(target))
+        //        {
+        //            Directory.CreateDirectory(target);
+        //        }
+        //        for (int i = 0; i < fileUploadModel.FormFiles.Count; i++)
+        //        {
+        //            string path = Path.Combine(target, fileUploadModel.FormFiles[i].FileName);
+        //            using (Stream stream = new FileStream(path, FileMode.Create))
+        //            {
+        //                await fileUploadModel.FormFiles[i].CopyToAsync(stream);
+        //            }
+        //        }
+        //        string filenames = "";
+        //        if (target != "")
+        //        {
+        //            string[] filePaths = Directory.GetFiles(target);
+        //            foreach (var file in filePaths)
+        //            {
+        //                filenames = filenames + Path.GetFileName(file) + "|";
+
+        //            }
+
+        //        }
+        //        var result = await _activityService.Service.UpdateActivityFilepathdata(target, fileUploadModel.Id, filenames);
+        //    }
+        //    return Ok();
+        //}
         [HttpPost]
         public async Task<IActionResult> UploadFile([FromForm] FileUploadModel fileUploadModel)
         {
-            if (fileUploadModel.FormFiles != null)
+            if (fileUploadModel.FormFiles == null || fileUploadModel.FormFiles.Count == 0)
+                return BadRequest("No files received.");
+
+            string folderPath = $"{fileUploadModel.ActivityName}/{fileUploadModel.ActivityName}-{fileUploadModel.Id}";
+            List<string> fileNames = new();
+
+            var connectionString = _config["AppSettings:AzureBlobStorage:ConnectionString"];
+            var containerName = _config["AppSettings:AzureBlobStorage:ContainerName"];
+
+            var containerClient = new BlobContainerClient(connectionString, containerName);
+           // await containerClient.CreateIfNotExistsAsync();
+
+            foreach (var formFile in fileUploadModel.FormFiles)
             {
-                //subDirectory = subDirectory ?? string.Empty;
-                var target = Path.Combine(Directory.GetCurrentDirectory().ToString(), fileUploadModel.ActivityName, fileUploadModel.ActivityName + "-" + fileUploadModel.Id);
+                string uniqueFileName = $"{Guid.NewGuid()}_{formFile.FileName}";
+                string blobPath = $"{folderPath}/{uniqueFileName}";
 
-                //Path.Combine(_appSettings.Settings.UploadFilePath.ToString(), fileUploadModel.ActivityName, fileUploadModel.ActivityName + "-" + fileUploadModel.Id);
-                if (!Directory.Exists(target))
-                {
-                    Directory.CreateDirectory(target);
-                }
-                for (int i = 0; i < fileUploadModel.FormFiles.Count; i++)
-                {
-                    string path = Path.Combine(target, fileUploadModel.FormFiles[i].FileName);
-                    using (Stream stream = new FileStream(path, FileMode.Create))
-                    {
-                        await fileUploadModel.FormFiles[i].CopyToAsync(stream);
-                    }
-                }
-                string filenames = "";
-                if (target != "")
-                {
-                    string[] filePaths = Directory.GetFiles(target);
-                    foreach (var file in filePaths)
-                    {
-                        filenames = filenames + Path.GetFileName(file) + "|";
+                var blobClient = containerClient.GetBlobClient(blobPath);
+                await using var stream = formFile.OpenReadStream();
+                await blobClient.UploadAsync(stream, overwrite: true);
 
-                    }
-
-                }
-                var result = await _activityService.Service.UpdateActivityFilepathdata(target, fileUploadModel.Id, filenames);
+                fileNames.Add(uniqueFileName);
             }
-            return Ok();
+
+            string filenamesConcatenated = string.Join("|", fileNames);
+
+            // Save to DB (use full blob URI if needed)
+            var result = await _activityService.Service.UpdateActivityFilepathdata(
+                folderPath, fileUploadModel.Id, filenamesConcatenated
+            );
+
+            return Ok(new { path = folderPath, files = fileNames });
         }
 
         [HttpPost]

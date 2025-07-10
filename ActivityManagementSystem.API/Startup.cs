@@ -35,6 +35,7 @@ namespace ActivityManagementSystem.Service
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            Configuration.GetSection("AppSettings").Bind(AppSettings);
             var builder = new ConfigurationBuilder()
               .SetBasePath(Directory.GetCurrentDirectory())
               .AddJsonFile("appsettings.json");
@@ -43,7 +44,7 @@ namespace ActivityManagementSystem.Service
             builder.AddEnvironmentVariables();
             
             Configuration = builder.Build();
-            Configuration.GetSection("AppSettings").Bind(AppSettings);
+          
           
         }
 
